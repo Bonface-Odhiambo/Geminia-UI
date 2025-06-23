@@ -1,130 +1,196 @@
 <div
-    class="flex min-w-0 flex-auto flex-col items-center sm:flex-row sm:justify-center md:items-start md:justify-start"
+  class="flex min-w-0 flex-auto flex-col items-center sm:flex-row sm:justify-center md:items-start md:justify-start"
 >
-    <div
-        class="w-full px-4 py-8 sm:bg-card sm:w-auto sm:rounded-2xl sm:p-12 sm:shadow md:flex md:h-full md:w-1/2 md:items-center md:justify-end md:rounded-none md:p-16 md:shadow-none"
-    >
-        <div class="mx-auto w-full max-w-80 sm:mx-0 sm:w-80">
-            <!-- Logo -->
-            <div class="w-12">
-                <img src="images/logo/logo.svg" />
-            </div>
+  <!-- Welcome Section (now on the left) -->
+  <div
+    class="relative hidden h-full w-1/2 flex-auto items-center justify-center overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 p-16 dark:border-r md:flex lg:px-28"
+  >
+    <!-- Background -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div
+        class="absolute -top-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-xl animate-pulse"
+      ></div>
+      <div
+        class="absolute top-1/3 -right-20 w-60 h-60 bg-white/5 rounded-full blur-2xl animate-bounce"
+        style="animation-duration: 3s"
+      ></div>
+    </div>
 
-            <!-- Title -->
-            <div
-                class="mt-8 text-4xl font-extrabold leading-tight tracking-tight"
+    <!-- Content -->
+    <div class="relative z-10 w-full max-w-2xl">
+      <!-- Welcome Badge -->
+      <div
+        class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-sm font-medium mb-6"
+      >
+        <span class="text-lg">🌊</span>
+        Welcome aboard!
+      </div>
+
+      <div class="text-6xl font-bold leading-tight text-white mb-2">
+        <div class="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+          Geminia Marine
+        </div>
+        <div class="text-white/95">Portal</div>
+      </div>
+
+      <div class="mt-6 text-lg leading-relaxed text-white/90 max-w-lg">
+        Get marine insurance in just a few clicks! Our simple process makes
+        protecting your assets easier than ever. ⚓
+      </div>
+
+      <!-- Insurance Cards -->
+      <div class="mt-10 space-y-4">
+        <!-- Marine Insurance Card -->
+        <div
+          class="group bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300"
+        >
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div
+                class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center text-white text-xl"
+              >
+                🚢
+              </div>
+              <div>
+                <h3 class="text-white font-semibold text-lg">Marine Insurance</h3>
+                <p class="text-white/70 text-sm">Protect your vessels & cargo</p>
+              </div>
+            </div>
+            <button
+              mat-flat-button
+              class="px-6 py-2 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-medium rounded-xl transition-all duration-200 shadow-lg"
+              (click)="navigateToMarineQuote()"
             >
-                Sign up
-            </div>
-            <div class="mt-0.5 flex items-baseline font-medium">
-                <div>Already have an account?</div>
-                <a
-                    class="ml-1 text-primary-500 hover:underline"
-                    [routerLink]="['/sign-in']"
-                    >Sign in
-                </a>
-            </div>
-
-            <!-- Alert -->
-            @if (showAlert) {
-                <fuse-alert
-                    class="mt-8"
-                    [appearance]="'outline'"
-                    [showIcon]="false"
-                    [type]="alert.type"
-                    [@shake]="alert.type === 'error'"
-                >
-                    {{ alert.message }}
-                </fuse-alert>
-            }
-
-            <!-- Account Creation Section -->
-            <div class="mt-8 text-center">
-                <p class="text-lg text-gray-600 mb-6">
-                    Wanna create your free account?
-                </p>
-                
-                <button
-                    class="fuse-mat-button-large w-full mb-6"
-                    mat-flat-button
-                    [color]="'primary'"
-                    (click)="navigateToRegistration()"
-                >
-                    Create your free account
-                </button>
-            </div>
+              Get Quote ✨
+            </button>
+          </div>
         </div>
-    </div>
-    <div
-        class="relative hidden h-full w-1/2 flex-auto items-center justify-center overflow-hidden bg-blue-800 p-16 dark:border-l md:flex lg:px-28"
-    >
-        <!-- Background -->
-        <!-- Rings -->
-        <!-- prettier-ignore -->
-        <svg class="absolute inset-0 pointer-events-none"
-             viewBox="0 0 960 540" width="100%" height="100%" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
-            <g class="text-gray-700 opacity-25" fill="none" stroke="currentColor" stroke-width="100">
-                <circle r="234" cx="196" cy="23"></circle>
-                <circle r="234" cx="790" cy="491"></circle>
-            </g>
-        </svg>
-        <!-- Dots -->
-        <!-- prettier-ignore -->
-        <svg class="absolute -top-16 -right-16 text-gray-700"
-             viewBox="0 0 220 192" width="220" height="192" fill="none">
-            <defs>
-                <pattern id="837c3e70-6c3a-44e6-8854-cc48c737b659" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                    <rect x="0" y="0" width="4" height="4" fill="currentColor"></rect>
-                </pattern>
-            </defs>
-            <rect width="220" height="192" fill="url(#837c3e70-6c3a-44e6-8854-cc48c737b659)"></rect>
-        </svg>
-        <!-- Content -->
-        <div class="relative z-10 w-full max-w-2xl">
-            <div class="text-7xl font-bold leading-none text-gray-100">
-                <div>Welcome to</div>
-                <div>Geminia Marine Portal</div>
+
+        <!-- Travel Insurance Card -->
+        <div
+          class="group bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300"
+        >
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div
+                class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center text-white text-xl"
+              >
+                🚗
+              </div>
+              <div>
+                <h3 class="text-white font-semibold text-lg">Travel Insurance</h3>
+                <p class="text-white/70 text-sm">Comprehensive vehicle coverage</p>
+              </div>
             </div>
-            <div class="mt-6 text-lg leading-6 tracking-tight text-gray-100">
-                Our portal enables agents and clients to get marine insurance in a very simple process
-            </div>
-            
-            <!-- Insurance Type Buttons -->
-            <div class="mt-8 flex flex-col gap-4">
-                <!-- Marine Insurance Row -->
-                <div class="flex items-center gap-4">
-                    <button
-                        mat-flat-button
-                        class="px-8 py-3 bg-white text-blue-800 hover:bg-gray-100 font-semibold rounded-lg transition-colors duration-200 min-w-[120px]"
-                    >
-                        Marine
-                    </button>
-                    <button
-                        mat-flat-button
-                        class="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 shadow-lg"
-                        (click)="navigateToMarineQuote()"
-                    >
-                        Get a Quote
-                    </button>
-                </div>
-                
-                <!-- Motor Insurance Row -->
-                <div class="flex items-center gap-4">
-                    <button
-                        mat-flat-button
-                        class="px-8 py-3 bg-white text-blue-800 hover:bg-gray-100 font-semibold rounded-lg transition-colors duration-200 min-w-[120px]"
-                    >
-                        Motor
-                    </button>
-                    <button
-                        mat-flat-button
-                        class="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 shadow-lg"
-                        (click)="navigateToMotorQuote()"
-                    >
-                        Get a Quote
-                    </button>
-                </div>
-            </div>
+            <button
+              mat-flat-button
+              class="px-6 py-2 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-medium rounded-xl transition-all duration-200 shadow-lg"
+              (click)="navigateToMotorQuote()"
+            >
+              Get Quote ✨
+            </button>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Sign Up Section (now on the right) -->
+  <div
+    class="w-full px-4 py-8 sm:bg-card sm:w-auto sm:rounded-2xl sm:p-12 sm:shadow md:flex md:h-full md:w-1/2 md:items-center md:justify-center md:rounded-none md:p-16 md:shadow-none bg-gradient-to-br from-gray-50 to-white"
+  >
+    <div class="mx-auto w-full max-w-96 sm:mx-0 sm:w-96">
+      <!-- Logo Container -->
+      <div class="flex items-center gap-3 mb-8">
+        <div
+          class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg"
+        >
+          <img src="images/logo/logo.svg" class="w-8 h-8 filter brightness-0 invert" />
+        </div>
+        <div class="flex gap-1">
+          <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+          <div class="w-1.5 h-1.5 bg-blue-300 rounded-full animate-pulse" style="animation-delay: 0.3s"></div>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <div class="space-y-3 mb-8">
+        <div
+          class="text-4xl font-extrabold leading-tight tracking-tight bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent"
+        >
+          Join Us! 🎉
+        </div>
+        <div class="flex items-center gap-2 text-gray-600">
+          <span class="font-medium">Already have an account?</span>
+          <a
+            class="text-blue-500 hover:text-blue-600 hover:underline font-semibold transition-all duration-200"
+            [routerLink]="['/sign-in']"
+          >
+            Sign in →
+          </a>
+        </div>
+      </div>
+
+      <!-- Alert -->
+      @if (showAlert) {
+        <div class="mb-8">
+          <fuse-alert
+            class="rounded-2xl border-0 shadow-sm"
+            [appearance]="'soft'"
+            [showIcon]="true"
+            [type]="alert.type"
+            [@shake]="alert.type === 'error'"
+          >
+            {{ alert.message }}
+          </fuse-alert>
+        </div>
+      }
+
+      <!-- Main Content Card -->
+      <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
+        <div class="text-center space-y-6">
+          <!-- Icon -->
+          <div
+            class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-50 rounded-full"
+          >
+            <span class="text-3xl">🚀</span>
+          </div>
+
+          <div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">
+              Ready to get started?
+            </h3>
+            <p class="text-gray-600 leading-relaxed">
+              Create your free account and start getting quotes in minutes! No
+              hidden fees, no commitments. ✨
+            </p>
+          </div>
+
+          <button
+            class="w-full px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-2xl transition-all duration-300 shadow-lg"
+            mat-flat-button
+            (click)="navigateToRegistration()"
+          >
+            Create Free Account 🎯
+          </button>
+
+          <!-- Simple features list -->
+          <div class="mt-8 space-y-3 text-sm text-gray-600">
+            <div class="flex items-center justify-center gap-2">
+              <span class="text-green-500">✓</span>
+              <span>Free account setup</span>
+            </div>
+            <div class="flex items-center justify-center gap-2">
+              <span class="text-green-500">✓</span>
+              <span>Instant quotes</span>
+            </div>
+            <div class="flex items-center justify-center gap-2">
+              <span class="text-green-500">✓</span>
+              <span>24/7 support</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

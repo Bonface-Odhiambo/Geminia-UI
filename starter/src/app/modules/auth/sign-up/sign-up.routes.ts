@@ -1,7 +1,8 @@
 import { Routes } from '@angular/router';
-import { AuthSignUpComponent } from './sign-up.component';
-import { UserRegistrationComponent } from '../user-registration/user-registration.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
+import { QuoteFormComponent } from '../quote-process/quote-form.component';
+import { UserRegistrationComponent } from '../user-registration/user-registration.component';
+import { AuthSignUpComponent } from './sign-up.component';
 
 export default [
     {
@@ -12,9 +13,12 @@ export default [
         path: 'user-registration',
         component: UserRegistrationComponent,
     },
-{
-    path:'dashboard',
-    component: DashboardComponent,
-},
-
+    {
+        path: 'dashboard',
+        component: DashboardComponent,
+    },
+    {
+        path: 'travel-quote',
+        component: QuoteFormComponent,
+    },
 ] as Routes;
