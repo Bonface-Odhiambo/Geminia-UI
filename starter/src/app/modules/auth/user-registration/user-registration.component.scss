@@ -1,0 +1,40 @@
+.mat-mdc-form-field {
+    width: 100%;
+}
+
+.mat-mdc-radio-button {
+    margin-right: 16px;
+}
+
+.mat-mdc-radio-button .mdc-radio {
+    --mdc-radio-selected-focus-icon-color: #dc2626;
+    --mdc-radio-selected-hover-icon-color: #dc2626;
+    --mdc-radio-selected-icon-color: #dc2626;
+    --mdc-radio-selected-pressed-icon-color: #dc2626;
+}
+
+.mat-mdc-checkbox {
+    --mdc-checkbox-selected-focus-icon-color: #dc2626;
+    --mdc-checkbox-selected-hover-icon-color: #dc2626;
+    --mdc-checkbox-selected-icon-color: #dc2626;
+    --mdc-checkbox-selected-pressed-icon-color: #dc2626;
+}
+
+// Custom scrollbar for the form container
+.max-h-\[90vh\]::-webkit-scrollbar {
+    width: 6px;
+}
+
+.max-h-\[90vh\]::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.max-h-\[90vh\]::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.max-h-\[90vh\]::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}

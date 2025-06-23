@@ -1,0 +1,274 @@
+<div class="min-h-screen bg-gray-50 flex">
+  <!-- Sidebar -->
+  <div class="w-64 bg-gradient-to-b from-blue-600 to-blue-800 text-white flex flex-col">
+    <!-- Logo/Brand -->
+    <div class="p-6 border-b border-blue-500/30">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+          <span class="text-white font-bold text-lg">P</span>
+        </div>
+        <div>
+          <h1 class="text-lg font-semibold">GEMINIA INSURANCE CLIENT PORTAL</h1>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Profile -->
+    <div class="p-6 border-b border-blue-500/30">
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+          <span class="text-white font-semibold text-lg">{{ getInitials(user.name) }}</span>
+        </div>
+        <div>
+          <h3 class="font-medium text-white">Welcome, {{ user.name }}</h3>
+          <p class="text-blue-200 text-sm">{{ user.email }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="flex-1 p-4">
+      <div class="space-y-2">
+        <a [routerLink]="['/dashboard']" 
+           routerLinkActive="bg-white/20 text-white"
+           class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-white/10 hover:text-white transition-colors">
+          <mat-icon>dashboard</mat-icon>
+          <span>Dashboard</span>
+        </a>
+
+        <!-- Marine Insurance Dropdown -->
+        <div class="space-y-1">
+          <button (click)="toggleLifeInsurance()" 
+                  class="w-full flex items-center justify-between px-4 py-3 rounded-lg text-blue-100 hover:bg-white/10 hover:text-white transition-colors">
+            <div class="flex items-center space-x-3">
+              <mat-icon>favorite</mat-icon>
+              <span>Marine Insurance</span>
+            </div>
+            <mat-icon [class.rotate-180]="isLifeInsuranceOpen" class="transition-transform">
+              expand_more
+            </mat-icon>
+          </button>
+          <div *ngIf="isLifeInsuranceOpen" class="ml-6 space-y-1">
+            <a href="#" class="block px-4 py-2 text-sm text-blue-200 hover:text-white hover:bg-white/10 rounded-lg">
+              Active Policies
+            </a>
+            <a href="#" class="block px-4 py-2 text-sm text-blue-200 hover:text-white hover:bg-white/10 rounded-lg">
+              Pending Transactions
+            </a>
+            <a href="#" class="block px-4 py-2 text-sm text-blue-200 hover:text-white hover:bg-white/10 rounded-lg">
+              Proposals
+            </a>
+          </div>
+        </div>
+
+        <!-- Motor Insurance Dropdown -->
+        <div class="space-y-1">
+          <button (click)="toggleGeneralInsurance()" 
+                  class="w-full flex items-center justify-between px-4 py-3 rounded-lg text-blue-100 hover:bg-white/10 hover:text-white transition-colors">
+            <div class="flex items-center space-x-3">
+              <mat-icon>security</mat-icon>
+              <span>Motor Insurance</span>
+            </div>
+            <mat-icon [class.rotate-180]="isGeneralInsuranceOpen" class="transition-transform">
+              expand_more
+            </mat-icon>
+          </button>
+          <div *ngIf="isGeneralInsuranceOpen" class="ml-6 space-y-1">
+            <a href="#" class="block px-4 py-2 text-sm text-blue-200 hover:text-white hover:bg-white/10 rounded-lg">
+              Motor Commercial Insurance
+            </a>
+            <a href="#" class="block px-4 py-2 text-sm text-blue-200 hover:text-white hover:bg-white/10 rounded-lg">
+              Motor Private
+            </a>
+          </div>
+        </div>
+
+      
+      </div>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col">
+    <!-- Top Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <button mat-icon-button class="lg:hidden">
+            <mat-icon>menu</mat-icon>
+          </button>
+          <div>
+            <h2 class="text-xl font-semibold text-gray-900">Dashboard</h2>
+            <p class="text-sm text-gray-500">Overview of your insurance portfolio</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+          <!-- Notifications -->
+          <button mat-icon-button [matMenuTriggerFor]="notificationMenu" class="relative">
+            <mat-icon>notifications</mat-icon>
+            <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+              3
+            </span>
+          </button>
+          
+          <!-- User Menu -->
+          <button mat-icon-button [matMenuTriggerFor]="userMenu">
+            <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+              <span class="text-white font-semibold text-sm">{{ getInitials(user.name) }}</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <main class="flex-1 p-6 overflow-y-auto">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <!-- Life Active Policies -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-medium text-gray-600">Life Active Policies</h3>
+            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+              <mat-icon class="text-green-600">favorite</mat-icon>
+            </div>
+          </div>
+          <div class="text-3xl font-bold text-gray-900 mb-2">{{ dashboardStats.lifeActivePolicies }}</div>
+          <div class="text-sm text-gray-500">Active policies</div>
+        </div>
+
+        <!-- Life Pending Transactions -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-medium text-gray-600">Life Pending Transactions</h3>
+            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+              <mat-icon class="text-red-600">pending</mat-icon>
+            </div>
+          </div>
+          <div class="text-3xl font-bold text-gray-900 mb-2">{{ dashboardStats.lifePendingTransactions }}</div>
+          <div class="text-sm text-gray-500">Pending transactions</div>
+        </div>
+
+        <!-- Life Pending Proposals -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-medium text-gray-600">Life Pending Proposals</h3>
+            <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+              <mat-icon class="text-pink-600">description</mat-icon>
+            </div>
+          </div>
+          <div class="text-3xl font-bold text-gray-900 mb-2">{{ dashboardStats.lifePendingProposals }}</div>
+          <div class="text-sm text-gray-500">Pending proposals</div>
+        </div>
+
+        <!-- Others -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-medium text-gray-600">Others</h3>
+            <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+              <mat-icon class="text-orange-600">more_horiz</mat-icon>
+            </div>
+          </div>
+          <div class="text-3xl font-bold text-gray-900 mb-2">{{ dashboardStats.others }}</div>
+          <div class="text-sm text-gray-500">Other items</div>
+        </div>
+
+        <!-- Life Quotes -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-medium text-gray-600">Life Quotes</h3>
+            <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+              <mat-icon class="text-teal-600">request_quote</mat-icon>
+            </div>
+          </div>
+          <div class="text-3xl font-bold text-gray-900 mb-2">{{ dashboardStats.lifeQuotes }}</div>
+          <div class="text-sm text-gray-500">Available quotes</div>
+        </div>
+      </div>
+
+      <!-- Additional Content Area -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+          <div class="space-y-4">
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <mat-icon class="text-blue-600 text-sm">check</mat-icon>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">Policy payment processed</p>
+                <p class="text-xs text-gray-500">2 hours ago</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+              <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <mat-icon class="text-green-600 text-sm">add</mat-icon>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">New quote generated</p>
+                <p class="text-xs text-gray-500">1 day ago</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <button class="group h-20 flex flex-col items-center justify-center space-y-2 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all duration-200">
+              <mat-icon class="text-gray-600 group-hover:text-blue-600">add</mat-icon>
+              <span class="text-sm text-gray-700 group-hover:text-blue-700 font-medium">New Quote</span>
+            </button>
+            <button class="group h-20 flex flex-col items-center justify-center space-y-2 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all duration-200">
+              <mat-icon class="text-gray-600 group-hover:text-blue-600">payment</mat-icon>
+              <span class="text-sm text-gray-700 group-hover:text-blue-700 font-medium">Make Payment</span>
+            </button>
+            <button class="group h-20 flex flex-col items-center justify-center space-y-2 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all duration-200">
+              <mat-icon class="text-gray-600 group-hover:text-blue-600">description</mat-icon>
+              <span class="text-sm text-gray-700 group-hover:text-blue-700 font-medium">View Policies</span>
+            </button>
+            <button class="group h-20 flex flex-col items-center justify-center space-y-2 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all duration-200">
+              <mat-icon class="text-gray-600 group-hover:text-blue-600">support</mat-icon>
+              <span class="text-sm text-gray-700 group-hover:text-blue-700 font-medium">Support</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Menus -->
+<mat-menu #notificationMenu="matMenu">
+  <button mat-menu-item>
+    <mat-icon>mail</mat-icon>
+    <span>New message received</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon>payment</mat-icon>
+    <span>Payment due reminder</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon>update</mat-icon>
+    <span>Policy update available</span>
+  </button>
+</mat-menu>
+
+<mat-menu #userMenu="matMenu">
+  <button mat-menu-item>
+    <mat-icon>person</mat-icon>
+    <span>Profile</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon>settings</mat-icon>
+    <span>Settings</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button mat-menu-item (click)="logout()">
+    <mat-icon>logout</mat-icon>
+    <span>Logout</span>
+  </button>
+</mat-menu>
