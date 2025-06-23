@@ -1,0 +1,1310 @@
+<div
+    class="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50"
+>
+    <!-- Subtle Background Pattern -->
+    <div class="absolute inset-0">
+        <!-- Professional wave pattern -->
+        <div class="absolute bottom-0 left-0 h-24 w-full opacity-10">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path
+                    d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"
+                    fill="currentColor"
+                    class="text-blue-600"
+                ></path>
+            </svg>
+        </div>
+
+        <!-- Minimal accent dots -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div
+                class="absolute left-1/4 top-1/4 h-1 w-1 rounded-full bg-blue-300 opacity-40"
+            ></div>
+            <div
+                class="absolute right-1/4 top-3/4 h-1 w-1 rounded-full bg-indigo-300 opacity-40"
+            ></div>
+            <div
+                class="absolute left-3/4 top-1/2 h-1 w-1 rounded-full bg-slate-300 opacity-40"
+            ></div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="relative z-10 flex min-h-screen flex-col">
+        <!-- Professional Header -->
+        <header
+            class="sticky top-0 z-50 border-b border-slate-200/50 bg-white/80 shadow-sm backdrop-blur-sm"
+        >
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex h-16 items-center justify-between">
+                    <div class="flex items-center">
+                        <div
+                            class="rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 p-2.5 shadow-sm"
+                        >
+                            <svg
+                                class="h-6 w-6 text-white"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    d="M3,6H21V8H3V6M16,10V12H21V14H16V16H14V10H16M5,10V16H7V14H9V12H7V10H5M11,10V16H13V10H11Z"
+                                />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h1 class="text-xl font-semibold text-slate-800">
+                                Geminia Marine
+                            </h1>
+                            <p class="text-xs font-medium text-slate-500">
+                                Professional Insurance Solutions
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Updated Progress Steps -->
+                    <div class="hidden items-center space-x-4 md:flex">
+                        <div
+                            class="flex items-center"
+                            [ngClass]="{
+                                'text-blue-600': currentStep >= 1,
+                                'text-slate-400': currentStep < 1,
+                            }"
+                        >
+                            <div
+                                class="mr-2 flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-semibold"
+                                [ngClass]="{
+                                    'border-blue-600 bg-blue-600 text-white':
+                                        currentStep >= 1,
+                                    'border-slate-300 text-slate-400':
+                                        currentStep < 1,
+                                }"
+                            >
+                                1
+                            </div>
+                            <span class="text-sm font-medium"
+                                >Registration</span
+                            >
+                        </div>
+
+                        <div class="h-0.5 w-6 bg-slate-200"></div>
+
+                        <div
+                            class="flex items-center"
+                            [ngClass]="{
+                                'text-blue-600': currentStep >= 2,
+                                'text-slate-400': currentStep < 2,
+                            }"
+                        >
+                            <div
+                                class="mr-2 flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-semibold"
+                                [ngClass]="{
+                                    'border-blue-600 bg-blue-600 text-white':
+                                        currentStep >= 2,
+                                    'border-slate-300 text-slate-400':
+                                        currentStep < 2,
+                                }"
+                            >
+                                2
+                            </div>
+                            <span class="text-sm font-medium"
+                                >Quote Details</span
+                            >
+                        </div>
+
+                        <div class="h-0.5 w-6 bg-slate-200"></div>
+
+                        <div
+                            class="flex items-center"
+                            [ngClass]="{
+                                'text-blue-600': currentStep >= 3,
+                                'text-slate-400': currentStep < 3,
+                            }"
+                        >
+                            <div
+                                class="mr-2 flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-semibold"
+                                [ngClass]="{
+                                    'border-blue-600 bg-blue-600 text-white':
+                                        currentStep >= 3,
+                                    'border-slate-300 text-slate-400':
+                                        currentStep < 3,
+                                }"
+                            >
+                                3
+                            </div>
+                            <span class="text-sm font-medium">Sign In</span>
+                        </div>
+
+                        <div class="h-0.5 w-6 bg-slate-200"></div>
+
+                        <div
+                            class="flex items-center"
+                            [ngClass]="{
+                                'text-blue-600': currentStep >= 4,
+                                'text-slate-400': currentStep < 4,
+                            }"
+                        >
+                            <div
+                                class="mr-2 flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-semibold"
+                                [ngClass]="{
+                                    'border-blue-600 bg-blue-600 text-white':
+                                        currentStep >= 4,
+                                    'border-slate-300 text-slate-400':
+                                        currentStep < 4,
+                                }"
+                            >
+                                4
+                            </div>
+                            <span class="text-sm font-medium">Payment</span>
+                        </div>
+                    </div>
+
+                    <!-- Help Button -->
+                    <button
+                        mat-icon-button
+                        class="text-slate-600 hover:text-slate-800"
+                    >
+                        <mat-icon>help_outline</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex flex-1 items-center justify-center p-4 py-8">
+            <div class="w-full max-w-4xl">
+                <!-- Step 1: Registration (unchanged) -->
+                <div
+                    *ngIf="currentStep === 1"
+                    class="transform rounded-2xl border border-slate-200 bg-white p-8 shadow-lg transition-all duration-500 ease-in-out"
+                    [@slideIn]
+                >
+                    <div class="mb-8 text-center">
+                        <div
+                            class="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100"
+                        >
+                            <svg
+                                class="h-7 w-7 text-blue-600"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    d="M12 12C14.21 12 16 10.21 16 8S14.21 4 12 4 8 5.79 8 8 9.79 12 12 12M12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
+                                />
+                            </svg>
+                        </div>
+                        <h2 class="mb-2 text-2xl font-semibold text-slate-800">
+                            Get Started
+                        </h2>
+                        <p class="text-slate-600">
+                            Begin your marine insurance application
+                        </p>
+                    </div>
+
+                    <form [formGroup]="registrationForm" class="space-y-6">
+                        <!-- User Type Selection -->
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div class="relative">
+                                <input
+                                    type="radio"
+                                    id="individual"
+                                    value="individual"
+                                    formControlName="userType"
+                                    class="peer sr-only"
+                                />
+                                <label
+                                    for="individual"
+                                    class="flex cursor-pointer items-center rounded-xl border-2 border-slate-200 bg-slate-50 p-5 transition-all duration-200 hover:border-slate-300 peer-checked:border-blue-500 peer-checked:bg-blue-50"
+                                >
+                                    <div
+                                        class="mr-4 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-600"
+                                    >
+                                        <svg
+                                            class="h-5 w-5 text-white"
+                                            fill="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                d="M12 12C14.21 12 16 10.21 16 8S14.21 4 12 4 8 5.79 8 8 9.79 12 12 12M12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3
+                                            class="font-semibold text-slate-800"
+                                        >
+                                            Individual
+                                        </h3>
+                                        <p class="text-sm text-slate-600">
+                                            Personal marine insurance
+                                        </p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="relative">
+                                <input
+                                    type="radio"
+                                    id="business"
+                                    value="business"
+                                    formControlName="userType"
+                                    class="peer sr-only"
+                                />
+                                <label
+                                    for="business"
+                                    class="flex cursor-pointer items-center rounded-xl border-2 border-slate-200 bg-slate-50 p-5 transition-all duration-200 hover:border-slate-300 peer-checked:border-blue-500 peer-checked:bg-blue-50"
+                                >
+                                    <div
+                                        class="mr-4 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-indigo-600"
+                                    >
+                                        <svg
+                                            class="h-5 w-5 text-white"
+                                            fill="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                d="M12 7V3H2V21H22V7H12ZM6 19H4V17H6V19ZM6 15H4V13H6V15ZM6 11H4V9H6V11ZM6 7H4V5H6V7ZM10 19H8V17H10V19ZM10 15H8V13H10V15ZM10 11H8V9H10V11ZM10 7H8V5H10V7ZM20 19H12V17H20V19ZM20 15H12V13H20V15ZM20 11H12V9H20V11Z"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3
+                                            class="font-semibold text-slate-800"
+                                        >
+                                            Business
+                                        </h3>
+                                        <p class="text-sm text-slate-600">
+                                            Commercial marine coverage
+                                        </p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Form Fields -->
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Full Name</mat-label>
+                                <input matInput formControlName="fullName" />
+                                <mat-icon matSuffix class="text-slate-400"
+                                    >person</mat-icon
+                                >
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Email Address</mat-label>
+                                <input
+                                    matInput
+                                    type="email"
+                                    formControlName="email"
+                                />
+                                <mat-icon matSuffix class="text-slate-400"
+                                    >email</mat-icon
+                                >
+                            </mat-form-field>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Phone Number</mat-label>
+                                <input
+                                    matInput
+                                    type="tel"
+                                    formControlName="phone"
+                                />
+                                <mat-icon matSuffix class="text-slate-400"
+                                    >phone</mat-icon
+                                >
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Location</mat-label>
+                                <mat-select formControlName="location">
+                                    <mat-option value="nairobi"
+                                        >Nairobi</mat-option
+                                    >
+                                    <mat-option value="mombasa"
+                                        >Mombasa</mat-option
+                                    >
+                                    <mat-option value="kisumu"
+                                        >Kisumu</mat-option
+                                    >
+                                    <mat-option value="other">Other</mat-option>
+                                </mat-select>
+                                <mat-icon matSuffix class="text-slate-400"
+                                    >location_on</mat-icon
+                                >
+                            </mat-form-field>
+                        </div>
+
+                        <!-- Continue Button -->
+                        <div class="flex justify-center pt-6">
+                            <button
+                                type="button"
+                                (click)="nextStep()"
+                                mat-flat-button
+                                class="transform rounded-lg bg-blue-600 px-10 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.02] hover:bg-blue-700 hover:shadow-lg"
+                            >
+                                Continue to Quote Details
+                                <mat-icon class="ml-2">arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Step 2: Quote Details (unchanged) -->
+                <div
+                    *ngIf="currentStep === 2"
+                    class="transform rounded-2xl border border-slate-200 bg-white p-8 shadow-lg transition-all duration-500 ease-in-out"
+                    [@slideIn]
+                >
+                    <div class="mb-8 text-center">
+                        <div
+                            class="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-green-100"
+                        >
+                            <svg
+                                class="h-7 w-7 text-green-600"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    d="M3,6H21V8H3V6M16,10V12H21V14H16V16H14V10H16M5,10V16H7V14H9V12H7V10H5M11,10V16H13V10H11Z"
+                                />
+                            </svg>
+                        </div>
+                        <h2 class="mb-2 text-2xl font-semibold text-slate-800">
+                            Vessel Information
+                        </h2>
+                        <p class="text-slate-600">
+                            Tell us about your vessel for accurate pricing
+                        </p>
+                    </div>
+
+                    <form [formGroup]="quoteForm" class="space-y-8">
+                        <!-- Vessel Type -->
+                        <div>
+                            <h3
+                                class="mb-4 text-lg font-semibold text-slate-800"
+                            >
+                                Vessel Type
+                            </h3>
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                <div class="relative">
+                                    <input
+                                        type="radio"
+                                        id="yacht"
+                                        value="yacht"
+                                        formControlName="vesselType"
+                                        class="peer sr-only"
+                                    />
+                                    <label
+                                        for="yacht"
+                                        class="block cursor-pointer rounded-xl border-2 border-slate-200 bg-white p-5 text-center transition-all hover:border-slate-300 peer-checked:border-blue-500 peer-checked:bg-blue-50"
+                                    >
+                                        <div
+                                            class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100"
+                                        >
+                                            <svg
+                                                class="h-5 w-5 text-blue-600"
+                                                fill="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    d="M3,6H21V8H3V6M16,10V12H21V14H16V16H14V10H16M5,10V16H7V14H9V12H7V10H5M11,10V16H13V10H11Z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <h4
+                                            class="font-semibold text-slate-800"
+                                        >
+                                            Yacht
+                                        </h4>
+                                        <p class="text-sm text-slate-600">
+                                            Luxury vessels
+                                        </p>
+                                    </label>
+                                </div>
+
+                                <div class="relative">
+                                    <input
+                                        type="radio"
+                                        id="fishing"
+                                        value="fishing"
+                                        formControlName="vesselType"
+                                        class="peer sr-only"
+                                    />
+                                    <label
+                                        for="fishing"
+                                        class="block cursor-pointer rounded-xl border-2 border-slate-200 bg-white p-5 text-center transition-all hover:border-slate-300 peer-checked:border-blue-500 peer-checked:bg-blue-50"
+                                    >
+                                        <div
+                                            class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-green-100"
+                                        >
+                                            <svg
+                                                class="h-5 w-5 text-green-600"
+                                                fill="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    d="M20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4C12.76,4 13.5,4.11 14.2,4.31L15.77,2.74C14.61,2.26 13.34,2 12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12M7.91,10.08L6.5,11.5L11,16L21,6L19.59,4.58L11,13.17L7.91,10.08Z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <h4
+                                            class="font-semibold text-slate-800"
+                                        >
+                                            Fishing Boat
+                                        </h4>
+                                        <p class="text-sm text-slate-600">
+                                            Commercial fishing
+                                        </p>
+                                    </label>
+                                </div>
+
+                                <div class="relative">
+                                    <input
+                                        type="radio"
+                                        id="cargo"
+                                        value="cargo"
+                                        formControlName="vesselType"
+                                        class="peer sr-only"
+                                    />
+                                    <label
+                                        for="cargo"
+                                        class="block cursor-pointer rounded-xl border-2 border-slate-200 bg-white p-5 text-center transition-all hover:border-slate-300 peer-checked:border-blue-500 peer-checked:bg-blue-50"
+                                    >
+                                        <div
+                                            class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100"
+                                        >
+                                            <svg
+                                                class="h-5 w-5 text-purple-600"
+                                                fill="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    d="M2,21V19H4V17H6V15H8V13H10V11H12V9H14V7H16V5H18V3H20V5H18V7H16V9H14V11H12V13H10V15H8V17H6V19H4V21H2Z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <h4
+                                            class="font-semibold text-slate-800"
+                                        >
+                                            Cargo Ship
+                                        </h4>
+                                        <p class="text-sm text-slate-600">
+                                            Commercial transport
+                                        </p>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vessel Details -->
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Vessel Value (USD)</mat-label>
+                                <input
+                                    matInput
+                                    type="number"
+                                    formControlName="vesselValue"
+                                />
+                                <mat-icon matSuffix class="text-slate-400"
+                                    >attach_money</mat-icon
+                                >
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Year Built</mat-label>
+                                <input
+                                    matInput
+                                    type="number"
+                                    formControlName="yearBuilt"
+                                />
+                                <mat-icon matSuffix class="text-slate-400"
+                                    >calendar_today</mat-icon
+                                >
+                            </mat-form-field>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Length (meters)</mat-label>
+                                <input
+                                    matInput
+                                    type="number"
+                                    formControlName="length"
+                                />
+                                <mat-icon matSuffix class="text-slate-400"
+                                    >straighten</mat-icon
+                                >
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Primary Use</mat-label>
+                                <mat-select formControlName="primaryUse">
+                                    <mat-option value="recreational"
+                                        >Recreational</mat-option
+                                    >
+                                    <mat-option value="commercial"
+                                        >Commercial</mat-option
+                                    >
+                                    <mat-option value="charter"
+                                        >Charter</mat-option
+                                    >
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <!-- Coverage Options -->
+                        <div>
+                            <h3
+                                class="mb-4 text-lg font-semibold text-slate-800"
+                            >
+                                Coverage Options
+                            </h3>
+                            <div class="space-y-3 rounded-xl bg-slate-50 p-5">
+                                <mat-checkbox
+                                    formControlName="hullCoverage"
+                                    color="primary"
+                                    class="block"
+                                >
+                                    <span class="ml-2 text-slate-700"
+                                        >Hull & Machinery Coverage</span
+                                    >
+                                </mat-checkbox>
+                                <mat-checkbox
+                                    formControlName="liabilityCoverage"
+                                    color="primary"
+                                    class="block"
+                                >
+                                    <span class="ml-2 text-slate-700"
+                                        >Third Party Liability</span
+                                    >
+                                </mat-checkbox>
+                                <mat-checkbox
+                                    formControlName="cargoCoverage"
+                                    color="primary"
+                                    class="block"
+                                >
+                                    <span class="ml-2 text-slate-700"
+                                        >Cargo Protection</span
+                                    >
+                                </mat-checkbox>
+                                <mat-checkbox
+                                    formControlName="personalEffects"
+                                    color="primary"
+                                    class="block"
+                                >
+                                    <span class="ml-2 text-slate-700"
+                                        >Personal Effects</span
+                                    >
+                                </mat-checkbox>
+                            </div>
+                        </div>
+
+                        <!-- Navigation -->
+                        <div class="flex justify-between pt-6">
+                            <button
+                                type="button"
+                                (click)="previousStep()"
+                                mat-stroked-button
+                                class="rounded-lg border-2 border-slate-300 px-6 py-2 font-medium transition-all hover:border-slate-400"
+                            >
+                                <mat-icon class="mr-2">arrow_back</mat-icon>
+                                Back
+                            </button>
+
+                            <button
+                                type="button"
+                                (click)="generateQuote()"
+                                mat-flat-button
+                                class="transform rounded-lg bg-green-600 px-10 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.02] hover:bg-green-700 hover:shadow-lg"
+                            >
+                                Generate Quote
+                                <mat-icon class="ml-2">arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Step 3: NEW Sign In Page -->
+                <div
+                    *ngIf="currentStep === 3"
+                    class="transform rounded-2xl border border-slate-200 bg-white p-8 shadow-lg transition-all duration-500 ease-in-out"
+                    [@slideIn]
+                >
+                    <div class="mb-8 text-center">
+                        <div
+                            class="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-indigo-100"
+                        >
+                            <svg
+                                class="h-7 w-7 text-indigo-600"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"
+                                />
+                            </svg>
+                        </div>
+                        <h2 class="mb-2 text-2xl font-semibold text-slate-800">
+                            Sign In to Continue
+                        </h2>
+                        <p class="text-slate-600">
+                            Please sign in to proceed with your quote
+                        </p>
+                    </div>
+
+                    <!-- Quote Summary Card -->
+                    <div
+                        class="mb-8 rounded-xl border border-blue-200 bg-blue-50 p-6"
+                    >
+                        <h3 class="mb-4 text-lg font-semibold text-slate-800">
+                            Your Quote Summary
+                        </h3>
+                        <div
+                            class="grid grid-cols-1 gap-4 text-sm md:grid-cols-2"
+                        >
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-600"
+                                        >Vessel Type:</span
+                                    >
+                                    <span class="font-medium text-slate-800">{{
+                                        quoteForm.get('vesselType')?.value
+                                            | titlecase
+                                    }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-600"
+                                        >Vessel Value:</span
+                                    >
+                                    <span class="font-medium text-slate-800"
+                                        >${{
+                                            quoteForm.get('vesselValue')?.value
+                                                | number
+                                        }}</span
+                                    >
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-600"
+                                        >Coverage Period:</span
+                                    >
+                                    <span class="font-medium text-slate-800"
+                                        >12 Months</span
+                                    >
+                                </div>
+                            </div>
+                            <div class="text-center md:text-right">
+                                <div class="rounded-lg bg-white p-4 shadow-sm">
+                                    <p class="mb-1 text-sm text-slate-600">
+                                        Estimated Premium
+                                    </p>
+                                    <p class="text-2xl font-bold text-blue-600">
+                                        ${{ calculatePremium() | number }}
+                                    </p>
+                                    <p class="text-xs text-slate-500">
+                                        Final price after sign-in
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sign In Options -->
+                    <div class="space-y-6">
+                        <!-- Existing User Sign In -->
+                        <div class="rounded-xl bg-slate-50 p-6">
+                            <h3
+                                class="mb-4 text-lg font-semibold text-slate-800"
+                            >
+                                Existing Customer
+                            </h3>
+                            <form [formGroup]="signInForm" class="space-y-4">
+                                <mat-form-field
+                                    appearance="outline"
+                                    class="w-full"
+                                >
+                                    <mat-label>Email Address</mat-label>
+                                    <input
+                                        matInput
+                                        type="email"
+                                        formControlName="email"
+                                    />
+                                    <mat-icon matSuffix class="text-slate-400"
+                                        >email</mat-icon
+                                    >
+                                </mat-form-field>
+
+                                <mat-form-field
+                                    appearance="outline"
+                                    class="w-full"
+                                >
+                                    <mat-label>Password</mat-label>
+                                    <input
+                                        matInput
+                                        [type]="
+                                            hidePassword ? 'password' : 'text'
+                                        "
+                                        formControlName="password"
+                                    />
+                                    <button
+                                        mat-icon-button
+                                        matSuffix
+                                        (click)="hidePassword = !hidePassword"
+                                        type="button"
+                                    >
+                                        <mat-icon>{{
+                                            hidePassword
+                                                ? 'visibility_off'
+                                                : 'visibility'
+                                        }}</mat-icon>
+                                    </button>
+                                </mat-form-field>
+
+                                <div class="flex items-center justify-between">
+                                    <mat-checkbox
+                                        formControlName="rememberMe"
+                                        color="primary"
+                                    >
+                                        <span class="text-sm text-slate-700"
+                                            >Remember me</span
+                                        >
+                                    </mat-checkbox>
+                                    <a
+                                        href="#"
+                                        class="text-sm text-blue-600 hover:underline"
+                                        >Forgot password?</a
+                                    >
+                                </div>
+
+                                <button
+                                    type="button"
+                                    (click)="signIn()"
+                                    [disabled]="!signInForm.valid || signingIn"
+                                    mat-flat-button
+                                    class="w-full rounded-lg bg-indigo-600 py-3 font-semibold text-white transition-all hover:bg-indigo-700 disabled:opacity-50"
+                                >
+                                    <ng-container *ngIf="!signingIn">
+                                        Sign In & Continue
+                                    </ng-container>
+                                    <ng-container *ngIf="signingIn">
+                                        <mat-progress-spinner
+                                            [diameter]="20"
+                                            [mode]="'indeterminate'"
+                                            class="mr-2"
+                                        ></mat-progress-spinner>
+                                        Signing In...
+                                    </ng-container>
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="relative">
+                            <div class="absolute inset-0 flex items-center">
+                                <div
+                                    class="w-full border-t border-slate-300"
+                                ></div>
+                            </div>
+                            <div class="relative flex justify-center text-sm">
+                                <span class="bg-white px-2 text-slate-500"
+                                    >Or</span
+                                >
+                            </div>
+                        </div>
+
+                        <!-- New User Registration -->
+                        <div
+                            class="rounded-xl border border-green-200 bg-green-50 p-6"
+                        >
+                            <h3
+                                class="mb-4 text-lg font-semibold text-slate-800"
+                            >
+                                New Customer
+                            </h3>
+                            <p class="mb-4 text-slate-600">
+                                Create an account to manage your marine
+                                insurance policies
+                            </p>
+
+                            <div
+                                class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2"
+                            >
+                                <div
+                                    class="flex items-center text-sm text-slate-600"
+                                >
+                                    <svg
+                                        class="mr-2 h-4 w-4 text-green-500"
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z"
+                                        />
+                                    </svg>
+                                    Policy management dashboard
+                                </div>
+                                <div
+                                    class="flex items-center text-sm text-slate-600"
+                                >
+                                    <svg
+                                        class="mr-2 h-4 w-4 text-green-500"
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z"
+                                        />
+                                    </svg>
+                                    24/7 claims support
+                                </div>
+                                <div
+                                    class="flex items-center text-sm text-slate-600"
+                                >
+                                    <svg
+                                        class="mr-2 h-4 w-4 text-green-500"
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z"
+                                        />
+                                    </svg>
+                                    Instant policy documents
+                                </div>
+                                <div
+                                    class="flex items-center text-sm text-slate-600"
+                                >
+                                    <svg
+                                        class="mr-2 h-4 w-4 text-green-500"
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z"
+                                        />
+                                    </svg>
+                                    Renewal reminders
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                (click)="createAccount()"
+                                mat-flat-button
+                                class="w-full rounded-lg bg-green-600 py-3 font-semibold text-white transition-all hover:bg-green-700"
+                            >
+                                Create Account & Continue
+                                <mat-icon class="ml-2">person_add</mat-icon>
+                            </button>
+                        </div>
+
+                        <!-- Navigation -->
+                        <div class="flex justify-between pt-4">
+                            <button
+                                type="button"
+                                (click)="previousStep()"
+                                mat-stroked-button
+                                class="rounded-lg border-2 border-slate-300 px-6 py-2 font-medium transition-all hover:border-slate-400"
+                            >
+                                <mat-icon class="mr-2">arrow_back</mat-icon>
+                                Back to Quote
+                            </button>
+
+                            <button
+                                type="button"
+                                (click)="continueAsGuest()"
+                                mat-stroked-button
+                                class="rounded-lg border-2 border-slate-300 px-6 py-2 font-medium transition-all hover:border-slate-400"
+                            >
+                                Continue as Guest
+                                <mat-icon class="ml-2">arrow_forward</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Payment (previously Step 3) -->
+                <div
+                    *ngIf="currentStep === 4"
+                    class="transform rounded-2xl border border-slate-200 bg-white p-8 shadow-lg transition-all duration-500 ease-in-out"
+                    [@slideIn]
+                >
+                    <div class="mb-8 text-center">
+                        <div
+                            class="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-purple-100"
+                        >
+                            <svg
+                                class="h-7 w-7 text-purple-600"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    d="M20,8H4V6H20M20,18H4V12H20M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.11,4 20,4Z"
+                                />
+                            </svg>
+                        </div>
+                        <h2 class="mb-2 text-2xl font-semibold text-slate-800">
+                            Complete Your Purchase
+                        </h2>
+                        <p class="text-slate-600">
+                            Finalize your marine insurance policy
+                        </p>
+                    </div>
+
+                    <!-- User Info Display (if signed in) -->
+                    <div
+                        *ngIf="isSignedIn"
+                        class="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-4"
+                    >
+                        <div class="flex items-center">
+                            <div
+                                class="mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-blue-600"
+                            >
+                                <svg
+                                    class="h-5 w-5 text-white"
+                                    fill="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"
+                                    />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-slate-800">
+                                    {{ currentUser?.name }}
+                                </p>
+                                <p class="text-sm text-slate-600">
+                                    {{ currentUser?.email }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quote Summary -->
+                    <div
+                        class="mb-8 rounded-xl border border-slate-200 bg-slate-50 p-6"
+                    >
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <div>
+                                <h3
+                                    class="mb-4 text-lg font-semibold text-slate-800"
+                                >
+                                    Policy Summary
+                                </h3>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-600"
+                                            >Vessel Type:</span
+                                        >
+                                        <span
+                                            class="font-medium text-slate-800"
+                                            >{{
+                                                quoteForm.get('vesselType')
+                                                    ?.value | titlecase
+                                            }}</span
+                                        >
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-600"
+                                            >Vessel Value:</span
+                                        >
+                                        <span class="font-medium text-slate-800"
+                                            >${{
+                                                quoteForm.get('vesselValue')
+                                                    ?.value | number
+                                            }}</span
+                                        >
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-600"
+                                            >Coverage Period:</span
+                                        >
+                                        <span class="font-medium text-slate-800"
+                                            >12 Months</span
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center md:text-right">
+                                <div
+                                    class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+                                >
+                                    <p class="mb-1 text-sm text-slate-600">
+                                        Annual Premium
+                                    </p>
+                                    <p class="text-2xl font-bold text-blue-600">
+                                        ${{ calculatePremium() | number }}
+                                    </p>
+                                    <p class="text-xs text-slate-500">
+                                        All taxes included
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Form -->
+                    <form [formGroup]="paymentForm" class="space-y-6">
+                        <h3 class="text-lg font-semibold text-slate-800">
+                            Payment Information
+                        </h3>
+
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Cardholder Name</mat-label>
+                                <input
+                                    matInput
+                                    formControlName="cardholderName"
+                                />
+                                <mat-icon matSuffix class="text-slate-400"
+                                    >person</mat-icon
+                                >
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Card Number</mat-label>
+                                <input
+                                    matInput
+                                    formControlName="cardNumber"
+                                    placeholder="1234 5678 9012 3456"
+                                />
+                                <mat-icon matSuffix class="text-slate-400"
+                                    >credit_card</mat-icon
+                                >
+                            </mat-form-field>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-6">
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>Expiry Date</mat-label>
+                                <input
+                                    matInput
+                                    formControlName="expiryDate"
+                                    placeholder="MM/YY"
+                                />
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="w-full">
+                                <mat-label>CVV</mat-label>
+                                <input
+                                    matInput
+                                    formControlName="cvv"
+                                    placeholder="123"
+                                />
+                                <mat-icon matSuffix class="text-slate-400"
+                                    >lock</mat-icon
+                                >
+                            </mat-form-field>
+                        </div>
+
+                        <!-- Terms -->
+                        <div
+                            class="rounded-lg border border-slate-200 bg-slate-50 p-4"
+                        >
+                            <mat-checkbox
+                                formControlName="acceptTerms"
+                                color="primary"
+                            >
+                                <span class="text-sm text-slate-700">
+                                    I agree to the
+                                    <a
+                                        href="#"
+                                        class="font-medium text-blue-600 hover:underline"
+                                        >Terms & Conditions</a
+                                    >
+                                    and
+                                    <a
+                                        href="#"
+                                        class="font-medium text-blue-600 hover:underline"
+                                        >Privacy Policy</a
+                                    >
+                                </span>
+                            </mat-checkbox>
+                        </div>
+
+                        <!-- Navigation -->
+                        <div class="flex justify-between pt-6">
+                            <button
+                                type="button"
+                                (click)="previousStep()"
+                                mat-stroked-button
+                                class="rounded-lg border-2 border-slate-300 px-6 py-2 font-medium transition-all hover:border-slate-400"
+                            >
+                                <mat-icon class="mr-2">arrow_back</mat-icon>
+                                Back
+                            </button>
+
+                            <button
+                                type="button"
+                                (click)="completePurchase()"
+                                [disabled]="!paymentForm.valid || processing"
+                                mat-flat-button
+                                class="transform rounded-lg bg-purple-600 px-10 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.02] hover:bg-purple-700 hover:shadow-lg disabled:transform-none disabled:opacity-50"
+                            >
+                                <ng-container *ngIf="!processing">
+                                    <span
+                                        >Complete Purchase - ${{
+                                            calculatePremium() | number
+                                        }}</span
+                                    >
+                                    <mat-icon class="ml-2">payment</mat-icon>
+                                </ng-container>
+                                <ng-container *ngIf="processing">
+                                    <mat-progress-spinner
+                                        [diameter]="20"
+                                        [mode]="'indeterminate'"
+                                        class="mr-2"
+                                    ></mat-progress-spinner>
+                                    <span>Processing...</span>
+                                </ng-container>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Step 5: Success (previously Step 4) -->
+                <div
+                    *ngIf="currentStep === 5"
+                    class="transform rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-lg transition-all duration-500 ease-in-out"
+                    [@slideIn]
+                >
+                    <div class="mb-8">
+                        <div
+                            class="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-xl bg-green-100"
+                        >
+                            <svg
+                                class="h-8 w-8 text-green-600"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z"
+                                />
+                            </svg>
+                        </div>
+                        <h2 class="mb-4 text-3xl font-semibold text-slate-800">
+                            Policy Activated
+                        </h2>
+                        <p class="mb-6 text-lg text-slate-600">
+                            Your marine insurance is now in effect
+                        </p>
+
+                        <div
+                            class="mb-8 rounded-xl border border-green-200 bg-green-50 p-6"
+                        >
+                            <h3
+                                class="mb-3 text-lg font-semibold text-slate-800"
+                            >
+                                Policy Information
+                            </h3>
+                            <div class="space-y-1 text-sm text-slate-600">
+                                <p>
+                                    Policy Number:
+                                    <span
+                                        class="font-mono font-semibold text-slate-800"
+                                        >GEM-{{ generatePolicyNumber() }}</span
+                                    >
+                                </p>
+                                <p>
+                                    Effective Date:
+                                    <span
+                                        class="font-semibold text-slate-800"
+                                        >{{ today | date: 'mediumDate' }}</span
+                                    >
+                                </p>
+                                <p>
+                                    Expiration Date:
+                                    <span
+                                        class="font-semibold text-slate-800"
+                                        >{{
+                                            nextYear | date: 'mediumDate'
+                                        }}</span
+                                    >
+                                </p>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex flex-col justify-center gap-4 sm:flex-row"
+                        >
+                            <button
+                                mat-flat-button
+                                class="transform rounded-lg bg-blue-600 px-8 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.02] hover:bg-blue-700 hover:shadow-lg"
+                            >
+                                <mat-icon class="mr-2">download</mat-icon>
+                                Download Policy
+                            </button>
+
+                            <button
+                                mat-stroked-button
+                                class="rounded-lg border-2 border-slate-300 px-8 py-3 font-medium transition-all hover:border-slate-400"
+                            >
+                                <mat-icon class="mr-2">email</mat-icon>
+                                Email Policy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer
+            class="border-t border-slate-200/50 bg-white/80 py-6 backdrop-blur-sm"
+        >
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between">
+                    <div
+                        class="flex items-center space-x-6 text-sm text-slate-600"
+                    >
+                        <span>© 2025 Geminia Marine Insurance</span>
+                        <a
+                            href="#"
+                            class="transition-colors hover:text-slate-800"
+                            >Privacy Policy</a
+                        >
+                        <a
+                            href="#"
+                            class="transition-colors hover:text-slate-800"
+                            >Terms of Service</a
+                        >
+                        <a
+                            href="#"
+                            class="transition-colors hover:text-slate-800"
+                            >Support</a
+                        >
+                    </div>
+
+                    <div class="flex items-center space-x-6">
+                        <div class="flex items-center text-sm text-slate-600">
+                            <svg
+                                class="mr-1 h-4 w-4 text-green-500"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"
+                                />
+                            </svg>
+                            SSL Secured
+                        </div>
+                        <div class="flex items-center text-sm text-slate-600">
+                            <svg
+                                class="mr-1 h-4 w-4 text-blue-500"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    d="M12,2A3,3 0 0,1 15,5V7H20A1,1 0 0,1 21,8V19A1,1 0 0,1 20,20H4A1,1 0 0,1 3,19V8A1,1 0 0,1 4,7H9V5A3,3 0 0,1 12,2M12,4A1,1 0 0,0 11,5V7H13V5A1,1 0 0,0 12,4Z"
+                                />
+                            </svg>
+                            24/7 Support
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>

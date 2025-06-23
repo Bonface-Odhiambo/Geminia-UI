@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from '../dashboard/dashboard.component';
-// import { QuoteFormComponent } from '../quote-process/quote-form.component';
+import { TravelQuoteComponent } from '../travel-quote/travel-quote.component';
 import { UserRegistrationComponent } from '../user-registration/user-registration.component';
 import { AuthSignUpComponent } from './sign-up.component';
 
@@ -10,15 +10,15 @@ export default [
         component: AuthSignUpComponent,
     },
     {
-        path: 'user-registration',
+        path: 'marine-quote',
         component: UserRegistrationComponent,
     },
     {
         path: 'dashboard',
         component: DashboardComponent,
     },
-    // {
-    //     path: 'travel-quote',
-    //     component: QuoteFormComponent,
-    // },
+    {
+        path: 'travel-quote',
+        component: TravelQuoteComponent,
+    },
 ] as Routes;
