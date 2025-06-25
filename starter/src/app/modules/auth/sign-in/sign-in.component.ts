@@ -133,7 +133,8 @@ export class AuthSignInComponent implements OnInit {
       this._cd.markForCheck(); // Manually trigger change detection
     }, 2000);
 
-    // On a successful sign-in, you would navigate the user
+    // On a successful sign-in, you would navigate the use
+    window.location.href="/sign-up/dashboard"
     // e.g., this._router.navigate(['/dashboard']);
   }
 

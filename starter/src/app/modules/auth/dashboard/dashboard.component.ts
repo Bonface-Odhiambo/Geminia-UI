@@ -1,98 +1,91 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
+import { Component, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { RouterModule } from '@angular/router';
 
 interface User {
-  name: string;
-  email: string;
+    name: string;
+    email: string;
 }
 
+// Updated interface to match the new cards
 interface DashboardStats {
-  lifeActivePolicies: number;
-  lifePendingTransactions: number;
-  lifePendingProposals: number;
-  others: number;
-  lifeQuotes: number;
+    marinePolicies: number;
+    travelPolicies: number;
 }
 
 @Component({
-  selector: 'app-dashboard',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatIconModule,
-    MatButtonModule,
-    MatMenuModule,
-    MatDividerModule
-  ],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+    selector: 'app-dashboard',
+    standalone: true,
+    imports: [
+        CommonModule,
+        RouterModule,
+        MatIconModule,
+        MatButtonModule,
+        MatMenuModule,
+        MatDividerModule,
+    ],
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-  user: User = {
-    name: 'Bonface Odhiambo',
-    email: 'bonface@example.com'
-  };
-
-  dashboardStats: DashboardStats = {
-    lifeActivePolicies: 0,
-    lifePendingTransactions: 0,
-    lifePendingProposals: 0,
-    others: 0,
-    lifeQuotes: 0
-  };
-
-  // Sidebar toggle states
-  isLifeInsuranceOpen = false;
-  isGeneralInsuranceOpen = false;
-  isPensionsOpen = false;
-
-  constructor() { }
-
-  ngOnInit(): void {
-    this.loadDashboardData();
-  }
-
-  loadDashboardData(): void {
-    // Load dashboard statistics from your service
-    // This is mock data - replace with actual service calls
-    this.dashboardStats = {
-      lifeActivePolicies: 0,
-      lifePendingTransactions: 0,
-      lifePendingProposals: 0,
-      others: 0,
-      lifeQuotes: 0
+    user: User = {
+        name: 'Bonface Odhiambo',
+        email: 'bonface@example.com',
     };
-  }
 
-  getInitials(name: string): string {
-    return name
-      .split(' ')
-      .map(word => word.charAt(0))
-      .join('')
-      .toUpperCase()
-      .substring(0, 2);
-  }
+    // Updated dashboardStats object to hold data for the new cards
+    dashboardStats: DashboardStats = {
+        marinePolicies: 0,
+        travelPolicies: 0,
+    };
 
-  toggleLifeInsurance(): void {
-    this.isLifeInsuranceOpen = !this.isLifeInsuranceOpen;
-  }
+    // Sidebar toggle states
+    isLifeInsuranceOpen = false;
+    isGeneralInsuranceOpen = false;
+    isPensionsOpen = false;
 
-  toggleGeneralInsurance(): void {
-    this.isGeneralInsuranceOpen = !this.isGeneralInsuranceOpen;
-  }
+    constructor() {}
 
-  togglePensions(): void {
-    this.isPensionsOpen = !this.isPensionsOpen;
-  }
+    ngOnInit(): void {
+        this.loadDashboardData();
+    }
 
-  logout(): void {
-    // Implement logout logic
-    console.log('Logging out...');
-  }
+    loadDashboardData(): void {
+        // Load dashboard statistics from your service
+        // This is mock data - replace with actual service calls
+        this.dashboardStats = {
+            marinePolicies: 4, // Example data
+            travelPolicies: 2, // Example data
+        };
+    }
+
+    getInitials(name: string): string {
+        return name
+            .split(' ')
+            .map((word) => word.charAt(0))
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
+    }
+
+    toggleLifeInsurance(): void {
+        this.isLifeInsuranceOpen = !this.isLifeInsuranceOpen;
+    }
+
+    toggleGeneralInsurance(): void {
+        this.isGeneralInsuranceOpen = !this.isGeneralInsuranceOpen;
+    }
+
+    togglePensions(): void {
+        this.isPensionsOpen = !this.isPensionsOpen;
+    }
+
+    logout(): void {
+        // Implement logout logic
+        console.log('Logging out...');
+    }
 }
