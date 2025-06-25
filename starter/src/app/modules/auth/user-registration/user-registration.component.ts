@@ -1,255 +1,273 @@
-import { animate, style, transition, trigger } from '@angular/animations';
-import { CommonModule, formatNumber } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+
+interface PremiumCalculation {
+  basePremium: number;
+  addOnPremium: number;
+  totalPremium: number;
+  baseRate: number;
+  currency: string;
+}
 
 @Component({
-  selector: 'app-marine-insurance-portal',
+  selector: 'app-marine-cargo-quotation',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatRadioModule,
-    MatTooltipModule,
-    MatTabsModule,
-    MatProgressBarModule,
-  ],
-  templateUrl: './marine-insurance.component.html',
-  styleUrls: ['./marine-insurance.component.scss'],
-  animations: [
-    trigger('slideIn', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(20px)' }),
-        animate(
-          '300ms ease-in',
-          style({ opacity: 1, transform: 'translateY(0)' }),
-        ),
-      ]),
-    ]),
-  ],
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './marine-cargo-quotation.component.html',
+  styleUrls: ['./marine-cargo-quotation.component.css']
 })
-export class MarineInsurancePortalComponent implements OnInit {
-  // --- STATE MANAGEMENT ---
-  currentView: string = 'login'; // Controls which "page" is shown
-  isLoggedIn: boolean = false;
-  userRole: string | null = null;
-  showOnboardingMessage: boolean = false;
-  claimStep: number = 1;
-
-  // --- FORM GROUPS ---
-  loginForm: FormGroup;
-  registrationForm: FormGroup;
-  coverSelectionForm: FormGroup;
-  singleTransitForm: FormGroup;
-  quoteRetrievalForm: FormGroup;
-  openCoverForm: FormGroup;
+export class MarineCargoQuotationComponent implements OnInit {
+  quotationForm: FormGroup;
   paymentForm: FormGroup;
-  claimsForm: FormGroup;
-  adminFilterForm: FormGroup;
-
-  // --- DATA & SIMULATION ---
-  retrievedQuote: any = null;
-  policyDetails: any = null;
-  quoteSummary: any = { premium: 0, levies: 0, total: 0 };
+  currentStep: number = 1;
+  isProcessingPayment: boolean = false;
+  
+  premiumCalculation: PremiumCalculation = {
+    basePremium: 0,
+    addOnPremium: 0,
+    totalPremium: 0,
+    baseRate: 0,
+    currency: 'KES'
+  };
 
   constructor(private fb: FormBuilder) {
-    this.initializeForms();
+    this.quotationForm = this.createQuotationForm();
+    this.paymentForm = this.createPaymentForm();
   }
 
   ngOnInit(): void {
-    // Recalculate quote summary on form changes
-    this.singleTransitForm.valueChanges.subscribe(() => {
-      this.calculateQuoteSummary();
-    });
+    this.setupFormSubscriptions();
   }
 
-  private initializeForms(): void {
-    // Prompt 1: Login
-    this.loginForm = this.fb.group({
-      email: ['intermediary@geminia.com', [Validators.required, Validators.email]],
-      password: ['password', Validators.required],
-      role: ['intermediary', Validators.required],
-    });
-
-    // Prompt 2: Registration
-    this.registrationForm = this.fb.group({
-      fullName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
-      password: ['', Validators.required],
-      confirmPassword: ['', Validators.required],
-      intermediaryCode: [''],
-      consent1: [false, Validators.requiredTrue],
-      consent2: [false, Validators.requiredTrue],
-      consent3: [false, Validators.requiredTrue],
-    });
-
-    // Prompt 3: Cover Selection
-    this.coverSelectionForm = this.fb.group({
+  private createQuotationForm(): FormGroup {
+    return this.fb.group({
       accountType: ['', Validators.required],
-      coverType: [''],
-    });
-
-    // Prompt 4: Single Transit Quote
-    this.singleTransitForm = this.fb.group({
-      tradeType: ['import', Validators.required],
-      modeOfShipment: ['sea', Validators.required],
-      origin: ['Shanghai', Validators.required],
-      destination: ['Mombasa', Validators.required],
-      shippingDate: [new Date(), Validators.required],
+      tradeType: ['', Validators.required],
+      modeOfShipment: ['', Validators.required],
+      cargoType: ['', Validators.required],
+      origin: ['', Validators.required],
+      destination: ['', Validators.required],
+      shippingDate: ['', Validators.required],
       currency: ['KES', Validators.required],
-      coverType: ['ICCA', Validators.required],
-      goodsDescription: ['Electronics', Validators.required],
-      sumInsured: [500000, Validators.required],
-      ucrNumber: ['UCR12345678'],
-      idfNumber: ['IDF987654321', Validators.required],
-      addOns: this.fb.group({
-        war: [true],
-        sri_cc: [true],
-        storage: [false],
-      }),
-    });
-
-    // Prompt 5: Quote Retrieval
-    this.quoteRetrievalForm = this.fb.group({
-      reference: ['QTE-12345'],
-    });
-
-    // Prompt 6: Open Cover
-    this.openCoverForm = this.fb.group({
-      contractRef: [{ value: 'MOC-GEM-001', disabled: true }],
-      idf: ['', Validators.required],
-      ucr: [''],
-      vessel: ['', Validators.required],
-      shipmentDate: [null, Validators.required],
-      cargoValue: [null, Validators.required],
-    });
-
-    // Prompt 7: Payment
-    this.paymentForm = this.fb.group({
-      paymentMethod: ['mpesa'],
-    });
-
-    // Prompt 9: Claims
-    this.claimsForm = this.fb.group({
-      certificateNumber: ['AMI-12345', Validators.required],
-      dateOfLoss: [null, Validators.required],
-      description: ['', Validators.required],
-      location: ['', Validators.required],
-      contactInfo: ['', Validators.required],
-      documents: [null],
-    });
-
-    // Prompt 10: Admin
-    this.adminFilterForm = this.fb.group({
-      startDate: [null],
-      endDate: [null],
-      status: [''],
-      accountType: [''],
+      coverType: ['ICC_A', Validators.required],
+      sumInsured: ['', [Validators.required, Validators.min(1)]],
+      descriptionOfGoods: ['', Validators.required],
+      ucrNumber: [''],
+      idfNumber: [''],
+      concealedLossCover: [false],
+      storageWarehouse: [false],
+      warRisk: [false],
+      generalAverage: [false],
+      territorialExtension: [false]
     });
   }
 
-  // --- VIEW NAVIGATION ---
-  setView(view: string): void {
-    this.currentView = view;
-    // Reset states when changing views
-    this.retrievedQuote = null;
-    this.showOnboardingMessage = false;
-    if (view === 'claims') this.claimStep = 1;
+  private createPaymentForm(): FormGroup {
+    return this.fb.group({
+      paymentMethod: ['', Validators.required],
+      cardNumber: [''],
+      expiryDate: [''],
+      cvv: [''],
+      cardholderName: [''],
+      phoneNumber: ['']
+    });
   }
 
-  // --- ACTIONS & LOGIC ---
-  login(): void {
-    if (this.loginForm.valid) {
-      this.isLoggedIn = true;
-      this.userRole = this.loginForm.value.role;
-      this.setView(this.userRole === 'admin' ? 'adminDashboard' : 'dashboard');
+  private setupFormSubscriptions(): void {
+    // Watch for changes in sum insured and currency
+    this.quotationForm.valueChanges.subscribe(() => {
+      const sumInsured = this.quotationForm.get('sumInsured')?.value;
+      const currency = this.quotationForm.get('currency')?.value;
+      
+      if (sumInsured && sumInsured > 0) {
+        this.calculatePremium(sumInsured, currency);
+      } else {
+        this.resetPremiumCalculation();
+      }
+    });
+
+    // Setup payment method validation
+    this.paymentForm.get('paymentMethod')?.valueChanges.subscribe(method => {
+      this.updatePaymentValidation(method);
+    });
+  }
+
+  private calculatePremium(sumInsured: number, currency: string): void {
+    let baseRate = 0.002; // 0.2% base rate
+    
+    // Adjust rate based on cargo type
+    const cargoType = this.quotationForm.get('cargoType')?.value;
+    switch (cargoType) {
+      case 'hazardous':
+        baseRate *= 2.5;
+        break;
+      case 'bulk':
+        baseRate *= 1.8;
+        break;
+      case 'containerized':
+        baseRate *= 1.3;
+        break;
+      case 'general':
+        baseRate *= 1.2;
+        break;
+    }
+
+    // Adjust rate based on mode of shipment
+    const modeOfShipment = this.quotationForm.get('modeOfShipment')?.value;
+    switch (modeOfShipment) {
+      case 'air':
+        baseRate *= 0.8; // Lower risk
+        break;
+      case 'sea':
+        baseRate *= 1.0;
+        break;
+      case 'land':
+        baseRate *= 1.1;
+        break;
+      case 'multimodal':
+        baseRate *= 1.3;
+        break;
+    }
+
+    const basePremium = sumInsured * baseRate;
+    
+    // Calculate add-on premiums
+    let addOnRate = 0;
+    if (this.quotationForm.get('warRisk')?.value) addOnRate += 0.001;
+    if (this.quotationForm.get('concealedLossCover')?.value) addOnRate += 0.0005;
+    if (this.quotationForm.get('storageWarehouse')?.value) addOnRate += 0.0003;
+    if (this.quotationForm.get('generalAverage')?.value) addOnRate += 0.0002;
+    if (this.quotationForm.get('territorialExtension')?.value) addOnRate += 0.0004;
+
+    const addOnPremium = sumInsured * addOnRate;
+    const totalPremium = basePremium + addOnPremium;
+
+    this.premiumCalculation = {
+      basePremium,
+      addOnPremium,
+      totalPremium,
+      baseRate,
+      currency
+    };
+  }
+
+  private resetPremiumCalculation(): void {
+    this.premiumCalculation = {
+      basePremium: 0,
+      addOnPremium: 0,
+      totalPremium: 0,
+      baseRate: 0,
+      currency: this.quotationForm.get('currency')?.value || 'KES'
+    };
+  }
+
+  private updatePaymentValidation(method: string): void {
+    // Clear all validators first
+    this.paymentForm.get('cardNumber')?.clearValidators();
+    this.paymentForm.get('expiryDate')?.clearValidators();
+    this.paymentForm.get('cvv')?.clearValidators();
+    this.paymentForm.get('cardholderName')?.clearValidators();
+    this.paymentForm.get('phoneNumber')?.clearValidators();
+
+    // Add validators based on payment method
+    if (method === 'card') {
+      this.paymentForm.get('cardNumber')?.setValidators([Validators.required]);
+      this.paymentForm.get('expiryDate')?.setValidators([Validators.required]);
+      this.paymentForm.get('cvv')?.setValidators([Validators.required]);
+      this.paymentForm.get('cardholderName')?.setValidators([Validators.required]);
+    } else if (method === 'mpesa') {
+      this.paymentForm.get('phoneNumber')?.setValidators([Validators.required]);
+    }
+
+    // Update validity
+    Object.keys(this.paymentForm.controls).forEach(key => {
+      this.paymentForm.get(key)?.updateValueAndValidity();
+    });
+  }
+
+  onSubmit(): void {
+    if (this.quotationForm.valid) {
+      this.goToStep(2);
+    } else {
+      this.markFormGroupTouched(this.quotationForm);
     }
   }
 
-  logout(): void {
-    this.isLoggedIn = false;
-    this.userRole = null;
-    this.setView('login');
+  proceedToPayment(): void {
+    this.goToStep(3);
   }
 
-  register(): void {
-    if (this.registrationForm.valid) {
-      this.showOnboardingMessage = true;
-      setTimeout(() => this.setView('login'), 3000);
+  processPayment(): void {
+    if (this.paymentForm.valid) {
+      this.isProcessingPayment = true;
+      
+      // Simulate payment processing
+      setTimeout(() => {
+        this.isProcessingPayment = false;
+        alert('Payment successful! Your marine cargo insurance policy has been issued.');
+        // Reset form or redirect to success page
+        this.resetForms();
+      }, 3000);
+    } else {
+      this.markFormGroupTouched(this.paymentForm);
     }
   }
 
-  getQuote(): void {
-    if (this.coverSelectionForm.valid) {
-      const cover = this.coverSelectionForm.value.coverType;
-      if (cover === 'single') this.setView('singleTransitQuote');
-      if (cover === 'open') this.setView('openCoverQuote');
+  goToStep(step: number): void {
+    this.currentStep = step;
+  }
+
+  getCoverTypeDisplay(value: string): string {
+    const coverTypes: { [key: string]: string } = {
+      'ICC_A': 'ICC (A) - All Risks',
+      'ICC_B': 'ICC (B) - With Average',
+      'ICC_C': 'ICC (C) - Free of Particular Average'
+    };
+    return coverTypes[value] || value;
+  }
+
+  getSelectedAddOns(): string[] {
+    const addOns: string[] = [];
+    if (this.quotationForm.get('concealedLossCover')?.value) addOns.push('Concealed Loss Cover');
+    if (this.quotationForm.get('storageWarehouse')?.value) addOns.push('Storage & Warehouse');
+    if (this.quotationForm.get('warRisk')?.value) addOns.push('War Risk');
+    if (this.quotationForm.get('generalAverage')?.value) addOns.push('General Average');
+    if (this.quotationForm.get('territorialExtension')?.value) addOns.push('Territorial Extension');
+    return addOns;
+  }
+
+  generatePaymentReference(): string {
+    return 'MCI-' + Date.now().toString().slice(-8);
+  }
+
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach(key => {
+      const control = formGroup.get(key);
+      control?.markAsTouched();
+    });
+  }
+
+  private resetForms(): void {
+    this.quotationForm.reset();
+    this.paymentForm.reset();
+    this.currentStep = 1;
+    this.resetPremiumCalculation();
+  }
+
+  // Utility methods for template
+  isFieldInvalid(fieldName: string, formGroup: FormGroup = this.quotationForm): boolean {
+    const field = formGroup.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  getFieldError(fieldName: string, formGroup: FormGroup = this.quotationForm): string {
+    const field = formGroup.get(fieldName);
+    if (field?.errors) {
+      if (field.errors['required']) return `${fieldName} is required`;
+      if (field.errors['min']) return `${fieldName} must be greater than 0`;
     }
-  }
-
-  calculateQuoteSummary(): void {
-    const sumInsured = this.singleTransitForm.get('sumInsured').value || 0;
-    const baseRate = 0.005; // 0.5%
-    const premium = sumInsured * baseRate;
-    const levies = premium * 0.045; // 4.5%
-    const stampDuty = 40;
-    const total = premium + levies + stampDuty;
-    this.quoteSummary = { premium, levies, stampDuty, total };
-  }
-
-  retrieveQuote(): void {
-    if (this.quoteRetrievalForm.valid) {
-      this.retrievedQuote = {
-        ref: this.quoteRetrievalForm.value.reference,
-        sumInsured: 500000,
-        premium: 2540,
-        status: 'Expired',
-        expiryDate: '2025-06-20',
-      };
-    }
-  }
-
-  buyNow(quote: any): void {
-    this.policyDetails = quote;
-    this.setView('payment');
-  }
-
-  submitPayment(): void {
-    this.policyDetails.status = 'Paid';
-    this.setView('confirmation');
-  }
-
-  submitClaim(): void {
-    if (this.claimsForm.valid) {
-      this.claimStep = 4; // Move to confirmation step
-    }
+    return '';
   }
 }

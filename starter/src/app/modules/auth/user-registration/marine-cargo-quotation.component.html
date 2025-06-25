@@ -1,0 +1,590 @@
+<div class="min-h-screen w-screen bg-gray-50 p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Progress Steps -->
+    <div class="mb-8">
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center">
+          <div [class]="currentStep >= 1 ? 'w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium' : 'w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-medium'">
+            1
+          </div>
+          <span [class]="currentStep >= 1 ? 'ml-2 text-sm font-medium text-blue-600' : 'ml-2 text-sm text-gray-500'">Shipment Details</span>
+        </div>
+        <div class="w-8 h-px bg-gray-300"></div>
+        <div class="flex items-center">
+          <div [class]="currentStep >= 2 ? 'w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium' : 'w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-medium'">
+            2
+          </div>
+          <span [class]="currentStep >= 2 ? 'ml-2 text-sm font-medium text-blue-600' : 'ml-2 text-sm text-gray-500'">Quote Review</span>
+        </div>
+        <div class="w-8 h-px bg-gray-300"></div>
+        <div class="flex items-center">
+          <div [class]="currentStep >= 3 ? 'w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium' : 'w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-medium'">
+            3
+          </div>
+          <span [class]="currentStep >= 3 ? 'ml-2 text-sm font-medium text-blue-600' : 'ml-2 text-sm text-gray-500'">Payment</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 1: Shipment Details -->
+    <div *ngIf="currentStep === 1" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Main Form -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg shadow-sm p-6">
+          <h2 class="text-2xl font-semibold text-gray-900 mb-2">Marine Cargo Quotation Form</h2>
+          <p class="text-gray-600 mb-6">Complete the details below for your marine cargo insurance quote</p>
+
+          <form [formGroup]="quotationForm" (ngSubmit)="onSubmit()">
+            <!-- Row 1: Account Type and Trade Type -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Account Type <span class="text-red-500">*</span>
+                </label>
+                <select 
+                  formControlName="accountType"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                >
+                  <option value="">Select account type</option>
+                  <option value="individual">Individual</option>
+                  <option value="corporate">Corporate</option>
+                  <option value="sme">SME</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Trade Type <span class="text-red-500">*</span>
+                </label>
+                <select 
+                  formControlName="tradeType"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                >
+                  <option value="">Select trade type</option>
+                  <option value="import">Import</option>
+                  <option value="export">Export</option>
+                  <option value="domestic">Domestic</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row 2: Mode of Shipment and Cargo Type -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Mode of Shipment <span class="text-red-500">*</span>
+                </label>
+                <select 
+                  formControlName="modeOfShipment"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                >
+                  <option value="">Select mode</option>
+                  <option value="sea">Sea</option>
+                  <option value="air">Air</option>
+                  <option value="land">Land</option>
+                  <option value="multimodal">Multimodal</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Cargo Type <span class="text-red-500">*</span>
+                </label>
+                <select 
+                  formControlName="cargoType"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                >
+                  <option value="">Select cargo type</option>
+                  <option value="general">General Cargo</option>
+                  <option value="containerized">Containerized</option>
+                  <option value="bulk">Bulk</option>
+                  <option value="hazardous">Hazardous</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row 3: Origin, Destination, Shipping Date -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Origin <span class="text-red-500">*</span>
+                </label>
+                <input 
+                  type="text"
+                  formControlName="origin"
+                  placeholder="e.g. Shanghai, China"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Destination <span class="text-red-500">*</span>
+                </label>
+                <input 
+                  type="text"
+                  formControlName="destination"
+                  placeholder="e.g. Mombasa, Kenya"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Shipping Date <span class="text-red-500">*</span>
+                </label>
+                <input 
+                  type="date"
+                  formControlName="shippingDate"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <!-- Row 4: Currency, Cover Type, Sum Insured -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Currency <span class="text-red-500">*</span>
+                </label>
+                <select 
+                  formControlName="currency"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                >
+                  <option value="KES">KES (Kenyan Shilling)</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Cover Type <span class="text-red-500">*</span>
+                </label>
+                <select 
+                  formControlName="coverType"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                >
+                  <option value="ICC_A">ICC (A) - All Risks</option>
+                  <option value="ICC_B">ICC (B)</option>
+                  <option value="ICC_C">ICC (C)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Sum Insured <span class="text-red-500">*</span>
+                </label>
+                <input 
+                  type="number"
+                  formControlName="sumInsured"
+                  placeholder="2500000"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <!-- Description of Goods -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Description of Goods <span class="text-red-500">*</span>
+              </label>
+              <textarea 
+                formControlName="descriptionOfGoods"
+                rows="3"
+                placeholder="Electronic devices, laptops, mobile phones..."
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              ></textarea>
+            </div>
+
+            <!-- UCR and IDF Numbers -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  UCR Number
+                  <span class="ml-1 text-gray-400 cursor-help" title="Unique Consignment Reference">ⓘ</span>
+                </label>
+                <input 
+                  type="text"
+                  formControlName="ucrNumber"
+                  placeholder="CN123456789..."
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  IDF Number
+                  <span class="ml-1 text-gray-400 cursor-help" title="Import Declaration Form">ⓘ</span>
+                </label>
+                <input 
+                  type="text"
+                  formControlName="idfNumber"
+                  placeholder="IDF987654321..."
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <!-- Optional Add-ons -->
+            <div class="mb-8">
+              <h3 class="text-lg font-medium text-gray-900 mb-4">Optional Add-ons</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label class="flex items-center">
+                  <input 
+                    type="checkbox"
+                    formControlName="concealedLossCover"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <span class="ml-2 text-sm text-gray-700">Concealed Loss Cover</span>
+                </label>
+                <label class="flex items-center">
+                  <input 
+                    type="checkbox"
+                    formControlName="storageWarehouse"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <span class="ml-2 text-sm text-gray-700">Storage & Warehouse</span>
+                </label>
+                <label class="flex items-center">
+                  <input 
+                    type="checkbox"
+                    formControlName="warRisk"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <span class="ml-2 text-sm text-gray-700">War Risk</span>
+                </label>
+                <label class="flex items-center">
+                  <input 
+                    type="checkbox"
+                    formControlName="generalAverage"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <span class="ml-2 text-sm text-gray-700">General Average</span>
+                </label>
+                <label class="flex items-center">
+                  <input 
+                    type="checkbox"
+                    formControlName="territorialExtension"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <span class="ml-2 text-sm text-gray-700">Territorial Extension</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button 
+              type="submit"
+              [disabled]="quotationForm.invalid"
+              class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed font-medium"
+            >
+              Get Quote
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Premium Summary Sidebar -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow-sm p-6 sticky top-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Premium Summary</h3>
+          <p class="text-sm text-gray-600 mb-4">Live calculation based on your inputs</p>
+          
+          <div *ngIf="!premiumCalculation.basePremium" class="bg-gray-50 rounded-lg p-4 mb-6">
+            <p class="text-center text-gray-500">Enter sum insured to see premium calculation</p>
+          </div>
+
+          <div *ngIf="premiumCalculation.basePremium" class="space-y-4 mb-6">
+            <div class="bg-blue-50 rounded-lg p-4">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm text-gray-600">Base Premium</span>
+                <span class="font-medium">{{ premiumCalculation.currency }} {{ premiumCalculation.basePremium | number:'1.2-2' }}</span>
+              </div>
+              <div *ngIf="premiumCalculation.addOnPremium > 0" class="flex justify-between items-center mb-2">
+                <span class="text-sm text-gray-600">Add-ons</span>
+                <span class="font-medium">{{ premiumCalculation.currency }} {{ premiumCalculation.addOnPremium | number:'1.2-2' }}</span>
+              </div>
+              <div class="border-t pt-2">
+                <div class="flex justify-between items-center">
+                  <span class="font-semibold">Total Premium</span>
+                  <span class="font-bold text-lg text-blue-600">{{ premiumCalculation.currency }} {{ premiumCalculation.totalPremium | number:'1.2-2' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <h4 class="font-medium text-gray-900">Coverage Includes:</h4>
+            <ul class="space-y-2 text-sm text-gray-600">
+              <li class="flex items-start">
+                <span class="text-green-500 mr-2">•</span>
+                Institute Cargo Clauses (A)
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-500 mr-2">•</span>
+                Theft, Pilferage & Non-delivery
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-500 mr-2">•</span>
+                General Average & Salvage
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-500 mr-2">•</span>
+                Sue & Labour Charges
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Quote Review -->
+    <div *ngIf="currentStep === 2" class="max-w-4xl mx-auto">
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-6">Quote Review</h2>
+        
+        <!-- Quote Summary -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <!-- Shipment Details -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Shipment Details</h3>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Account Type:</span>
+                <span class="font-medium">{{ quotationForm.get('accountType')?.value | titlecase }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Trade Type:</span>
+                <span class="font-medium">{{ quotationForm.get('tradeType')?.value | titlecase }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Mode of Shipment:</span>
+                <span class="font-medium">{{ quotationForm.get('modeOfShipment')?.value | titlecase }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Cargo Type:</span>
+                <span class="font-medium">{{ quotationForm.get('cargoType')?.value | titlecase }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Origin:</span>
+                <span class="font-medium">{{ quotationForm.get('origin')?.value }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Destination:</span>
+                <span class="font-medium">{{ quotationForm.get('destination')?.value }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Shipping Date:</span>
+                <span class="font-medium">{{ quotationForm.get('shippingDate')?.value | date }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coverage Details -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Coverage Details</h3>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Sum Insured:</span>
+                <span class="font-medium">{{ quotationForm.get('currency')?.value }} {{ quotationForm.get('sumInsured')?.value | number:'1.2-2' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Cover Type:</span>
+                <span class="font-medium">{{ getCoverTypeDisplay(quotationForm.get('coverType')?.value) }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Description:</span>
+                <span class="font-medium">{{ quotationForm.get('descriptionOfGoods')?.value }}</span>
+              </div>
+              
+              <!-- Optional Add-ons -->
+              <div *ngIf="getSelectedAddOns().length > 0">
+                <span class="text-gray-600">Add-ons:</span>
+                <ul class="mt-1 space-y-1">
+                  <li *ngFor="let addon of getSelectedAddOns()" class="text-sm font-medium ml-4">
+                    • {{ addon }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Premium Breakdown -->
+        <div class="bg-gray-50 rounded-lg p-6 mb-8">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Premium Breakdown</h3>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span>Base Premium ({{ (premiumCalculation.baseRate * 100).toFixed(3) }}%):</span>
+              <span>{{ premiumCalculation.currency }} {{ premiumCalculation.basePremium | number:'1.2-2' }}</span>
+            </div>
+            <div *ngIf="premiumCalculation.addOnPremium > 0" class="flex justify-between">
+              <span>Optional Add-ons:</span>
+              <span>{{ premiumCalculation.currency }} {{ premiumCalculation.addOnPremium | number:'1.2-2' }}</span>
+            </div>
+            <div class="border-t pt-2 font-semibold text-lg">
+              <div class="flex justify-between">
+                <span>Total Premium:</span>
+                <span class="text-blue-600">{{ premiumCalculation.currency }} {{ premiumCalculation.totalPremium | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex space-x-4">
+          <button 
+            (click)="goToStep(1)"
+            class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Back to Edit
+          </button>
+          <button 
+            (click)="proceedToPayment()"
+            class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium"
+          >
+            Proceed to Payment
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Payment -->
+    <div *ngIf="currentStep === 3" class="max-w-2xl mx-auto">
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-6">Payment</h2>
+        
+        <!-- Payment Summary -->
+        <div class="bg-blue-50 rounded-lg p-4 mb-6">
+          <div class="flex justify-between items-center">
+            <span class="text-lg font-medium">Total Amount Due:</span>
+            <span class="text-2xl font-bold text-blue-600">{{ premiumCalculation.currency }} {{ premiumCalculation.totalPremium | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <!-- Payment Form -->
+        <form [formGroup]="paymentForm" (ngSubmit)="processPayment()">
+          <!-- Payment Method -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-3">Payment Method</label>
+            <div class="space-y-3">
+              <label class="flex items-center">
+                <input 
+                  type="radio" 
+                  formControlName="paymentMethod" 
+                  value="card"
+                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                />
+                <span class="ml-2 text-sm text-gray-700">Credit/Debit Card</span>
+              </label>
+              <label class="flex items-center">
+                <input 
+                  type="radio" 
+                  formControlName="paymentMethod" 
+                  value="mpesa"
+                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                />
+                <span class="ml-2 text-sm text-gray-700">M-Pesa</span>
+              </label>
+              <label class="flex items-center">
+                <input 
+                  type="radio" 
+                  formControlName="paymentMethod" 
+                  value="bank"
+                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                />
+                <span class="ml-2 text-sm text-gray-700">Bank Transfer</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Card Payment Details -->
+          <div *ngIf="paymentForm.get('paymentMethod')?.value === 'card'" class="space-y-4 mb-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Card Number</label>
+              <input 
+                type="text"
+                formControlName="cardNumber"
+                placeholder="1234 5678 9012 3456"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Expiry Date</label>
+                <input 
+                  type="text"
+                  formControlName="expiryDate"
+                  placeholder="MM/YY"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">CVV</label>
+                <input 
+                  type="text"
+                  formControlName="cvv"
+                  placeholder="123"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Cardholder Name</label>
+              <input 
+                type="text"
+                formControlName="cardholderName"
+                placeholder="John Doe"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          <!-- M-Pesa Payment Details -->
+          <div *ngIf="paymentForm.get('paymentMethod')?.value === 'mpesa'" class="space-y-4 mb-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+              <input 
+                type="tel"
+                formControlName="phoneNumber"
+                placeholder="254712345678"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          <!-- Bank Transfer Details -->
+          <div *ngIf="paymentForm.get('paymentMethod')?.value === 'bank'" class="bg-gray-50 rounded-lg p-4 mb-6">
+            <h4 class="font-medium text-gray-900 mb-2">Bank Transfer Details</h4>
+            <div class="text-sm text-gray-600 space-y-1">
+              <p><strong>Bank:</strong> ABC Insurance Bank</p>
+              <p><strong>Account Name:</strong> Marine Cargo Insurance</p>
+              <p><strong>Account Number:</strong> 1234567890</p>
+              <p><strong>Reference:</strong> {{ generatePaymentReference() }}</p>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex space-x-4">
+            <button 
+              type="button"
+              (click)="goToStep(2)"
+              class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              Back to Review
+            </button>
+            <button 
+              type="submit"
+              [disabled]="paymentForm.invalid || isProcessingPayment"
+              class="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              <span *ngIf="!isProcessingPayment">Complete Payment</span>
+              <span *ngIf="isProcessingPayment" class="flex items-center justify-center">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

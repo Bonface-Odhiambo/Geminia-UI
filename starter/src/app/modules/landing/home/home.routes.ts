@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { MarineInsurancePortalComponent } from 'app/modules/auth/user-registration/user-registration.component';
+import { MarineCargoQuotationComponent } from 'app/modules/auth/user-registration/user-registration.component';
 
 export default [
     {
         path: '',
-        component: MarineInsurancePortalComponent,
+        component: MarineCargoQuotationComponent,
     },
 ] as Routes;
