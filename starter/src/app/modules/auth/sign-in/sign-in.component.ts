@@ -1,130 +1,150 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import {
-    FormsModule,
-    NgForm,
-    ReactiveFormsModule,
-    UntypedFormBuilder,
-    UntypedFormGroup,
-    Validators,
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  inject,
+  ChangeDetectorRef,
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { Router, RouterModule } from '@angular/router';
+import {
+  animate,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
+
+// Angular Material Modules
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { fuseAnimations } from '@fuse/animations';
-import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
-import { AuthService } from 'app/core/auth/auth.service';
+
+// NOTE: The original template uses a custom <fuse-alert> component.
+// This implementation will use a standard <div> for the alert message.
+// You would replace the <div> with your custom component.
 
 @Component({
-    selector: 'auth-sign-in',
-    templateUrl: './sign-in.component.html',
-    encapsulation: ViewEncapsulation.None,
-    animations: fuseAnimations,
-    imports: [
-        RouterLink,
-        FuseAlertComponent,
-        FormsModule,
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatButtonModule,
-        MatIconModule,
-        MatCheckboxModule,
-        MatProgressSpinnerModule,
-    ],
+  selector: 'app-sign-in',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatProgressSpinnerModule,
+  ],
+  templateUrl: './sign-in.component.html',
+  styleUrl: './sign-in.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('shake', [
+      transition('* => *', [
+        style({ transform: 'translateX(0)' }),
+        animate(
+          '300ms ease-in-out',
+          style({ transform: 'translateX(-10px)' }),
+        ),
+        animate(
+          '300ms ease-in-out',
+          style({ transform: 'translateX(10px)' }),
+        ),
+        animate(
+          '300ms ease-in-out',
+          style({ transform: 'translateX(0)' }),
+        ),
+      ]),
+    ]),
+  ],
 })
 export class AuthSignInComponent implements OnInit {
-    @ViewChild('signInNgForm') signInNgForm: NgForm;
+  private _formBuilder = inject(FormBuilder);
+  private _router = inject(Router);
+  private _cd = inject(ChangeDetectorRef);
 
-    alert: { type: FuseAlertType; message: string } = {
-        type: 'success',
-        message: '',
-    };
-    signInForm: UntypedFormGroup;
-    showAlert: boolean = false;
+  signInForm!: FormGroup;
+  useOTP: boolean = false;
+  showPassword: boolean = false;
+  showAlert: boolean = false;
+  alert: { type: 'success' | 'error'; message: string } = {
+    type: 'error',
+    message: '',
+  };
 
-    /**
-     * Constructor
-     */
-    constructor(
-        private _activatedRoute: ActivatedRoute,
-        private _authService: AuthService,
-        private _formBuilder: UntypedFormBuilder,
-        private _router: Router
-    ) {}
+  ngOnInit(): void {
+    this.signInForm = this._formBuilder.group({
+      username: [
+        'intermediary@company.com',
+        [Validators.required, Validators.email],
+      ],
+      password: ['password', [Validators.required]],
+      otpCode: [
+        '',
+        [Validators.required, Validators.pattern(/^\d{6}$/)],
+      ],
+    });
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Lifecycle hooks
-    // -----------------------------------------------------------------------------------------------------
+    // Initially, disable the OTP field
+    this.signInForm.get('otpCode')?.disable();
+  }
 
-    /**
-     * On init
-     */
-    ngOnInit(): void {
-        // Create the form
-        this.signInForm = this._formBuilder.group({
-            username: [
-                'pmugenya@gmail.com',
-                [Validators.required, Validators.email],
-            ],
-            password: ['Manchester123*', Validators.required],
-            rememberMe: [''],
-        });
+  toggleOTP(state: boolean): void {
+    this.useOTP = state;
+    if (this.useOTP) {
+      this.signInForm.get('username')?.disable();
+      this.signInForm.get('password')?.disable();
+      this.signInForm.get('otpCode')?.enable();
+    } else {
+      this.signInForm.get('username')?.enable();
+      this.signInForm.get('password')?.enable();
+      this.signInForm.get('otpCode')?.disable();
+    }
+    this.showAlert = false;
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  signIn(): void {
+    if (this.signInForm.invalid) {
+      return;
     }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
+    this.signInForm.disable();
+    this.showAlert = false;
 
-    /**
-     * Sign in
-     */
-    signIn(): void {
-        // Return if the form is invalid
-        if (this.signInForm.invalid) {
-            return;
-        }
+    // Simulate an API call
+    setTimeout(() => {
+      // Example error case
+      this.alert = {
+        type: 'error',
+        message: 'Invalid credentials. Please try again.',
+      };
+      this.showAlert = true;
+      this.signInForm.enable(); // Re-enable form on error
+      this.toggleOTP(this.useOTP); // Re-apply correct disabled state
+      this._cd.markForCheck(); // Manually trigger change detection
+    }, 2000);
 
-        // Disable the form
-        this.signInForm.disable();
+    // On a successful sign-in, you would navigate the user
+    // e.g., this._router.navigate(['/dashboard']);
+  }
 
-        // Hide the alert
-        this.showAlert = false;
+  resendOTP(): void {
+    console.log('Resending OTP...');
+    // Add logic to resend OTP and show a confirmation message
+  }
 
-        // Sign in
-        this._authService.signIn(this.signInForm.value).subscribe(
-            () => {
-                // Set the redirect url.
-                // The '/signed-in-redirect' is a dummy url to catch the request and redirect the user
-                // to the correct page after a successful sign in. This way, that url can be set via
-                // routing file and we don't have to touch here.
-                const redirectURL =
-                    this._activatedRoute.snapshot.queryParamMap.get(
-                        'redirectURL'
-                    ) || '/signed-in-redirect';
-
-                // Navigate to the redirect url
-                this._router.navigateByUrl(redirectURL);
-            },
-            (response) => {
-                // Re-enable the form
-                this.signInForm.enable();
-
-                // Reset the form
-                this.signInNgForm.resetForm();
-
-                // Set the alert
-                this.alert = {
-                    type: 'error',
-                    message: 'Wrong email or password',
-                };
-
-                // Show the alert
-                this.showAlert = true;
-            }
-        );
-    }
+  getQuickQuote(): void {
+    console.log('Navigating to quick quote page...');
+    // Example navigation
+    // this._router.navigate(['/quick-quote']);
+  }
 }
