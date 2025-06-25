@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { LandingHomeComponent } from 'app/modules/landing/home/home.component';
+import { MarineInsurancePortalComponent } from 'app/modules/auth/user-registration/user-registration.component';
 
 export default [
     {
         path: '',
-        component: LandingHomeComponent,
+        component: MarineInsurancePortalComponent,
     },
 ] as Routes;

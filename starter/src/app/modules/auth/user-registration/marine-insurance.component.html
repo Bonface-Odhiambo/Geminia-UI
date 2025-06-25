@@ -1,1310 +1,1239 @@
+<!-- 
+  ALL-IN-ONE MARINE INSURANCE PORTAL
+  This single file contains the UI for all 10 prompts.
+  Navigation is handled by the `currentView` variable in the component.
+-->
 <div
-    class="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50"
+  class="relative min-h-screen w-full bg-slate-50 font-sans text-slate-800"
 >
-    <!-- Subtle Background Pattern -->
-    <div class="absolute inset-0">
-        <!-- Professional wave pattern -->
-        <div class="absolute bottom-0 left-0 h-24 w-full opacity-10">
-            <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
-                <path
-                    d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"
-                    fill="currentColor"
-                    class="text-blue-600"
-                ></path>
-            </svg>
-        </div>
+  <!-- Main Container -->
+  <div class="relative z-10 flex min-h-screen flex-col">
+    <!-- Logged In Header -->
+  <header
+  *ngIf="isLoggedIn"
+  class="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 shadow-sm backdrop-blur-sm"
+>
+  <!-- This container centers the content block with a max-width -->
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <!-- 
+      This flex container arranges its children in a row.
+      - 'justify-between': Pushes the first child to the start (left) and the last child to the end (right).
+      - 'items-center': Vertically aligns the children in the middle.
+    -->
+    <div class="flex h-16 items-center justify-between">
+      <!-- Left Side: Logo and Title -->
+      <div class="flex items-center gap-4">
+        <img
+          src="https://geminialife.co.ke/wp-content/uploads/2022/06/thumbnail_GEMINIA-FINAL-LOGO-png.png"
+          alt="Geminia Logo"
+          class="h-10 w-auto"
+        />
+        <h1 class="text-xl font-semibold text-slate-800">Marine Portal</h1>
+      </div>
 
-        <!-- Minimal accent dots -->
-        <div class="absolute inset-0 overflow-hidden">
-            <div
-                class="absolute left-1/4 top-1/4 h-1 w-1 rounded-full bg-blue-300 opacity-40"
-            ></div>
-            <div
-                class="absolute right-1/4 top-3/4 h-1 w-1 rounded-full bg-indigo-300 opacity-40"
-            ></div>
-            <div
-                class="absolute left-3/4 top-1/2 h-1 w-1 rounded-full bg-slate-300 opacity-40"
-            ></div>
-        </div>
+      <!-- Right Side: Welcome Message and Logout Button -->
+      <div class="flex items-center gap-4">
+        <span class="hidden text-sm sm:inline"
+          >Welcome,
+          <span class="font-medium capitalize">{{ userRole }}</span></span
+        >
+        <button
+          mat-stroked-button
+          color="warn"
+          (click)="logout()"
+          class="!min-w-0 !border-red-500 !px-3 !text-red-500"
+        >
+          <mat-icon>logout</mat-icon>
+          <span class="ml-2 hidden sm:inline">Logout</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1">
+      <!-- 
+        ======================================================================
+        PROMPT 1: LOGIN PAGE
+        ======================================================================
+      -->
+    <!-- Main container with a pleasant gradient background -->
+<div
+  *ngIf="currentView === 'login'"
+  class="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4"
+  [@slideIn]
+>
+  <!-- Login card with shadow and rounded corners -->
+  <div
+    class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-lg"
+  >
+    <div class="mb-8 text-center">
+      <!-- 
+        SUGGESTION: Added h-16 and w-auto to control the logo size.
+        Adjust the height (h-16) as needed.
+      -->
+      <img
+        src="https://geminialife.co.ke/wp-content/uploads/2022/06/thumbnail_GEMINIA-FINAL-LOGO-png.png"
+        alt="Geminia Logo"
+        class="mx-auto mb-4 h-16 w-auto"
+      />
+      <h2 class="text-2xl font-bold text-slate-800">Marine Portal Login</h2>
+      <p class="text-slate-500">Secure access for our trusted partners.</p>
     </div>
 
-    <!-- Main Container -->
-    <div class="relative z-10 flex min-h-screen flex-col">
-        <!-- Professional Header -->
-        <header
-            class="sticky top-0 z-50 border-b border-slate-200/50 bg-white/80 shadow-sm backdrop-blur-sm"
+    <form [formGroup]="loginForm" (ngSubmit)="login()" class="space-y-6">
+      <!-- Email or Phone Field -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Email or Phone</mat-label>
+        <input matInput formControlName="email" required />
+        <mat-icon matSuffix>person</mat-icon>
+        <!-- 
+          SUGGESTION: Added mat-error for user feedback.
+          This will show a message if the field is touched and left empty.
+        -->
+        <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
+          Email or Phone is required.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Password Field -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Password / OTP</mat-label>
+        <input matInput type="password" formControlName="password" required />
+        <mat-icon matSuffix>lock</mat-icon>
+        <!-- SUGGESTION: Added mat-error for user feedback -->
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+          Password is required.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Role Selection Field -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Role</mat-label>
+        <mat-select formControlName="role" required>
+          <mat-option value="intermediary">Intermediary</mat-option>
+          <mat-option value="clearing_agent">Clearing Agent</mat-option>
+          <mat-option value="admin">Admin</mat-option>
+        </mat-select>
+        <!-- SUGGESTION: Added mat-error for user feedback -->
+        <mat-error *ngIf="loginForm.get('role')?.hasError('required')">
+          Please select a role.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Submit Button -->
+      <button
+        mat-flat-button
+        color="primary"
+        class="w-full !py-3 !text-base"
+        type="submit"
+        [disabled]="loginForm.invalid"
+      >
+        Secure Login
+      </button>
+
+      <!-- Link to Registration View -->
+      <div class="text-center text-sm">
+        <a
+          (click)="setView('registration')"
+          class="cursor-pointer font-medium text-blue-600 hover:underline"
+          role="button"
+          tabindex="0"
+          >Don't have an account? Register</a
         >
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="flex h-16 items-center justify-between">
-                    <div class="flex items-center">
-                        <div
-                            class="rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 p-2.5 shadow-sm"
-                        >
-                            <svg
-                                class="h-6 w-6 text-white"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    d="M3,6H21V8H3V6M16,10V12H21V14H16V16H14V10H16M5,10V16H7V14H9V12H7V10H5M11,10V16H13V10H11Z"
-                                />
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <h1 class="text-xl font-semibold text-slate-800">
-                                Geminia Marine
-                            </h1>
-                            <p class="text-xs font-medium text-slate-500">
-                                Professional Insurance Solutions
-                            </p>
-                        </div>
-                    </div>
+      </div>
+    </form>
+  </div>
+</div>
 
-                    <!-- Updated Progress Steps -->
-                    <div class="hidden items-center space-x-4 md:flex">
-                        <div
-                            class="flex items-center"
-                            [ngClass]="{
-                                'text-blue-600': currentStep >= 1,
-                                'text-slate-400': currentStep < 1,
-                            }"
-                        >
-                            <div
-                                class="mr-2 flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-semibold"
-                                [ngClass]="{
-                                    'border-blue-600 bg-blue-600 text-white':
-                                        currentStep >= 1,
-                                    'border-slate-300 text-slate-400':
-                                        currentStep < 1,
-                                }"
-                            >
-                                1
-                            </div>
-                            <span class="text-sm font-medium"
-                                >Registration</span
-                            >
-                        </div>
-
-                        <div class="h-0.5 w-6 bg-slate-200"></div>
-
-                        <div
-                            class="flex items-center"
-                            [ngClass]="{
-                                'text-blue-600': currentStep >= 2,
-                                'text-slate-400': currentStep < 2,
-                            }"
-                        >
-                            <div
-                                class="mr-2 flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-semibold"
-                                [ngClass]="{
-                                    'border-blue-600 bg-blue-600 text-white':
-                                        currentStep >= 2,
-                                    'border-slate-300 text-slate-400':
-                                        currentStep < 2,
-                                }"
-                            >
-                                2
-                            </div>
-                            <span class="text-sm font-medium"
-                                >Quote Details</span
-                            >
-                        </div>
-
-                        <div class="h-0.5 w-6 bg-slate-200"></div>
-
-                        <div
-                            class="flex items-center"
-                            [ngClass]="{
-                                'text-blue-600': currentStep >= 3,
-                                'text-slate-400': currentStep < 3,
-                            }"
-                        >
-                            <div
-                                class="mr-2 flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-semibold"
-                                [ngClass]="{
-                                    'border-blue-600 bg-blue-600 text-white':
-                                        currentStep >= 3,
-                                    'border-slate-300 text-slate-400':
-                                        currentStep < 3,
-                                }"
-                            >
-                                3
-                            </div>
-                            <span class="text-sm font-medium">Sign In</span>
-                        </div>
-
-                        <div class="h-0.5 w-6 bg-slate-200"></div>
-
-                        <div
-                            class="flex items-center"
-                            [ngClass]="{
-                                'text-blue-600': currentStep >= 4,
-                                'text-slate-400': currentStep < 4,
-                            }"
-                        >
-                            <div
-                                class="mr-2 flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-semibold"
-                                [ngClass]="{
-                                    'border-blue-600 bg-blue-600 text-white':
-                                        currentStep >= 4,
-                                    'border-slate-300 text-slate-400':
-                                        currentStep < 4,
-                                }"
-                            >
-                                4
-                            </div>
-                            <span class="text-sm font-medium">Payment</span>
-                        </div>
-                    </div>
-
-                    <!-- Help Button -->
-                    <button
-                        mat-icon-button
-                        class="text-slate-600 hover:text-slate-800"
-                    >
-                        <mat-icon>help_outline</mat-icon>
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="flex flex-1 items-center justify-center p-4 py-8">
-            <div class="w-full max-w-4xl">
-                <!-- Step 1: Registration (unchanged) -->
-                <div
-                    *ngIf="currentStep === 1"
-                    class="transform rounded-2xl border border-slate-200 bg-white p-8 shadow-lg transition-all duration-500 ease-in-out"
-                    [@slideIn]
-                >
-                    <div class="mb-8 text-center">
-                        <div
-                            class="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100"
-                        >
-                            <svg
-                                class="h-7 w-7 text-blue-600"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    d="M12 12C14.21 12 16 10.21 16 8S14.21 4 12 4 8 5.79 8 8 9.79 12 12 12M12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
-                                />
-                            </svg>
-                        </div>
-                        <h2 class="mb-2 text-2xl font-semibold text-slate-800">
-                            Get Started
-                        </h2>
-                        <p class="text-slate-600">
-                            Begin your marine insurance application
-                        </p>
-                    </div>
-
-                    <form [formGroup]="registrationForm" class="space-y-6">
-                        <!-- User Type Selection -->
-                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div class="relative">
-                                <input
-                                    type="radio"
-                                    id="individual"
-                                    value="individual"
-                                    formControlName="userType"
-                                    class="peer sr-only"
-                                />
-                                <label
-                                    for="individual"
-                                    class="flex cursor-pointer items-center rounded-xl border-2 border-slate-200 bg-slate-50 p-5 transition-all duration-200 hover:border-slate-300 peer-checked:border-blue-500 peer-checked:bg-blue-50"
-                                >
-                                    <div
-                                        class="mr-4 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-600"
-                                    >
-                                        <svg
-                                            class="h-5 w-5 text-white"
-                                            fill="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                d="M12 12C14.21 12 16 10.21 16 8S14.21 4 12 4 8 5.79 8 8 9.79 12 12 12M12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h3
-                                            class="font-semibold text-slate-800"
-                                        >
-                                            Individual
-                                        </h3>
-                                        <p class="text-sm text-slate-600">
-                                            Personal marine insurance
-                                        </p>
-                                    </div>
-                                </label>
-                            </div>
-
-                            <div class="relative">
-                                <input
-                                    type="radio"
-                                    id="business"
-                                    value="business"
-                                    formControlName="userType"
-                                    class="peer sr-only"
-                                />
-                                <label
-                                    for="business"
-                                    class="flex cursor-pointer items-center rounded-xl border-2 border-slate-200 bg-slate-50 p-5 transition-all duration-200 hover:border-slate-300 peer-checked:border-blue-500 peer-checked:bg-blue-50"
-                                >
-                                    <div
-                                        class="mr-4 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-indigo-600"
-                                    >
-                                        <svg
-                                            class="h-5 w-5 text-white"
-                                            fill="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                d="M12 7V3H2V21H22V7H12ZM6 19H4V17H6V19ZM6 15H4V13H6V15ZM6 11H4V9H6V11ZM6 7H4V5H6V7ZM10 19H8V17H10V19ZM10 15H8V13H10V15ZM10 11H8V9H10V11ZM10 7H8V5H10V7ZM20 19H12V17H20V19ZM20 15H12V13H20V15ZM20 11H12V9H20V11Z"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h3
-                                            class="font-semibold text-slate-800"
-                                        >
-                                            Business
-                                        </h3>
-                                        <p class="text-sm text-slate-600">
-                                            Commercial marine coverage
-                                        </p>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Form Fields -->
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label>Full Name</mat-label>
-                                <input matInput formControlName="fullName" />
-                                <mat-icon matSuffix class="text-slate-400"
-                                    >person</mat-icon
-                                >
-                            </mat-form-field>
-
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label>Email Address</mat-label>
-                                <input
-                                    matInput
-                                    type="email"
-                                    formControlName="email"
-                                />
-                                <mat-icon matSuffix class="text-slate-400"
-                                    >email</mat-icon
-                                >
-                            </mat-form-field>
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label>Phone Number</mat-label>
-                                <input
-                                    matInput
-                                    type="tel"
-                                    formControlName="phone"
-                                />
-                                <mat-icon matSuffix class="text-slate-400"
-                                    >phone</mat-icon
-                                >
-                            </mat-form-field>
-
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label>Location</mat-label>
-                                <mat-select formControlName="location">
-                                    <mat-option value="nairobi"
-                                        >Nairobi</mat-option
-                                    >
-                                    <mat-option value="mombasa"
-                                        >Mombasa</mat-option
-                                    >
-                                    <mat-option value="kisumu"
-                                        >Kisumu</mat-option
-                                    >
-                                    <mat-option value="other">Other</mat-option>
-                                </mat-select>
-                                <mat-icon matSuffix class="text-slate-400"
-                                    >location_on</mat-icon
-                                >
-                            </mat-form-field>
-                        </div>
-
-                        <!-- Continue Button -->
-                        <div class="flex justify-center pt-6">
-                            <button
-                                type="button"
-                                (click)="nextStep()"
-                                mat-flat-button
-                                class="transform rounded-lg bg-blue-600 px-10 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.02] hover:bg-blue-700 hover:shadow-lg"
-                            >
-                                Continue to Quote Details
-                                <mat-icon class="ml-2">arrow_forward</mat-icon>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Step 2: Quote Details (unchanged) -->
-                <div
-                    *ngIf="currentStep === 2"
-                    class="transform rounded-2xl border border-slate-200 bg-white p-8 shadow-lg transition-all duration-500 ease-in-out"
-                    [@slideIn]
-                >
-                    <div class="mb-8 text-center">
-                        <div
-                            class="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-green-100"
-                        >
-                            <svg
-                                class="h-7 w-7 text-green-600"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    d="M3,6H21V8H3V6M16,10V12H21V14H16V16H14V10H16M5,10V16H7V14H9V12H7V10H5M11,10V16H13V10H11Z"
-                                />
-                            </svg>
-                        </div>
-                        <h2 class="mb-2 text-2xl font-semibold text-slate-800">
-                            Vessel Information
-                        </h2>
-                        <p class="text-slate-600">
-                            Tell us about your vessel for accurate pricing
-                        </p>
-                    </div>
-
-                    <form [formGroup]="quoteForm" class="space-y-8">
-                        <!-- Vessel Type -->
-                        <div>
-                            <h3
-                                class="mb-4 text-lg font-semibold text-slate-800"
-                            >
-                                Vessel Type
-                            </h3>
-                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                <div class="relative">
-                                    <input
-                                        type="radio"
-                                        id="yacht"
-                                        value="yacht"
-                                        formControlName="vesselType"
-                                        class="peer sr-only"
-                                    />
-                                    <label
-                                        for="yacht"
-                                        class="block cursor-pointer rounded-xl border-2 border-slate-200 bg-white p-5 text-center transition-all hover:border-slate-300 peer-checked:border-blue-500 peer-checked:bg-blue-50"
-                                    >
-                                        <div
-                                            class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100"
-                                        >
-                                            <svg
-                                                class="h-5 w-5 text-blue-600"
-                                                fill="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    d="M3,6H21V8H3V6M16,10V12H21V14H16V16H14V10H16M5,10V16H7V14H9V12H7V10H5M11,10V16H13V10H11Z"
-                                                />
-                                            </svg>
-                                        </div>
-                                        <h4
-                                            class="font-semibold text-slate-800"
-                                        >
-                                            Yacht
-                                        </h4>
-                                        <p class="text-sm text-slate-600">
-                                            Luxury vessels
-                                        </p>
-                                    </label>
-                                </div>
-
-                                <div class="relative">
-                                    <input
-                                        type="radio"
-                                        id="fishing"
-                                        value="fishing"
-                                        formControlName="vesselType"
-                                        class="peer sr-only"
-                                    />
-                                    <label
-                                        for="fishing"
-                                        class="block cursor-pointer rounded-xl border-2 border-slate-200 bg-white p-5 text-center transition-all hover:border-slate-300 peer-checked:border-blue-500 peer-checked:bg-blue-50"
-                                    >
-                                        <div
-                                            class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-green-100"
-                                        >
-                                            <svg
-                                                class="h-5 w-5 text-green-600"
-                                                fill="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    d="M20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4C12.76,4 13.5,4.11 14.2,4.31L15.77,2.74C14.61,2.26 13.34,2 12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12M7.91,10.08L6.5,11.5L11,16L21,6L19.59,4.58L11,13.17L7.91,10.08Z"
-                                                />
-                                            </svg>
-                                        </div>
-                                        <h4
-                                            class="font-semibold text-slate-800"
-                                        >
-                                            Fishing Boat
-                                        </h4>
-                                        <p class="text-sm text-slate-600">
-                                            Commercial fishing
-                                        </p>
-                                    </label>
-                                </div>
-
-                                <div class="relative">
-                                    <input
-                                        type="radio"
-                                        id="cargo"
-                                        value="cargo"
-                                        formControlName="vesselType"
-                                        class="peer sr-only"
-                                    />
-                                    <label
-                                        for="cargo"
-                                        class="block cursor-pointer rounded-xl border-2 border-slate-200 bg-white p-5 text-center transition-all hover:border-slate-300 peer-checked:border-blue-500 peer-checked:bg-blue-50"
-                                    >
-                                        <div
-                                            class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100"
-                                        >
-                                            <svg
-                                                class="h-5 w-5 text-purple-600"
-                                                fill="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    d="M2,21V19H4V17H6V15H8V13H10V11H12V9H14V7H16V5H18V3H20V5H18V7H16V9H14V11H12V13H10V15H8V17H6V19H4V21H2Z"
-                                                />
-                                            </svg>
-                                        </div>
-                                        <h4
-                                            class="font-semibold text-slate-800"
-                                        >
-                                            Cargo Ship
-                                        </h4>
-                                        <p class="text-sm text-slate-600">
-                                            Commercial transport
-                                        </p>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Vessel Details -->
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label>Vessel Value (USD)</mat-label>
-                                <input
-                                    matInput
-                                    type="number"
-                                    formControlName="vesselValue"
-                                />
-                                <mat-icon matSuffix class="text-slate-400"
-                                    >attach_money</mat-icon
-                                >
-                            </mat-form-field>
-
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label>Year Built</mat-label>
-                                <input
-                                    matInput
-                                    type="number"
-                                    formControlName="yearBuilt"
-                                />
-                                <mat-icon matSuffix class="text-slate-400"
-                                    >calendar_today</mat-icon
-                                >
-                            </mat-form-field>
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label>Length (meters)</mat-label>
-                                <input
-                                    matInput
-                                    type="number"
-                                    formControlName="length"
-                                />
-                                <mat-icon matSuffix class="text-slate-400"
-                                    >straighten</mat-icon
-                                >
-                            </mat-form-field>
-
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label>Primary Use</mat-label>
-                                <mat-select formControlName="primaryUse">
-                                    <mat-option value="recreational"
-                                        >Recreational</mat-option
-                                    >
-                                    <mat-option value="commercial"
-                                        >Commercial</mat-option
-                                    >
-                                    <mat-option value="charter"
-                                        >Charter</mat-option
-                                    >
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
-
-                        <!-- Coverage Options -->
-                        <div>
-                            <h3
-                                class="mb-4 text-lg font-semibold text-slate-800"
-                            >
-                                Coverage Options
-                            </h3>
-                            <div class="space-y-3 rounded-xl bg-slate-50 p-5">
-                                <mat-checkbox
-                                    formControlName="hullCoverage"
-                                    color="primary"
-                                    class="block"
-                                >
-                                    <span class="ml-2 text-slate-700"
-                                        >Hull & Machinery Coverage</span
-                                    >
-                                </mat-checkbox>
-                                <mat-checkbox
-                                    formControlName="liabilityCoverage"
-                                    color="primary"
-                                    class="block"
-                                >
-                                    <span class="ml-2 text-slate-700"
-                                        >Third Party Liability</span
-                                    >
-                                </mat-checkbox>
-                                <mat-checkbox
-                                    formControlName="cargoCoverage"
-                                    color="primary"
-                                    class="block"
-                                >
-                                    <span class="ml-2 text-slate-700"
-                                        >Cargo Protection</span
-                                    >
-                                </mat-checkbox>
-                                <mat-checkbox
-                                    formControlName="personalEffects"
-                                    color="primary"
-                                    class="block"
-                                >
-                                    <span class="ml-2 text-slate-700"
-                                        >Personal Effects</span
-                                    >
-                                </mat-checkbox>
-                            </div>
-                        </div>
-
-                        <!-- Navigation -->
-                        <div class="flex justify-between pt-6">
-                            <button
-                                type="button"
-                                (click)="previousStep()"
-                                mat-stroked-button
-                                class="rounded-lg border-2 border-slate-300 px-6 py-2 font-medium transition-all hover:border-slate-400"
-                            >
-                                <mat-icon class="mr-2">arrow_back</mat-icon>
-                                Back
-                            </button>
-
-                            <button
-                                type="button"
-                                (click)="generateQuote()"
-                                mat-flat-button
-                                class="transform rounded-lg bg-green-600 px-10 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.02] hover:bg-green-700 hover:shadow-lg"
-                            >
-                                Generate Quote
-                                <mat-icon class="ml-2">arrow_forward</mat-icon>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Step 3: NEW Sign In Page -->
-                <div
-                    *ngIf="currentStep === 3"
-                    class="transform rounded-2xl border border-slate-200 bg-white p-8 shadow-lg transition-all duration-500 ease-in-out"
-                    [@slideIn]
-                >
-                    <div class="mb-8 text-center">
-                        <div
-                            class="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-indigo-100"
-                        >
-                            <svg
-                                class="h-7 w-7 text-indigo-600"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"
-                                />
-                            </svg>
-                        </div>
-                        <h2 class="mb-2 text-2xl font-semibold text-slate-800">
-                            Sign In to Continue
-                        </h2>
-                        <p class="text-slate-600">
-                            Please sign in to proceed with your quote
-                        </p>
-                    </div>
-
-                    <!-- Quote Summary Card -->
-                    <div
-                        class="mb-8 rounded-xl border border-blue-200 bg-blue-50 p-6"
-                    >
-                        <h3 class="mb-4 text-lg font-semibold text-slate-800">
-                            Your Quote Summary
-                        </h3>
-                        <div
-                            class="grid grid-cols-1 gap-4 text-sm md:grid-cols-2"
-                        >
-                            <div class="space-y-2">
-                                <div class="flex justify-between">
-                                    <span class="text-slate-600"
-                                        >Vessel Type:</span
-                                    >
-                                    <span class="font-medium text-slate-800">{{
-                                        quoteForm.get('vesselType')?.value
-                                            | titlecase
-                                    }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-slate-600"
-                                        >Vessel Value:</span
-                                    >
-                                    <span class="font-medium text-slate-800"
-                                        >${{
-                                            quoteForm.get('vesselValue')?.value
-                                                | number
-                                        }}</span
-                                    >
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-slate-600"
-                                        >Coverage Period:</span
-                                    >
-                                    <span class="font-medium text-slate-800"
-                                        >12 Months</span
-                                    >
-                                </div>
-                            </div>
-                            <div class="text-center md:text-right">
-                                <div class="rounded-lg bg-white p-4 shadow-sm">
-                                    <p class="mb-1 text-sm text-slate-600">
-                                        Estimated Premium
-                                    </p>
-                                    <p class="text-2xl font-bold text-blue-600">
-                                        ${{ calculatePremium() | number }}
-                                    </p>
-                                    <p class="text-xs text-slate-500">
-                                        Final price after sign-in
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sign In Options -->
-                    <div class="space-y-6">
-                        <!-- Existing User Sign In -->
-                        <div class="rounded-xl bg-slate-50 p-6">
-                            <h3
-                                class="mb-4 text-lg font-semibold text-slate-800"
-                            >
-                                Existing Customer
-                            </h3>
-                            <form [formGroup]="signInForm" class="space-y-4">
-                                <mat-form-field
-                                    appearance="outline"
-                                    class="w-full"
-                                >
-                                    <mat-label>Email Address</mat-label>
-                                    <input
-                                        matInput
-                                        type="email"
-                                        formControlName="email"
-                                    />
-                                    <mat-icon matSuffix class="text-slate-400"
-                                        >email</mat-icon
-                                    >
-                                </mat-form-field>
-
-                                <mat-form-field
-                                    appearance="outline"
-                                    class="w-full"
-                                >
-                                    <mat-label>Password</mat-label>
-                                    <input
-                                        matInput
-                                        [type]="
-                                            hidePassword ? 'password' : 'text'
-                                        "
-                                        formControlName="password"
-                                    />
-                                    <button
-                                        mat-icon-button
-                                        matSuffix
-                                        (click)="hidePassword = !hidePassword"
-                                        type="button"
-                                    >
-                                        <mat-icon>{{
-                                            hidePassword
-                                                ? 'visibility_off'
-                                                : 'visibility'
-                                        }}</mat-icon>
-                                    </button>
-                                </mat-form-field>
-
-                                <div class="flex items-center justify-between">
-                                    <mat-checkbox
-                                        formControlName="rememberMe"
-                                        color="primary"
-                                    >
-                                        <span class="text-sm text-slate-700"
-                                            >Remember me</span
-                                        >
-                                    </mat-checkbox>
-                                    <a
-                                        href="#"
-                                        class="text-sm text-blue-600 hover:underline"
-                                        >Forgot password?</a
-                                    >
-                                </div>
-
-                                <button
-                                    type="button"
-                                    (click)="signIn()"
-                                    [disabled]="!signInForm.valid || signingIn"
-                                    mat-flat-button
-                                    class="w-full rounded-lg bg-indigo-600 py-3 font-semibold text-white transition-all hover:bg-indigo-700 disabled:opacity-50"
-                                >
-                                    <ng-container *ngIf="!signingIn">
-                                        Sign In & Continue
-                                    </ng-container>
-                                    <ng-container *ngIf="signingIn">
-                                        <mat-progress-spinner
-                                            [diameter]="20"
-                                            [mode]="'indeterminate'"
-                                            class="mr-2"
-                                        ></mat-progress-spinner>
-                                        Signing In...
-                                    </ng-container>
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- Divider -->
-                        <div class="relative">
-                            <div class="absolute inset-0 flex items-center">
-                                <div
-                                    class="w-full border-t border-slate-300"
-                                ></div>
-                            </div>
-                            <div class="relative flex justify-center text-sm">
-                                <span class="bg-white px-2 text-slate-500"
-                                    >Or</span
-                                >
-                            </div>
-                        </div>
-
-                        <!-- New User Registration -->
-                        <div
-                            class="rounded-xl border border-green-200 bg-green-50 p-6"
-                        >
-                            <h3
-                                class="mb-4 text-lg font-semibold text-slate-800"
-                            >
-                                New Customer
-                            </h3>
-                            <p class="mb-4 text-slate-600">
-                                Create an account to manage your marine
-                                insurance policies
-                            </p>
-
-                            <div
-                                class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2"
-                            >
-                                <div
-                                    class="flex items-center text-sm text-slate-600"
-                                >
-                                    <svg
-                                        class="mr-2 h-4 w-4 text-green-500"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z"
-                                        />
-                                    </svg>
-                                    Policy management dashboard
-                                </div>
-                                <div
-                                    class="flex items-center text-sm text-slate-600"
-                                >
-                                    <svg
-                                        class="mr-2 h-4 w-4 text-green-500"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z"
-                                        />
-                                    </svg>
-                                    24/7 claims support
-                                </div>
-                                <div
-                                    class="flex items-center text-sm text-slate-600"
-                                >
-                                    <svg
-                                        class="mr-2 h-4 w-4 text-green-500"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z"
-                                        />
-                                    </svg>
-                                    Instant policy documents
-                                </div>
-                                <div
-                                    class="flex items-center text-sm text-slate-600"
-                                >
-                                    <svg
-                                        class="mr-2 h-4 w-4 text-green-500"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z"
-                                        />
-                                    </svg>
-                                    Renewal reminders
-                                </div>
-                            </div>
-
-                            <button
-                                type="button"
-                                (click)="createAccount()"
-                                mat-flat-button
-                                class="w-full rounded-lg bg-green-600 py-3 font-semibold text-white transition-all hover:bg-green-700"
-                            >
-                                Create Account & Continue
-                                <mat-icon class="ml-2">person_add</mat-icon>
-                            </button>
-                        </div>
-
-                        <!-- Navigation -->
-                        <div class="flex justify-between pt-4">
-                            <button
-                                type="button"
-                                (click)="previousStep()"
-                                mat-stroked-button
-                                class="rounded-lg border-2 border-slate-300 px-6 py-2 font-medium transition-all hover:border-slate-400"
-                            >
-                                <mat-icon class="mr-2">arrow_back</mat-icon>
-                                Back to Quote
-                            </button>
-
-                            <button
-                                type="button"
-                                (click)="continueAsGuest()"
-                                mat-stroked-button
-                                class="rounded-lg border-2 border-slate-300 px-6 py-2 font-medium transition-all hover:border-slate-400"
-                            >
-                                Continue as Guest
-                                <mat-icon class="ml-2">arrow_forward</mat-icon>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 4: Payment (previously Step 3) -->
-                <div
-                    *ngIf="currentStep === 4"
-                    class="transform rounded-2xl border border-slate-200 bg-white p-8 shadow-lg transition-all duration-500 ease-in-out"
-                    [@slideIn]
-                >
-                    <div class="mb-8 text-center">
-                        <div
-                            class="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-purple-100"
-                        >
-                            <svg
-                                class="h-7 w-7 text-purple-600"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    d="M20,8H4V6H20M20,18H4V12H20M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.11,4 20,4Z"
-                                />
-                            </svg>
-                        </div>
-                        <h2 class="mb-2 text-2xl font-semibold text-slate-800">
-                            Complete Your Purchase
-                        </h2>
-                        <p class="text-slate-600">
-                            Finalize your marine insurance policy
-                        </p>
-                    </div>
-
-                    <!-- User Info Display (if signed in) -->
-                    <div
-                        *ngIf="isSignedIn"
-                        class="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-4"
-                    >
-                        <div class="flex items-center">
-                            <div
-                                class="mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-blue-600"
-                            >
-                                <svg
-                                    class="h-5 w-5 text-white"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"
-                                    />
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="font-medium text-slate-800">
-                                    {{ currentUser?.name }}
-                                </p>
-                                <p class="text-sm text-slate-600">
-                                    {{ currentUser?.email }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quote Summary -->
-                    <div
-                        class="mb-8 rounded-xl border border-slate-200 bg-slate-50 p-6"
-                    >
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <div>
-                                <h3
-                                    class="mb-4 text-lg font-semibold text-slate-800"
-                                >
-                                    Policy Summary
-                                </h3>
-                                <div class="space-y-2 text-sm">
-                                    <div class="flex justify-between">
-                                        <span class="text-slate-600"
-                                            >Vessel Type:</span
-                                        >
-                                        <span
-                                            class="font-medium text-slate-800"
-                                            >{{
-                                                quoteForm.get('vesselType')
-                                                    ?.value | titlecase
-                                            }}</span
-                                        >
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-slate-600"
-                                            >Vessel Value:</span
-                                        >
-                                        <span class="font-medium text-slate-800"
-                                            >${{
-                                                quoteForm.get('vesselValue')
-                                                    ?.value | number
-                                            }}</span
-                                        >
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-slate-600"
-                                            >Coverage Period:</span
-                                        >
-                                        <span class="font-medium text-slate-800"
-                                            >12 Months</span
-                                        >
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="text-center md:text-right">
-                                <div
-                                    class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
-                                >
-                                    <p class="mb-1 text-sm text-slate-600">
-                                        Annual Premium
-                                    </p>
-                                    <p class="text-2xl font-bold text-blue-600">
-                                        ${{ calculatePremium() | number }}
-                                    </p>
-                                    <p class="text-xs text-slate-500">
-                                        All taxes included
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Payment Form -->
-                    <form [formGroup]="paymentForm" class="space-y-6">
-                        <h3 class="text-lg font-semibold text-slate-800">
-                            Payment Information
-                        </h3>
-
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label>Cardholder Name</mat-label>
-                                <input
-                                    matInput
-                                    formControlName="cardholderName"
-                                />
-                                <mat-icon matSuffix class="text-slate-400"
-                                    >person</mat-icon
-                                >
-                            </mat-form-field>
-
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label>Card Number</mat-label>
-                                <input
-                                    matInput
-                                    formControlName="cardNumber"
-                                    placeholder="1234 5678 9012 3456"
-                                />
-                                <mat-icon matSuffix class="text-slate-400"
-                                    >credit_card</mat-icon
-                                >
-                            </mat-form-field>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-6">
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label>Expiry Date</mat-label>
-                                <input
-                                    matInput
-                                    formControlName="expiryDate"
-                                    placeholder="MM/YY"
-                                />
-                            </mat-form-field>
-
-                            <mat-form-field appearance="outline" class="w-full">
-                                <mat-label>CVV</mat-label>
-                                <input
-                                    matInput
-                                    formControlName="cvv"
-                                    placeholder="123"
-                                />
-                                <mat-icon matSuffix class="text-slate-400"
-                                    >lock</mat-icon
-                                >
-                            </mat-form-field>
-                        </div>
-
-                        <!-- Terms -->
-                        <div
-                            class="rounded-lg border border-slate-200 bg-slate-50 p-4"
-                        >
-                            <mat-checkbox
-                                formControlName="acceptTerms"
-                                color="primary"
-                            >
-                                <span class="text-sm text-slate-700">
-                                    I agree to the
-                                    <a
-                                        href="#"
-                                        class="font-medium text-blue-600 hover:underline"
-                                        >Terms & Conditions</a
-                                    >
-                                    and
-                                    <a
-                                        href="#"
-                                        class="font-medium text-blue-600 hover:underline"
-                                        >Privacy Policy</a
-                                    >
-                                </span>
-                            </mat-checkbox>
-                        </div>
-
-                        <!-- Navigation -->
-                        <div class="flex justify-between pt-6">
-                            <button
-                                type="button"
-                                (click)="previousStep()"
-                                mat-stroked-button
-                                class="rounded-lg border-2 border-slate-300 px-6 py-2 font-medium transition-all hover:border-slate-400"
-                            >
-                                <mat-icon class="mr-2">arrow_back</mat-icon>
-                                Back
-                            </button>
-
-                            <button
-                                type="button"
-                                (click)="completePurchase()"
-                                [disabled]="!paymentForm.valid || processing"
-                                mat-flat-button
-                                class="transform rounded-lg bg-purple-600 px-10 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.02] hover:bg-purple-700 hover:shadow-lg disabled:transform-none disabled:opacity-50"
-                            >
-                                <ng-container *ngIf="!processing">
-                                    <span
-                                        >Complete Purchase - ${{
-                                            calculatePremium() | number
-                                        }}</span
-                                    >
-                                    <mat-icon class="ml-2">payment</mat-icon>
-                                </ng-container>
-                                <ng-container *ngIf="processing">
-                                    <mat-progress-spinner
-                                        [diameter]="20"
-                                        [mode]="'indeterminate'"
-                                        class="mr-2"
-                                    ></mat-progress-spinner>
-                                    <span>Processing...</span>
-                                </ng-container>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Step 5: Success (previously Step 4) -->
-                <div
-                    *ngIf="currentStep === 5"
-                    class="transform rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-lg transition-all duration-500 ease-in-out"
-                    [@slideIn]
-                >
-                    <div class="mb-8">
-                        <div
-                            class="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-xl bg-green-100"
-                        >
-                            <svg
-                                class="h-8 w-8 text-green-600"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z"
-                                />
-                            </svg>
-                        </div>
-                        <h2 class="mb-4 text-3xl font-semibold text-slate-800">
-                            Policy Activated
-                        </h2>
-                        <p class="mb-6 text-lg text-slate-600">
-                            Your marine insurance is now in effect
-                        </p>
-
-                        <div
-                            class="mb-8 rounded-xl border border-green-200 bg-green-50 p-6"
-                        >
-                            <h3
-                                class="mb-3 text-lg font-semibold text-slate-800"
-                            >
-                                Policy Information
-                            </h3>
-                            <div class="space-y-1 text-sm text-slate-600">
-                                <p>
-                                    Policy Number:
-                                    <span
-                                        class="font-mono font-semibold text-slate-800"
-                                        >GEM-{{ generatePolicyNumber() }}</span
-                                    >
-                                </p>
-                                <p>
-                                    Effective Date:
-                                    <span
-                                        class="font-semibold text-slate-800"
-                                        >{{ today | date: 'mediumDate' }}</span
-                                    >
-                                </p>
-                                <p>
-                                    Expiration Date:
-                                    <span
-                                        class="font-semibold text-slate-800"
-                                        >{{
-                                            nextYear | date: 'mediumDate'
-                                        }}</span
-                                    >
-                                </p>
-                            </div>
-                        </div>
-
-                        <div
-                            class="flex flex-col justify-center gap-4 sm:flex-row"
-                        >
-                            <button
-                                mat-flat-button
-                                class="transform rounded-lg bg-blue-600 px-8 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.02] hover:bg-blue-700 hover:shadow-lg"
-                            >
-                                <mat-icon class="mr-2">download</mat-icon>
-                                Download Policy
-                            </button>
-
-                            <button
-                                mat-stroked-button
-                                class="rounded-lg border-2 border-slate-300 px-8 py-3 font-medium transition-all hover:border-slate-400"
-                            >
-                                <mat-icon class="mr-2">email</mat-icon>
-                                Email Policy
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- Footer -->
-        <footer
-            class="border-t border-slate-200/50 bg-white/80 py-6 backdrop-blur-sm"
+      <!-- 
+        ======================================================================
+        PROMPT 1: DASHBOARD VIEW
+        ======================================================================
+      -->
+      <div
+        *ngIf="currentView === 'dashboard'"
+        class="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8"
+        [@slideIn]
+      >
+        <h2 class="mb-6 text-3xl font-bold text-slate-800">Dashboard</h2>
+        <!-- Quick Actions -->
+        <div
+          class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
         >
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between">
-                    <div
-                        class="flex items-center space-x-6 text-sm text-slate-600"
-                    >
-                        <span>© 2025 Geminia Marine Insurance</span>
-                        <a
-                            href="#"
-                            class="transition-colors hover:text-slate-800"
-                            >Privacy Policy</a
-                        >
-                        <a
-                            href="#"
-                            class="transition-colors hover:text-slate-800"
-                            >Terms of Service</a
-                        >
-                        <a
-                            href="#"
-                            class="transition-colors hover:text-slate-800"
-                            >Support</a
-                        >
-                    </div>
-
-                    <div class="flex items-center space-x-6">
-                        <div class="flex items-center text-sm text-slate-600">
-                            <svg
-                                class="mr-1 h-4 w-4 text-green-500"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"
-                                />
-                            </svg>
-                            SSL Secured
-                        </div>
-                        <div class="flex items-center text-sm text-slate-600">
-                            <svg
-                                class="mr-1 h-4 w-4 text-blue-500"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    d="M12,2A3,3 0 0,1 15,5V7H20A1,1 0 0,1 21,8V19A1,1 0 0,1 20,20H4A1,1 0 0,1 3,19V8A1,1 0 0,1 4,7H9V5A3,3 0 0,1 12,2M12,4A1,1 0 0,0 11,5V7H13V5A1,1 0 0,0 12,4Z"
-                                />
-                            </svg>
-                            24/7 Support
-                        </div>
-                    </div>
-                </div>
+          <button
+            (click)="setView('coverSelection')"
+            class="group flex items-center gap-4 rounded-xl border bg-white p-6 text-left shadow-sm transition hover:border-blue-500 hover:shadow-md"
+          >
+            <div
+              class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-blue-600 transition group-hover:bg-blue-600 group-hover:text-white"
+            >
+              <mat-icon>add_circle</mat-icon>
             </div>
-        </footer>
-    </div>
+            <div>
+              <h3 class="text-lg font-semibold">Get a New Quote</h3>
+              <p class="text-sm text-slate-500">
+                For Single Transit or Open Cover
+              </p>
+            </div>
+          </button>
+          <button
+            (click)="setView('claims')"
+            class="group flex items-center gap-4 rounded-xl border bg-white p-6 text-left shadow-sm transition hover:border-blue-500 hover:shadow-md"
+          >
+            <div
+              class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-blue-600 transition group-hover:bg-blue-600 group-hover:text-white"
+            >
+              <mat-icon>warning</mat-icon>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold">File a Claim</h3>
+              <p class="text-sm text-slate-500">
+                Start a new claim registration
+              </p>
+            </div>
+          </button>
+          <button
+            (click)="setView('quoteRetrieval')"
+            class="group flex items-center gap-4 rounded-xl border bg-white p-6 text-left shadow-sm transition hover:border-blue-500 hover:shadow-md"
+          >
+            <div
+              class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-blue-600 transition group-hover:bg-blue-600 group-hover:text-white"
+            >
+              <mat-icon>history</mat-icon>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold">View Policies & Quotes</h3>
+              <p class="text-sm text-slate-500">
+                Retrieve existing records
+              </p>
+            </div>
+          </button>
+        </div>
+        <!-- Visual Counters -->
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="rounded-xl border bg-white p-6 shadow-sm">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-medium text-slate-500">
+                Quotes Requested
+              </p>
+              <mat-icon class="text-green-500">request_quote</mat-icon>
+            </div>
+            <p class="mt-2 text-4xl font-bold">42</p>
+          </div>
+          <div class="rounded-xl border bg-white p-6 shadow-sm">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-medium text-slate-500">
+                Active Policies
+              </p>
+              <mat-icon class="text-blue-500">shield</mat-icon>
+            </div>
+            <p class="mt-2 text-4xl font-bold">18</p>
+          </div>
+          <div class="rounded-xl border bg-white p-6 shadow-sm">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-medium text-slate-500">
+                Pending Claims
+              </p>
+              <mat-icon class="text-amber-500">pending_actions</mat-icon>
+            </div>
+            <p class="mt-2 text-4xl font-bold">3</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 
+        ======================================================================
+        PROMPT 2: REGISTRATION & ACTIVATION
+        ======================================================================
+      -->
+      <div
+        *ngIf="currentView === 'registration'"
+        class="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4"
+        [@slideIn]
+      >
+        <div
+          class="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-8 shadow-lg"
+        >
+          <div *ngIf="!showOnboardingMessage">
+            <h2 class="mb-2 text-2xl font-bold text-slate-800">
+              Create Intermediary Account
+            </h2>
+            <p class="mb-6 text-slate-500">
+              Join our network of trusted partners.
+            </p>
+            <form
+              [formGroup]="registrationForm"
+              (ngSubmit)="register()"
+              class="space-y-4"
+            >
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Full Name</mat-label>
+                  <input matInput formControlName="fullName" />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Phone Number</mat-label>
+                  <input matInput formControlName="phone" />
+                </mat-form-field>
+              </div>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Email Address</mat-label>
+                <input matInput formControlName="email" />
+              </mat-form-field>
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Password</mat-label>
+                  <input
+                    matInput
+                    type="password"
+                    formControlName="password"
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Confirm Password</mat-label>
+                  <input
+                    matInput
+                    type="password"
+                    formControlName="confirmPassword"
+                  />
+                </mat-form-field>
+              </div>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Intermediary Code (Optional)</mat-label>
+                <input matInput formControlName="intermediaryCode" />
+              </mat-form-field>
+              <div class="space-y-2 pt-2">
+                <mat-checkbox formControlName="consent1" color="primary"
+                  >I agree to the Terms of Service.</mat-checkbox
+                >
+                <mat-checkbox formControlName="consent2" color="primary"
+                  >I agree to the Privacy Policy.</mat-checkbox
+                >
+                <mat-checkbox formControlName="consent3" color="primary"
+                  >I consent to receive marketing communications.</mat-checkbox
+                >
+              </div>
+              <button
+                mat-flat-button
+                color="primary"
+                class="w-full !py-3 !text-base"
+                type="submit"
+                [disabled]="registrationForm.invalid"
+              >
+                Create Account
+              </button>
+              <div class="text-center text-sm">
+                <a
+                  (click)="setView('login')"
+                  class="cursor-pointer font-medium text-blue-600 hover:underline"
+                  >Already have an account? Login</a
+                >
+              </div>
+            </form>
+          </div>
+          <!-- Onboarding Message -->
+          <div *ngIf="showOnboardingMessage" class="text-center">
+            <mat-icon
+              class="!h-16 !w-16 text-green-500"
+              >mark_email_read</mat-icon
+            >
+            <h2 class="mt-4 text-2xl font-bold">
+              Registration Successful!
+            </h2>
+            <p class="mt-2 text-slate-600">
+              Please check your email to activate your account. You will be
+              redirected to the login page shortly.
+            </p>
+            <mat-progress-spinner
+              class="mx-auto mt-6"
+              mode="indeterminate"
+              [diameter]="40"
+            ></mat-progress-spinner>
+          </div>
+        </div>
+      </div>
+
+      <!-- 
+        ======================================================================
+        PROMPT 3: MARINE COVER SELECTION
+        ======================================================================
+      -->
+      <div
+        *ngIf="currentView === 'coverSelection'"
+        class="mx-auto max-w-2xl p-4 sm:p-6 lg:p-8"
+        [@slideIn]
+      >
+        <div class="rounded-2xl border bg-white p-8 shadow-lg">
+          <button
+            mat-icon-button
+            (click)="setView('dashboard')"
+            class="absolute top-4 left-4"
+          >
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <h2 class="mb-6 text-center text-2xl font-bold">
+            Select Marine Cover
+          </h2>
+          <form
+            [formGroup]="coverSelectionForm"
+            (ngSubmit)="getQuote()"
+            class="space-y-6"
+          >
+            <div>
+              <label class="font-medium">Step 1: Select Account Type</label>
+              <mat-form-field appearance="outline" class="mt-2 w-full">
+                <mat-select
+                  formControlName="accountType"
+                  placeholder="Select your account type"
+                >
+                  <mat-option value="individual">Individual</mat-option>
+                  <mat-option value="corporate">Corporate</mat-option>
+                  <mat-option value="intermediary">Intermediary</mat-option>
+                  <mat-option value="clearing_agent"
+                    >Clearing Agent</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div *ngIf="coverSelectionForm.get('accountType').value">
+              <label class="font-medium">Step 2: Select Cover Type</label>
+              <mat-radio-group
+                formControlName="coverType"
+                class="mt-2 flex flex-col gap-3"
+              >
+                <mat-radio-button value="single"
+                  >Marine Single Transit</mat-radio-button
+                >
+                <mat-radio-button value="open"
+                  >Marine Open Cover</mat-radio-button
+                >
+              </mat-radio-group>
+            </div>
+
+            <button
+              mat-flat-button
+              color="primary"
+              class="w-full !py-3 !text-base"
+              type="submit"
+              [disabled]="!coverSelectionForm.get('coverType').value"
+            >
+              Get Quote
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- 
+        ======================================================================
+        PROMPT 4: QUOTATION FORM (SINGLE TRANSIT)
+        ======================================================================
+      -->
+      <div
+        *ngIf="currentView === 'singleTransitQuote'"
+        class="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8"
+        [@slideIn]
+      >
+        <button mat-stroked-button (click)="setView('coverSelection')">
+          <mat-icon>arrow_back</mat-icon>
+          Back to Cover Selection
+        </button>
+        <div class="mt-4 grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <!-- Form Section -->
+          <div
+            class="rounded-2xl border bg-white p-6 shadow-lg lg:col-span-2"
+          >
+            <h2 class="mb-6 text-2xl font-bold">
+              Single Transit Quotation
+            </h2>
+            <form [formGroup]="singleTransitForm" class="space-y-4">
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Trade Type</mat-label>
+                  <mat-select formControlName="tradeType">
+                    <mat-option value="import">Import</mat-option>
+                    <mat-option value="export">Export</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Mode of Shipment</mat-label>
+                  <mat-select formControlName="modeOfShipment">
+                    <mat-option value="sea">Sea</mat-option>
+                    <mat-option value="air">Air</mat-option>
+                    <mat-option value="land">Land</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Origin</mat-label>
+                  <input matInput formControlName="origin" />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Destination</mat-label>
+                  <input matInput formControlName="destination" />
+                </mat-form-field>
+              </div>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Description of Goods</mat-label>
+                <input matInput formControlName="goodsDescription" />
+              </mat-form-field>
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Sum Insured</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="sumInsured"
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Currency</mat-label>
+                  <mat-select formControlName="currency">
+                    <mat-option value="KES">KES</mat-option>
+                    <mat-option value="USD">USD</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>UCR Number</mat-label>
+                  <input matInput formControlName="ucrNumber" />
+                  <mat-icon
+                    matSuffix
+                    class="cursor-help"
+                    matTooltip="Validated in real-time"
+                    >verified</mat-icon
+                  >
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>IDF Number</mat-label>
+                  <input matInput formControlName="idfNumber" />
+                </mat-form-field>
+              </div>
+              <div [formGroupName]="'addOns'">
+                <h3 class="mb-2 font-medium">Optional Add-ons</h3>
+                <div class="flex flex-wrap gap-4">
+                  <mat-checkbox formControlName="war" color="primary"
+                    >War</mat-checkbox
+                  >
+                  <mat-checkbox formControlName="sri_cc" color="primary"
+                    >SRI & CC</mat-checkbox
+                  >
+                  <mat-checkbox formControlName="storage" color="primary"
+                    >Storage</mat-checkbox
+                  >
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Summary Sidebar -->
+          <div class="lg:sticky lg:top-24">
+            <div class="rounded-2xl border bg-white p-6 shadow-lg">
+              <h3 class="mb-4 text-xl font-bold">Policy Summary</h3>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Premium</span>
+                  <span class="font-medium"
+                    >KES
+                    {{ quoteSummary.premium | number: '1.2-2' }}</span
+                  >
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Levies</span>
+                  <span class="font-medium"
+                    >KES {{ quoteSummary.levies | number: '1.2-2' }}</span
+                  >
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Stamp Duty</span>
+                  <span class="font-medium"
+                    >KES
+                    {{ quoteSummary.stampDuty | number: '1.2-2' }}</span
+                  >
+                </div>
+                <div
+                  class="flex justify-between border-t pt-2 text-lg font-bold"
+                >
+                  <span>Total</span>
+                  <span
+                    >KES {{ quoteSummary.total | number: '1.2-2' }}</span
+                  >
+                </div>
+              </div>
+              <div
+                *ngIf="singleTransitForm.get('currency').value === 'USD'"
+                class="mt-4 rounded-lg bg-blue-50 p-2 text-center text-xs text-blue-700"
+              >
+                FX Rate: 1 USD = 130.50 KES
+              </div>
+              <div class="mt-6 flex flex-col gap-3">
+                <button
+                  mat-flat-button
+                  color="primary"
+                  class="w-full !py-3"
+                  (click)="buyNow(quoteSummary)"
+                >
+                  Buy Now
+                </button>
+                <div class="flex gap-3">
+                  <button mat-stroked-button class="w-full">
+                    <mat-icon>email</mat-icon> Email
+                  </button>
+                  <button mat-stroked-button class="w-full">
+                    <mat-icon>whatsapp</mat-icon> WhatsApp
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 
+        ======================================================================
+        PROMPT 5: QUOTATION RETRIEVAL & EDIT
+        ======================================================================
+      -->
+      <div
+        *ngIf="currentView === 'quoteRetrieval'"
+        class="mx-auto max-w-2xl p-4 sm:p-6 lg:p-8"
+        [@slideIn]
+      >
+        <div class="rounded-2xl border bg-white p-8 shadow-lg">
+          <button
+            mat-icon-button
+            (click)="setView('dashboard')"
+            class="absolute top-4 left-4"
+          >
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <h2 class="mb-6 text-center text-2xl font-bold">
+            Retrieve Quote
+          </h2>
+
+          <!-- Retrieval Form -->
+          <form
+            *ngIf="!retrievedQuote"
+            [formGroup]="quoteRetrievalForm"
+            (ngSubmit)="retrieveQuote()"
+            class="flex items-start gap-2"
+          >
+            <mat-form-field appearance="outline" class="flex-grow">
+              <mat-label>Enter Reference Number</mat-label>
+              <input matInput formControlName="reference" />
+            </mat-form-field>
+            <button
+              mat-flat-button
+              color="primary"
+              type="submit"
+              class="!h-[56px] !px-6"
+            >
+              Find
+            </button>
+          </form>
+
+          <!-- Quote Summary -->
+          <div *ngIf="retrievedQuote" [@slideIn]>
+            <div
+              class="mb-4 rounded-lg border p-4"
+              [ngClass]="{
+                                'border-red-200 bg-red-50': retrievedQuote.status === 'Expired',
+                                'border-green-200 bg-green-50': retrievedQuote.status !== 'Expired'
+                            }"
+            >
+              <div class="flex justify-between">
+                <h3 class="font-bold">Quote {{ retrievedQuote.ref }}</h3>
+                <span
+                  class="rounded-full px-2 py-0.5 text-xs font-medium"
+                  [ngClass]="{
+                                        'bg-red-200 text-red-800': retrievedQuote.status === 'Expired',
+                                        'bg-green-200 text-green-800': retrievedQuote.status !== 'Expired'
+                                    }"
+                  >{{ retrievedQuote.status }}</span
+                >
+              </div>
+              <div class="mt-2 space-y-1 text-sm">
+                <p>
+                  Sum Insured:
+                  <span class="font-medium"
+                    >KES
+                    {{ retrievedQuote.sumInsured | number }}</span
+                  >
+                </p>
+                <p>
+                  Premium:
+                  <span class="font-medium"
+                    >KES {{ retrievedQuote.premium | number }}</span
+                  >
+                </p>
+                <p *ngIf="retrievedQuote.status === 'Expired'">
+                  Expired On:
+                  <span class="font-medium">{{
+                    retrievedQuote.expiryDate
+                  }}</span>
+                </p>
+              </div>
+            </div>
+            <div
+              *ngIf="retrievedQuote.status === 'Expired'"
+              class="mb-4 rounded-lg bg-amber-50 p-3 text-center text-sm text-amber-800"
+            >
+              <mat-icon class="!align-middle">warning</mat-icon>
+              Rates are no longer locked. Regenerating may result in a
+              different premium.
+            </div>
+            <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+              <button mat-stroked-button class="w-full">Edit Quote</button>
+              <button mat-stroked-button class="w-full">
+                Regenerate Quote
+              </button>
+              <button
+                mat-flat-button
+                color="primary"
+                class="w-full"
+                (click)="buyNow(retrievedQuote)"
+              >
+                Buy Now
+              </button>
+            </div>
+            <button
+              mat-button
+              (click)="retrievedQuote = null"
+              class="mx-auto mt-4 block"
+            >
+              Search for another quote
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 
+        ======================================================================
+        PROMPT 6: OPEN COVER JOURNEY
+        ======================================================================
+      -->
+      <div
+        *ngIf="currentView === 'openCoverQuote'"
+        class="mx-auto max-w-2xl p-4 sm:p-6 lg:p-8"
+        [@slideIn]
+      >
+        <div class="rounded-2xl border bg-white p-8 shadow-lg">
+          <button
+            mat-icon-button
+            (click)="setView('coverSelection')"
+            class="absolute top-4 left-4"
+          >
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <h2 class="mb-2 text-center text-2xl font-bold">
+            Open Cover Declaration
+          </h2>
+          <p class="mb-6 text-center text-slate-500">
+            Declare a new shipment under your open cover policy.
+          </p>
+          <div
+            class="mb-4 rounded-lg bg-blue-50 p-3 text-center text-blue-800"
+          >
+            Credit Limit: <span class="font-bold">KES 5,000,000.00</span>
+          </div>
+          <form [formGroup]="openCoverForm" class="space-y-4">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Contract Reference</mat-label>
+              <input matInput formControlName="contractRef" />
+            </mat-form-field>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>IDF Number</mat-label>
+                <input matInput formControlName="idf" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>UCR Number</mat-label>
+                <input matInput formControlName="ucr" />
+              </mat-form-field>
+            </div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Vessel / Flight No.</mat-label>
+              <input matInput formControlName="vessel" />
+            </mat-form-field>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Shipment Date</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="ocPicker"
+                  formControlName="shipmentDate"
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="ocPicker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #ocPicker></mat-datepicker>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Cargo Value (KES)</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  formControlName="cargoValue"
+                />
+              </mat-form-field>
+            </div>
+            <button
+              mat-flat-button
+              color="primary"
+              class="w-full !py-3 !text-base"
+              [disabled]="openCoverForm.invalid"
+            >
+              Submit Declaration
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- 
+        ======================================================================
+        PROMPT 7: PAYMENT PAGE
+        ======================================================================
+      -->
+      <div
+        *ngIf="currentView === 'payment'"
+        class="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8"
+        [@slideIn]
+      >
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div class="lg:col-span-2">
+            <h2 class="mb-6 text-2xl font-bold">Complete Your Payment</h2>
+            <mat-tab-group animationDuration="0ms">
+              <mat-tab label="MPESA">
+                <div class="p-6 text-center">
+                  <h3 class="text-lg font-medium">Pay with MPESA</h3>
+                  <p class="text-slate-500">
+                    An STK push will be sent to your number.
+                  </p>
+                  <mat-form-field
+                    appearance="outline"
+                    class="mx-auto mt-4 max-w-sm"
+                  >
+                    <mat-label>Phone Number</mat-label>
+                    <input matInput value="0712345678" />
+                  </mat-form-field>
+                  <button
+                    mat-flat-button
+                    color="primary"
+                    class="mt-2 w-full max-w-sm !py-3"
+                    (click)="submitPayment()"
+                  >
+                    Send STK Push
+                  </button>
+                </div>
+              </mat-tab>
+              <mat-tab label="Card Payment">
+                <div class="space-y-4 p-6">
+                  <mat-form-field appearance="outline" class="w-full">
+                    <mat-label>Card Number</mat-label>
+                    <input matInput />
+                  </mat-form-field>
+                  <div class="grid grid-cols-2 gap-4">
+                    <mat-form-field appearance="outline" class="w-full">
+                      <mat-label>Expiry (MM/YY)</mat-label>
+                      <input matInput />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" class="w-full">
+                      <mat-label>CVV</mat-label>
+                      <input matInput />
+                    </mat-form-field>
+                  </div>
+                  <button
+                    mat-flat-button
+                    color="primary"
+                    class="w-full !py-3"
+                    (click)="submitPayment()"
+                  >
+                    Pay Now
+                  </button>
+                </div>
+              </mat-tab>
+              <mat-tab label="Credit Account">
+                <div class="p-6 text-center">
+                  <h3 class="text-lg font-medium">
+                    Pay with Credit Account
+                  </h3>
+                  <p class="mt-4 text-slate-500">
+                    Available Balance:
+                    <span class="font-bold text-green-600"
+                      >KES 250,000.00</span
+                    >
+                  </p>
+                  <p class="text-slate-500">
+                    This transaction will use
+                    <span class="font-bold"
+                      >KES {{ policyDetails?.premium | number }}</span
+                    >
+                    from your credit.
+                  </p>
+                  <button
+                    mat-flat-button
+                    color="primary"
+                    class="mt-4 !py-3"
+                    (click)="submitPayment()"
+                  >
+                    Confirm & Use Credit
+                  </button>
+                </div>
+              </mat-tab>
+            </mat-tab-group>
+          </div>
+          <!-- Payment Summary -->
+          <div class="lg:sticky lg:top-24">
+            <div class="rounded-2xl border bg-white p-6 shadow-lg">
+              <h3 class="mb-4 text-xl font-bold">Policy Summary</h3>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Reference</span>
+                  <span class="font-medium">{{ policyDetails?.ref }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Sum Insured</span>
+                  <span class="font-medium"
+                    >KES
+                    {{ policyDetails?.sumInsured | number }}</span
+                  >
+                </div>
+                <div
+                  class="flex justify-between border-t pt-2 text-lg font-bold"
+                >
+                  <span>Total Payable</span>
+                  <span
+                    >KES {{ policyDetails?.premium | number }}</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 
+        ======================================================================
+        PROMPT 8: CERTIFICATE CONFIRMATION
+        ======================================================================
+      -->
+      <div
+        *ngIf="currentView === 'confirmation'"
+        class="mx-auto max-w-3xl p-4 text-center sm:p-6 lg:p-8"
+        [@slideIn]
+      >
+        <div class="rounded-2xl border bg-white p-8 shadow-lg">
+          <div
+            class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100"
+          >
+            <mat-icon class="!h-10 !w-10 text-green-600"
+              >check_circle</mat-icon
+            >
+          </div>
+          <h2 class="text-3xl font-bold">Payment Successful!</h2>
+          <p class="mt-2 text-slate-500">
+            Your policy is now active. Your documents are ready for
+            download.
+          </p>
+          <div
+            class="mt-6 rounded-lg bg-blue-50 p-3 text-sm text-blue-800"
+          >
+            An email with all documents has been sent to your registered
+            address.
+          </div>
+          <div class="mt-6 space-y-2 border-t border-b py-4">
+            <div class="flex justify-between">
+              <span class="text-slate-500">Policy Status:</span>
+              <span
+                class="rounded-full bg-green-200 px-2 py-0.5 text-xs font-bold text-green-800"
+                >PAID</span
+              >
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Certificate Number:</span>
+              <span class="font-mono font-medium">AMI-54321</span>
+            </div>
+          </div>
+          <div class="mt-8 flex flex-col gap-4 sm:flex-row">
+            <button mat-stroked-button class="w-full !py-3">
+              <mat-icon>picture_as_pdf</mat-icon> Certificate PDF
+            </button>
+            <button mat-stroked-button class="w-full !py-3">
+              <mat-icon>receipt</mat-icon> Tax Invoice
+            </button>
+            <button mat-stroked-button class="w-full !py-3">
+              <mat-icon>description</mat-icon> Schedule
+            </button>
+          </div>
+          <button mat-flat-button color="primary" class="mt-4 w-full !py-3">
+            Download All (.zip)
+          </button>
+          <button
+            mat-button
+            (click)="setView('dashboard')"
+            class="mt-6"
+          >
+            Return to Dashboard
+          </button>
+        </div>
+      </div>
+
+      <!-- 
+        ======================================================================
+        PROMPT 9: CLAIMS REGISTRATION
+        ======================================================================
+      -->
+      <div
+        *ngIf="currentView === 'claims'"
+        class="mx-auto max-w-3xl p-4 sm:p-6 lg:p-8"
+        [@slideIn]
+      >
+        <div class="rounded-2xl border bg-white p-8 shadow-lg">
+          <h2 class="mb-4 text-center text-2xl font-bold">
+            Register a New Claim
+          </h2>
+          <!-- Progress Bar -->
+          <div class="mb-6">
+            <mat-progress-bar
+              mode="determinate"
+              [value]="(claimStep / 4) * 100"
+            ></mat-progress-bar>
+            <div class="mt-2 flex justify-between text-xs">
+              <span [class.font-bold]="claimStep >= 1">Details</span>
+              <span [class.font-bold]="claimStep >= 2">Description</span>
+              <span [class.font-bold]="claimStep >= 3">Documents</span>
+              <span [class.font-bold]="claimStep >= 4">Confirmation</span>
+            </div>
+          </div>
+
+          <form [formGroup]="claimsForm" (ngSubmit)="submitClaim()">
+            <!-- Step 1 -->
+            <div *ngIf="claimStep === 1" class="space-y-4" [@slideIn]>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Certificate Number</mat-label>
+                <input matInput formControlName="certificateNumber" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Date of Loss</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="lossPicker"
+                  formControlName="dateOfLoss"
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="lossPicker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #lossPicker></mat-datepicker>
+              </mat-form-field>
+              <button
+                mat-flat-button
+                color="primary"
+                class="w-full !py-3"
+                (click)="claimStep = 2"
+              >
+                Next: Description
+              </button>
+            </div>
+            <!-- Step 2 -->
+            <div *ngIf="claimStep === 2" class="space-y-4" [@slideIn]>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Location of Loss</mat-label>
+                <input matInput formControlName="location" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Description of Incident</mat-label>
+                <textarea
+                  matInput
+                  rows="4"
+                  formControlName="description"
+                ></textarea>
+              </mat-form-field>
+              <div class="flex gap-4">
+                <button
+                  mat-stroked-button
+                  class="w-full !py-3"
+                  (click)="claimStep = 1"
+                >
+                  Back
+                </button>
+                <button
+                  mat-flat-button
+                  color="primary"
+                  class="w-full !py-3"
+                  (click)="claimStep = 3"
+                >
+                  Next: Documents
+                </button>
+              </div>
+            </div>
+            <!-- Step 3 -->
+            <div *ngIf="claimStep === 3" class="space-y-4" [@slideIn]>
+              <div
+                class="flex h-32 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 text-center"
+              >
+                <div>
+                  <mat-icon class="text-slate-400">upload_file</mat-icon>
+                  <p class="text-slate-500">
+                    Click to upload documents
+                  </p>
+                </div>
+              </div>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Contact Person & Phone</mat-label>
+                <input matInput formControlName="contactInfo" />
+              </mat-form-field>
+              <div class="flex gap-4">
+                <button
+                  mat-stroked-button
+                  class="w-full !py-3"
+                  (click)="claimStep = 2"
+                >
+                  Back
+                </button>
+                <button
+                  mat-flat-button
+                  color="primary"
+                  class="w-full !py-3"
+                  type="submit"
+                >
+                  Submit Claim
+                </button>
+              </div>
+            </div>
+          </form>
+          <!-- Step 4 -->
+          <div *ngIf="claimStep === 4" class="text-center" [@slideIn]>
+            <mat-icon class="!h-16 !w-16 text-green-500"
+              >check_circle</mat-icon
+            >
+            <h3 class="mt-4 text-2xl font-bold">Claim Registered</h3>
+            <p class="mt-2 text-slate-600">
+              Your claim has been successfully submitted.
+            </p>
+            <p class="mt-4 rounded-lg bg-slate-100 p-3 font-mono">
+              Claim Reference: CLM-98765
+            </p>
+            <button
+              mat-flat-button
+              color="primary"
+              class="mt-6"
+              (click)="setView('dashboard')"
+            >
+              Return to Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 
+        ======================================================================
+        PROMPT 10: ADMIN PORTAL
+        ======================================================================
+      -->
+      <div
+        *ngIf="currentView === 'adminDashboard'"
+        class="bg-slate-100 p-4 sm:p-6 lg:p-8"
+        [@slideIn]
+      >
+        <div class="mx-auto max-w-7xl">
+          <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <h2 class="text-3xl font-bold text-slate-800">Admin Panel</h2>
+            <div class="flex gap-2">
+              <button mat-stroked-button>
+                <mat-icon>settings</mat-icon> Parameters
+              </button>
+              <button mat-flat-button color="primary">
+                <mat-icon>assessment</mat-icon> Generate Report
+              </button>
+            </div>
+          </div>
+          <!-- KPIs -->
+          <div
+            class="mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            <div class="rounded-xl border bg-white p-6 shadow-sm">
+              <p class="text-sm font-medium text-slate-500">
+                Premiums Collected (Month)
+              </p>
+              <p class="mt-2 text-4xl font-bold">KES 1.2M</p>
+            </div>
+            <div class="rounded-xl border bg-white p-6 shadow-sm">
+              <p class="text-sm font-medium text-slate-500">
+                Claims Paid (Month)
+              </p>
+              <p class="mt-2 text-4xl font-bold">KES 450K</p>
+            </div>
+            <div class="rounded-xl border bg-white p-6 shadow-sm">
+              <p class="text-sm font-medium text-slate-500">
+                Total Risk Exposure
+              </p>
+              <p class="mt-2 text-4xl font-bold">KES 87M</p>
+            </div>
+          </div>
+          <!-- Filters -->
+          <div
+            class="mb-6 grid grid-cols-1 gap-4 rounded-lg bg-white p-4 sm:grid-cols-2 lg:grid-cols-3"
+            [formGroup]="adminFilterForm"
+          >
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Filter by Date Range</mat-label>
+              <mat-date-range-input [rangePicker]="adminPicker">
+                <input
+                  matStartDate
+                  placeholder="Start date"
+                  formControlName="startDate"
+                />
+                <input
+                  matEndDate
+                  placeholder="End date"
+                  formControlName="endDate"
+                />
+              </mat-date-range-input>
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="adminPicker"
+              ></mat-datepicker-toggle>
+              <mat-date-range-picker #adminPicker></mat-date-range-picker>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Filter by Status</mat-label>
+              <mat-select formControlName="status">
+                <mat-option value="paid">Paid</mat-option>
+                <mat-option value="pending">Pending</mat-option>
+                <mat-option value="expired">Expired</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Filter by Account Type</mat-label>
+              <mat-select formControlName="accountType">
+                <mat-option value="intermediary">Intermediary</mat-option>
+                <mat-option value="agent">Clearing Agent</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <!-- Table -->
+          <div
+            class="overflow-hidden rounded-lg border border-slate-200 bg-white"
+          >
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                  <!-- Table headers -->
+                </thead>
+                <tbody class="divide-y divide-slate-200 bg-white">
+                  <!-- Table rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 </div>

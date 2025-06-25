@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { TravelQuoteComponent } from '../travel-quote/travel-quote.component';
-import { UserRegistrationComponent } from '../user-registration/user-registration.component';
 import { AuthSignUpComponent } from './sign-up.component';
+import { MarineInsurancePortalComponent } from '../user-registration/user-registration.component';
+
 
 export default [
     {
@@ -11,7 +12,7 @@ export default [
     },
     {
         path: 'marine-quote',
-        component: UserRegistrationComponent,
+        component: MarineInsurancePortalComponent,
     },
     {
         path: 'dashboard',
