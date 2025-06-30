@@ -3,30 +3,29 @@
   class="flex min-h-screen min-w-0 flex-auto flex-col items-center justify-center p-4 sm:p-6"
 >
   <!-- Form container with consistent card styling -->
-  <div
-    class="w-full max-w-sm rounded-2xl bg-card p-8 shadow sm:p-12"
-  >
+  <div class="w-full max-w-sm rounded-2xl bg-card p-8 shadow sm:p-12">
     <div class="w-full">
       <!-- Logo and Title -->
       <div class="text-center">
-        <div class="inline-flex items-center mb-4">
-          <mat-icon class="text-[#1E40AF] mr-2">anchor</mat-icon>
-          <span class="text-xl font-bold text-gray-800">Geminia Marine Portal</span>
+        <div class="mb-4 inline-flex items-center">
+          <mat-icon class="mr-2 text-[#1E40AF]">anchor</mat-icon>
+          <span class="text-xl font-bold text-gray-800"
+            >Geminia Marine Portal</span
+          >
         </div>
-
-        <div class="text-lg font-semibold text-gray-700 mb-2">
+        <div class="mb-2 text-lg font-semibold text-gray-700">
           Secure Portal Access
         </div>
-        <div class="text-sm text-gray-500 mb-8">
+        <div class="mb-8 text-sm text-gray-500">
           Sign in to your marine insurance portal
         </div>
       </div>
 
       <!-- Email/OTP Toggle -->
-      <div class="flex mb-6 bg-gray-100 rounded-lg p-1">
+      <div class="mb-6 flex rounded-lg bg-gray-100 p-1">
         <button
           type="button"
-          class="flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors"
+          class="flex-1 rounded-md py-2 px-4 text-sm font-medium transition-colors"
           [class.bg-white]="!useOTP"
           [class.text-[#1E40AF]]="!useOTP"
           [class.shadow-sm]="!useOTP"
@@ -38,7 +37,7 @@
         </button>
         <button
           type="button"
-          class="flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors"
+          class="flex-1 rounded-md py-2 px-4 text-sm font-medium transition-colors"
           [class.bg-white]="useOTP"
           [class.text-[#1E40AF]]="useOTP"
           [class.shadow-sm]="useOTP"
@@ -53,7 +52,7 @@
       <!-- Alert -->
       @if (showAlert) {
       <div
-        class="mb-6 p-4 rounded-md border"
+        class="mb-6 rounded-md border p-4"
         [ngClass]="{
           'border-red-400 bg-red-50 text-red-700': alert.type === 'error',
           'border-green-400 bg-green-50 text-green-700':
@@ -66,119 +65,61 @@
       }
 
       <!-- Sign in form -->
-      <form [formGroup]="signInForm" #signInNgForm="ngForm">
+      <form [formGroup]="signInForm" #signInNgForm="ngForm" (ngSubmit)="signIn()">
         <!-- Email Address (shown when not using OTP) -->
         @if (!useOTP) {
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+          <label class="mb-2 block text-sm font-medium text-gray-700">
             Email Address
           </label>
-          <div class="relative">
-            <input
-              id="email"
-              type="email"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E40AF] focus:border-[#1E40AF]"
-              placeholder="intermediary@company.com"
-              [formControlName]="'username'"
-            />
-            <div class="absolute right-2 top-2 flex space-x-1">
-              <button
-                type="button"
-                class="p-1 text-gray-400 hover:text-gray-600"
-                matTooltip="Clear field"
-                (click)="signInForm.get('username')?.reset()"
-              >
-                <mat-icon class="text-sm">close</mat-icon>
-              </button>
-            </div>
-          </div>
-          @if (signInForm.get('username')?.hasError('required') &&
-          signInForm.get('username')?.touched) {
-          <div class="mt-1 text-sm text-red-600">Email address is required</div>
-          } @if (signInForm.get('username')?.hasError('email') &&
-          signInForm.get('username')?.touched) {
-          <div class="mt-1 text-sm text-red-600">
-            Please enter a valid email address
-          </div>
-          }
+          <input
+            type="email"
+            class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-[#1E40AF] focus:outline-none focus:ring-2 focus:ring-[#1E40AF]"
+            [formControlName]="'username'"
+          />
         </div>
-
         <!-- Password -->
         <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+          <label class="mb-2 block text-sm font-medium text-gray-700">
             Password
           </label>
           <div class="relative">
             <input
-              id="password"
               [type]="showPassword ? 'text' : 'password'"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E40AF] focus:border-[#1E40AF]"
+              class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-[#1E40AF] focus:outline-none focus:ring-2 focus:ring-[#1E40AF]"
               [formControlName]="'password'"
             />
-            <div class="absolute right-2 top-2">
-              <button
-                type="button"
-                class="p-1 text-gray-400 hover:text-gray-600"
-                matTooltip="Show/Hide"
-                (click)="togglePasswordVisibility()"
-              >
-                <mat-icon class="text-sm">{{
-                  showPassword ? 'visibility_off' : 'visibility'
-                }}</mat-icon>
-              </button>
-            </div>
+            <button
+              type="button"
+              class="absolute right-2 top-2 p-1 text-gray-400 hover:text-gray-600"
+              (click)="togglePasswordVisibility()"
+            >
+              <mat-icon class="text-sm">{{
+                showPassword ? 'visibility_off' : 'visibility'
+              }}</mat-icon>
+            </button>
           </div>
-          @if (signInForm.get('password')?.hasError('required') &&
-          signInForm.get('password')?.touched) {
-          <div class="mt-1 text-sm text-red-600">Password is required</div>
-          }
         </div>
-        }
-
+        } @if (useOTP) {
         <!-- OTP Field (shown when using OTP) -->
-        @if (useOTP) {
         <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+          <label class="mb-2 block text-sm font-medium text-gray-700">
             OTP Code
           </label>
-          <div class="relative">
-            <input
-              id="otp"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E40AF] focus:border-[#1E40AF]"
-              placeholder="Enter 6-digit code"
-              [formControlName]="'otpCode'"
-              maxlength="6"
-            />
-            <div class="absolute right-2 top-2 flex space-x-1">
-              <button
-                type="button"
-                class="p-1 text-gray-400 hover:text-gray-600"
-                matTooltip="Resend OTP"
-                (click)="resendOTP()"
-              >
-                <mat-icon class="text-sm">refresh</mat-icon>
-              </button>
-            </div>
-          </div>
-          @if (signInForm.get('otpCode')?.hasError('required') &&
-          signInForm.get('otpCode')?.touched) {
-          <div class="mt-1 text-sm text-red-600">OTP code is required</div>
-          } @if (signInForm.get('otpCode')?.hasError('pattern') &&
-          signInForm.get('otpCode')?.touched) {
-          <div class="mt-1 text-sm text-red-600">
-            Please enter a valid 6-digit code
-          </div>
-          }
+          <input
+            type="text"
+            class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-[#1E40AF] focus:outline-none focus:ring-2 focus:ring-[#1E40AF]"
+            [formControlName]="'otpCode'"
+            maxlength="6"
+          />
         </div>
         }
 
         <!-- Sign In Button -->
         <button
-          type="button"
-          class="w-full bg-[#1E40AF] text-white py-2 px-4 rounded-md font-medium hover:bg-[#1E3A8A] focus:outline-none focus:ring-2 focus:ring-[#1E40AF] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          type="submit"
+          class="w-full rounded-md bg-[#1E40AF] py-2 px-4 font-medium text-white transition-colors hover:bg-[#1E3A8A] focus:outline-none focus:ring-2 focus:ring-[#1E40AF] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           [disabled]="signInForm.disabled || signInForm.invalid"
-          (click)="signIn()"
         >
           @if (!signInForm.disabled) {
           <span>Sign In</span>
@@ -186,7 +127,7 @@
           <div class="flex items-center justify-center">
             <mat-progress-spinner
               [diameter]="20"
-              [mode]="'indeterminate'"
+              mode="indeterminate"
               class="mr-2"
             ></mat-progress-spinner>
             <span>Signing in...</span>
@@ -194,29 +135,51 @@
           }
         </button>
 
-        <!-- Forgot Password -->
-        <div class="mt-4 text-center">
+        <!-- Links -->
+        <div class="mt-6 flex items-center justify-between">
           <a
-            class="text-sm text-[#1E40AF] hover:text-[#1E3A8A] hover:underline"
+            class="text-sm font-medium text-[#1E40AF] hover:text-[#1E3A8A] hover:underline"
             [routerLink]="['/forgot-password']"
           >
-            Forgot your password?
+            Forgot password?
           </a>
+          <div>
+            <span class="text-sm text-gray-600">No account?</span>
+            <a
+              class="ml-1 text-sm font-medium text-green-600 hover:text-green-700 hover:underline"
+              [routerLink]="['/sign-up/user-registration']"
+            >
+              Register here
+            </a>
+          </div>
         </div>
       </form>
 
       <!-- Quick Access Section -->
-      <div class="mt-8 text-center">
-        <div class="text-sm text-gray-600 mb-3">
-          Need to get started quickly?
+      <div class="mt-8 border-t pt-8 text-center">
+        <div class="mb-4 text-sm text-gray-600">
+          Or get a quick quote (no login required)
         </div>
-        <a href="/sign-up/marine-quote"
-          type="button"
-          class="w-full border-2 border-green-500 text-green-600 py-2 px-4 rounded-md font-medium hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
-          (click)="getQuickQuote()"
-        >
-          Get Quick Quote (No Login Required)
-    </a>
+        <div class="flex flex-col space-y-3">
+          <!-- Marine Quote Button -->
+          <a
+            href="/sign-up/marine-quote"
+            class="flex w-full items-center justify-center rounded-md border-2 border-green-500 py-2 px-4 font-medium text-green-600 transition-colors hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            (click)="getMarineQuote()"
+          >
+            <mat-icon class="mr-2 text-sm">directions_boat</mat-icon>
+            Get Marine Quote
+          </a>
+          <!-- Travel Quote Button -->
+          <a
+            href="/sign-up/travel-quote"
+            class="flex w-full items-center justify-center rounded-md border-2 border-blue-500 py-2 px-4 font-medium text-blue-600 transition-colors hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            (click)="getTravelQuote()"
+          >
+            <mat-icon class="mr-2 text-sm">flight_takeoff</mat-icon>
+            Get Travel Quote
+          </a>
+        </div>
       </div>
     </div>
   </div>

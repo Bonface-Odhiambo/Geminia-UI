@@ -25,10 +25,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-// NOTE: The original template uses a custom <fuse-alert> component.
-// This implementation will use a standard <div> for the alert message.
-// You would replace the <div> with your custom component.
-
 @Component({
   selector: 'app-sign-in',
   standalone: true,
@@ -47,18 +43,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     trigger('shake', [
       transition('* => *', [
         style({ transform: 'translateX(0)' }),
-        animate(
-          '300ms ease-in-out',
-          style({ transform: 'translateX(-10px)' }),
-        ),
-        animate(
-          '300ms ease-in-out',
-          style({ transform: 'translateX(10px)' }),
-        ),
-        animate(
-          '300ms ease-in-out',
-          style({ transform: 'translateX(0)' }),
-        ),
+        animate('300ms ease-in-out', style({ transform: 'translateX(-10px)' })),
+        animate('300ms ease-in-out', style({ transform: 'translateX(10px)' })),
+        animate('300ms ease-in-out', style({ transform: 'translateX(0)' })),
       ]),
     ]),
   ],
@@ -67,6 +54,12 @@ export class AuthSignInComponent implements OnInit {
   private _formBuilder = inject(FormBuilder);
   private _router = inject(Router);
   private _cd = inject(ChangeDetectorRef);
+
+  // Hardcoded credentials
+  private readonly VALID_CREDENTIALS = {
+    username: 'principalresearcher138@gmail.com',
+    password: '1234567',
+  };
 
   signInForm!: FormGroup;
   useOTP: boolean = false;
@@ -79,19 +72,12 @@ export class AuthSignInComponent implements OnInit {
 
   ngOnInit(): void {
     this.signInForm = this._formBuilder.group({
-      username: [
-        'intermediary@company.com',
-        [Validators.required, Validators.email],
-      ],
-      password: ['password', [Validators.required]],
-      otpCode: [
-        '',
-        [Validators.required, Validators.pattern(/^\d{6}$/)],
-      ],
+      username: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required]],
+      otpCode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
     });
 
-    // Initially, disable the OTP field
-    this.signInForm.get('otpCode')?.disable();
+    this.toggleOTP(false);
   }
 
   toggleOTP(state: boolean): void {
@@ -114,38 +100,99 @@ export class AuthSignInComponent implements OnInit {
 
   signIn(): void {
     if (this.signInForm.invalid) {
+      this.signInForm.markAllAsTouched();
       return;
     }
 
     this.signInForm.disable();
     this.showAlert = false;
 
-    // Simulate an API call
+    // Simulate authentication delay
     setTimeout(() => {
-      // Example error case
+      if (this.useOTP) {
+        // Handle OTP authentication (you can add OTP logic here if needed)
+        this.handleOTPAuthentication();
+      } else {
+        // Handle email/password authentication
+        this.handleCredentialAuthentication();
+      }
+    }, 2000);
+  }
+
+  private handleCredentialAuthentication(): void {
+    const formValue = this.signInForm.value;
+    const enteredUsername = formValue.username?.toLowerCase().trim();
+    const enteredPassword = formValue.password;
+
+    // Check against hardcoded credentials
+    if (
+      enteredUsername === this.VALID_CREDENTIALS.username.toLowerCase() &&
+      enteredPassword === this.VALID_CREDENTIALS.password
+    ) {
+      // Successful authentication
+      this.alert = {
+        type: 'success',
+        message: 'Sign in successful! Redirecting to dashboard...',
+      };
+      this.showAlert = true;
+      this._cd.markForCheck();
+
+      // Redirect to dashboard after showing success message
+      setTimeout(() => {
+        this._router.navigate(['/sign-up/dashboard']);
+      }, 1500);
+    } else {
+      // Failed authentication
       this.alert = {
         type: 'error',
         message: 'Invalid credentials. Please try again.',
       };
       this.showAlert = true;
-      this.signInForm.enable(); // Re-enable form on error
-      this.toggleOTP(this.useOTP); // Re-apply correct disabled state
-      this._cd.markForCheck(); // Manually trigger change detection
-    }, 2000);
+      this.signInForm.enable();
+      this.toggleOTP(this.useOTP);
+      this._cd.markForCheck();
+    }
+  }
 
-    // On a successful sign-in, you would navigate the use
-    window.location.href="/sign-up/dashboard"
-    // e.g., this._router.navigate(['/dashboard']);
+  private handleOTPAuthentication(): void {
+    const otpCode = this.signInForm.value.otpCode;
+    
+    // For demo purposes, accept '123456' as valid OTP
+    if (otpCode === '123456') {
+      this.alert = {
+        type: 'success',
+        message: 'OTP verified! Redirecting to dashboard...',
+      };
+      this.showAlert = true;
+      this._cd.markForCheck();
+
+      setTimeout(() => {
+        this._router.navigate(['/sign-up/dashboard']);
+      }, 1500);
+    } else {
+      this.alert = {
+        type: 'error',
+        message: 'Invalid OTP code. Please try again.',
+      };
+      this.showAlert = true;
+      this.signInForm.enable();
+      this.toggleOTP(this.useOTP);
+      this._cd.markForCheck();
+    }
   }
 
   resendOTP(): void {
     console.log('Resending OTP...');
-    // Add logic to resend OTP and show a confirmation message
+    // Add OTP resend logic here if needed
   }
 
-  getQuickQuote(): void {
-    console.log('Navigating to quick quote page...');
-    // Example navigation
-    // this._router.navigate(['/quick-quote']);
+  getMarineQuote(): void {
+    console.log('Navigating to marine quick quote page...');
+    // Example navigation: this._router.navigate(['/sign-up/marine-quote']);
+  }
+
+  getTravelQuote(): void {
+    console.log('Navigating to travel quick quote page...');
+    // Example navigation: this._router.navigate(['/sign-up/travel-quote']);
   }
 }

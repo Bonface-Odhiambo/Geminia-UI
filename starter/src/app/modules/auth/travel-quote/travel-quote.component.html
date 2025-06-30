@@ -1,1616 +1,1023 @@
-<div class="min-h-screen w-full bg-gray-50">
-    <!-- Header -->
-    <header class="border-b bg-white shadow-sm">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex h-16 items-center justify-between">
-                <div class="flex items-center">
-                    <div class="flex items-center gap-4">
-                        <img
-                            src="https://geminialife.co.ke/wp-content/uploads/2022/06/thumbnail_GEMINIA-FINAL-LOGO-png.png"
-                            alt="Geminia Logo"
-                            class="h-10 w-auto"
+<!-- Main container -->
+<div class="font-sans">
+  <!-- =================================================================== -->
+  <!--                     MULTI-STEP QUOTE FORM - FULL SCREEN             -->
+  <!-- =================================================================== -->
+  <div class="fixed inset-0 z-50 bg-gradient-to-br from-gray-50 to-blue-50">
+    <div class="flex h-full w-full flex-col">
+      <!-- Enhanced Form Header with Sky Blue Background -->
+      <div class="flex-shrink-0 bg-sky-400 p-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <img
+              src="https://geminialife.co.ke/wp-content/uploads/2022/06/thumbnail_GEMINIA-FINAL-LOGO-png.png"
+              alt="Geminia Insurance Logo"
+              class="h-12 w-12 object-contain"
+            />
+            <div class="text-white">
+              <h1 class="text-2xl font-bold">Travel Insurance Application</h1>
+              <p class="mt-1 text-blue-100" *ngIf="quote?.id">
+                Quote ID: {{ quote.id }}
+              </p>
+            </div>
+          </div>
+          <button
+            (click)="resetToStart()"
+            class="text-3xl text-white transition-colors hover:text-blue-200"
+            aria-label="Close quote"
+          >
+            &times;
+          </button>
+        </div>
+      </div>
+
+      <!-- Enhanced Progress Bar -->
+      <div class="flex-shrink-0 bg-sky-50 px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div
+            *ngFor="let step of stepLabels; let i = index"
+            class="flex items-center"
+            [class.flex-1]="i < stepLabels.length - 1"
+          >
+            <!-- Step Circle -->
+            <div
+              class="flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-300"
+              [ngClass]="{
+                'border-sky-500 bg-sky-500 text-white':
+                  state.currentStep === i + 1,
+                'border-sky-500 bg-sky-500 text-white':
+                  state.currentStep > i + 1,
+                'border-gray-300 bg-white text-gray-400':
+                  state.currentStep < i + 1
+              }"
+            >
+              <span *ngIf="state.currentStep > i + 1" class="text-sm">✓</span>
+              <span *ngIf="state.currentStep <= i + 1" class="text-sm font-bold"
+                >{{ i + 1 }}</span
+              >
+            </div>
+
+            <!-- Step Label -->
+            <span
+              class="ml-2 hidden text-sm font-medium md:inline"
+              [ngClass]="{
+                'text-sky-600': state.currentStep === i + 1,
+                'text-sky-600': state.currentStep > i + 1,
+                'text-gray-400': state.currentStep < i + 1
+              }"
+            >
+              {{ step }}
+            </span>
+
+            <!-- Connector Line -->
+            <div
+              *ngIf="i < stepLabels.length - 1"
+              class="mx-4 h-0.5 flex-1 transition-all duration-300"
+              [ngClass]="{
+                'bg-sky-500': state.currentStep > i + 1,
+                'bg-gray-300': state.currentStep <= i + 1
+              }"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Content - Full Height with Scroll -->
+      <div class="flex-1 overflow-auto bg-white">
+        <div class="min-h-full p-8">
+          <!-- Validation Errors -->
+          <div *ngIf="validationErrors | keyvalue as errors" class="mb-6">
+            <div
+              *ngFor="let errorGroup of errors"
+              class="mb-4 border-l-4 border-red-400 bg-red-50 p-4"
+            >
+              <div class="flex">
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-red-800">
+                    Please correct the following errors:
+                  </h3>
+                  <div class="mt-2 text-sm text-red-700">
+                    <ul class="list-inside list-disc space-y-1">
+                      <li *ngFor="let error of errorGroup.value">
+                        {{ error }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 1: Plan Selection - Modern Card Design -->
+          <div
+            *ngIf="state.currentStep === QuoteStep.PLAN_SELECTION"
+            class="flex min-h-full flex-col"
+          >
+            <div class="mb-12 text-center">
+              <h2 class="mb-4 text-4xl font-bold text-gray-800">
+                Choose Your <span class="text-sky-500">Perfect Plan</span>
+              </h2>
+              <p class="text-xl text-gray-600">
+                Select the coverage that matches your travel style
+              </p>
+            </div>
+
+            <!-- Plan Cards Grid -->
+            <div class="flex flex-1 items-center justify-center">
+              <div class="grid w-full max-w-7xl grid-cols-1 gap-8 lg:grid-cols-3">
+                <div
+                  *ngFor="let plan of productCards; let i = index"
+                  class="group relative cursor-pointer overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-3"
+                  [class.ring-4]="selectedPlan === plan.name"
+                  [class.ring-sky-400]="selectedPlan === plan.name"
+                  [class.shadow-sky-200]="selectedPlan === plan.name"
+                  (click)="selectPlan(plan.name)"
+                >
+                  <!-- Background Gradient -->
+                  <div
+                    class="absolute inset-0 bg-gradient-to-br opacity-5 transition-opacity group-hover:opacity-10"
+                    [ngClass]="{
+                      'from-blue-400 to-sky-500': i === 0,
+                      'from-purple-400 to-pink-500': i === 1,
+                      'from-amber-400 to-orange-500': i === 2
+                    }"
+                  ></div>
+
+                  <!-- Popular Badge -->
+                  <div
+                    *ngIf="plan.popular"
+                    class="absolute -right-12 top-8 rotate-45 bg-gradient-to-r from-sky-400 to-sky-500 px-12 py-2 text-sm font-bold text-white shadow-lg"
+                  >
+                    POPULAR
+                  </div>
+
+                  <!-- Selection Check -->
+                  <div
+                    *ngIf="selectedPlan === plan.name"
+                    class="absolute right-6 top-6 z-10"
+                  >
+                    <div
+                      class="flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-white shadow-lg"
+                    >
+                      <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fill-rule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clip-rule="evenodd"
                         />
-                        <h1 class="text-xl font-semibold text-slate-800">
-                            Marine Portal
-                        </h1>
+                      </svg>
                     </div>
-                </div>
-                <div class="flex space-x-4">
-                    <a
-                        href="/sign-in"
-                        class="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-                    >
-                        Login
-                    </a>
-                </div>
-            </div>
-        </div>
-    </header>
+                  </div>
 
-    <!-- Hero Section -->
-    <section
-        class="relative bg-gradient-to-r from-blue-700 to-cyan-500 text-white"
-    >
-        <div class="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
-            <div class="text-center md:w-1/2 md:text-left">
-                <p class="text-lg font-medium text-cyan-200">
-                    Nice to meet you
-                </p>
-                <h1
-                    class="mt-2 text-4xl font-extrabold tracking-tight md:text-5xl"
-                >
-                    Generate Quote Now
-                </h1>
-                <p class="mt-4 text-lg text-blue-100">
-                    Simply provide your trip details, and we’ll generate a
-                    comprehensive quote tailored to your needs.
-                </p>
-                <div class="mt-8">
-                    <a
-                        (click)="scrollToForm()"
-                        class="inline-block cursor-pointer rounded-lg bg-purple-600 px-8 py-3 font-semibold text-white shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-blue-700"
-                    >
-                        View Plans
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Progress Steps -->
-    <div id="quote-process-section" class="border-b bg-white">
-        <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between">
-                <h1 class="text-xl font-semibold text-gray-900">
-                    Generate Quote Process
-                </h1>
-            </div>
-            <div class="mt-4">
-                <nav class="flex space-x-8" aria-label="Progress">
+                  <div class="relative p-8">
+                    <!-- Icon -->
                     <div
-                        *ngFor="let step of steps; let i = index"
-                        class="flex items-center"
-                        [class.text-blue-600]="currentStep >= i + 1"
-                        [class.text-gray-500]="currentStep < i + 1"
+                      class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl text-4xl shadow-lg transition-transform group-hover:scale-110"
+                      [ngClass]="{
+                        'bg-gradient-to-br from-blue-100 to-sky-100': i === 0,
+                        'bg-gradient-to-br from-purple-100 to-pink-100': i === 1,
+                        'bg-gradient-to-br from-amber-100 to-orange-100': i === 2
+                      }"
                     >
-                        <div class="flex items-center">
-                            <div
-                                class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-medium"
-                                [class.bg-blue-600]="currentStep >= i + 1"
-                                [class.text-white]="currentStep >= i + 1"
-                                [class.bg-gray-200]="currentStep < i + 1"
-                                [class.text-gray-500]="currentStep < i + 1"
-                            >
-                                {{ i + 1 }}
-                            </div>
-                            <span class="ml-2 text-sm font-medium">{{
-                                step.name
-                            }}</span>
-                        </div>
+                      {{ plan.icon }}
+                    </div>
+
+                    <!-- Title -->
+                    <h3 class="mb-4 text-2xl font-bold text-gray-800">
+                      {{ plan.name }}
+                    </h3>
+
+                    <!-- Description -->
+                    <p class="mb-6 text-gray-600 leading-relaxed">
+                      {{ plan.description }}
+                    </p>
+
+                    <!-- Features -->
+                    <div class="mb-8 space-y-3">
+                      <div
+                        *ngFor="let feature of plan.features"
+                        class="flex items-center space-x-3"
+                      >
                         <div
-                            *ngIf="i < steps.length - 1"
-                            class="ml-8 h-0.5 w-16"
-                            [class.bg-blue-600]="currentStep > i + 1"
-                            [class.bg-gray-200]="currentStep <= i + 1"
-                        ></div>
-                    </div>
-                </nav>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div class="rounded-lg bg-white shadow">
-            <!-- Step 1: Quote Form -->
-            <div *ngIf="currentStep === 1" class="p-6">
-                <h2 class="mb-6 text-2xl font-bold text-gray-900">
-                    Travel Details
-                </h2>
-
-                <!-- Error Summary -->
-                <div
-                    *ngIf="
-                        quoteFormSubmitted && getQuoteFormErrors().length > 0
-                    "
-                    class="mb-6 rounded-md border border-red-200 bg-red-50 p-4"
-                >
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg
-                                class="h-5 w-5 text-red-400"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <h3 class="text-sm font-medium text-red-800">
-                                Please correct the following errors:
-                            </h3>
-                            <div class="mt-2 text-sm text-red-700">
-                                <ul class="list-disc space-y-1 pl-5">
-                                    <li
-                                        *ngFor="
-                                            let error of getQuoteFormErrors()
-                                        "
-                                    >
-                                        {{ error }}
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <form
-                    [formGroup]="quoteForm"
-                    (ngSubmit)="onQuoteFormSubmit()"
-                    class="space-y-6"
-                >
-                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Travelling from *</label
-                            >
-                            <select
-                                formControlName="travellingFrom"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        quoteForm,
-                                        'travellingFrom',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                [class.border-gray-300]="
-                                    !isFieldInvalid(
-                                        quoteForm,
-                                        'travellingFrom',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option
-                                    *ngFor="let country of countries"
-                                    [value]="country"
-                                >
-                                    {{ country }}
-                                </option>
-                            </select>
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        quoteForm,
-                                        'travellingFrom',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(quoteForm, 'travellingFrom') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Travelling to *</label
-                            >
-                            <select
-                                formControlName="travellingTo"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        quoteForm,
-                                        'travellingTo',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                [class.border-gray-300]="
-                                    !isFieldInvalid(
-                                        quoteForm,
-                                        'travellingTo',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">Select destination</option>
-                                <option
-                                    *ngFor="let dest of destinations"
-                                    [value]="dest"
-                                >
-                                    {{ dest }}
-                                </option>
-                            </select>
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        quoteForm,
-                                        'travellingTo',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(quoteForm, 'travellingTo') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Departure date *</label
-                            >
-                            <input
-                                type="date"
-                                formControlName="departureDate"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        quoteForm,
-                                        'departureDate',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                [class.border-gray-300]="
-                                    !isFieldInvalid(
-                                        quoteForm,
-                                        'departureDate',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        quoteForm,
-                                        'departureDate',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(quoteForm, 'departureDate') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Return date *</label
-                            >
-                            <input
-                                type="date"
-                                formControlName="returnDate"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        quoteForm,
-                                        'returnDate',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                [class.border-gray-300]="
-                                    !isFieldInvalid(
-                                        quoteForm,
-                                        'returnDate',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        quoteForm,
-                                        'returnDate',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(quoteForm, 'returnDate') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Number of Days</label
-                            >
-                            <input
-                                type="number"
-                                formControlName="numberOfDays"
-                                readonly
-                                class="w-full rounded-md border border-gray-300 bg-gray-50 px-3 py-2"
-                            />
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Age *</label
-                            >
-                            <input
-                                type="number"
-                                formControlName="age"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        quoteForm,
-                                        'age',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                [class.border-gray-300]="
-                                    !isFieldInvalid(
-                                        quoteForm,
-                                        'age',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        quoteForm,
-                                        'age',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(quoteForm, 'age') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Date of birth *</label
-                            >
-                            <input
-                                type="date"
-                                formControlName="dateOfBirth"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        quoteForm,
-                                        'dateOfBirth',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                [class.border-gray-300]="
-                                    !isFieldInvalid(
-                                        quoteForm,
-                                        'dateOfBirth',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        quoteForm,
-                                        'dateOfBirth',
-                                        quoteFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(quoteForm, 'dateOfBirth') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Travel type *</label
-                            >
-                            <select
-                                formControlName="travelType"
-                                class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="Individual">Individual</option>
-                                <option value="Family">Family</option>
-                                <option value="Group">Group</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label
-                            class="mb-2 block text-sm font-medium text-gray-700"
-                            >Reason for travel *</label
+                          class="flex h-5 w-5 items-center justify-center rounded-full text-xs text-white"
+                          [ngClass]="{
+                            'bg-blue-500': i === 0,
+                            'bg-purple-500': i === 1,
+                            'bg-amber-500': i === 2
+                          }"
                         >
-                        <select
-                            formControlName="reasonForTravel"
-                            class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="Leisure">Leisure</option>
-                            <option value="Business">Business</option>
-                            <option value="Medical">Medical</option>
-                            <option value="Education">Education</option>
-                        </select>
+                          ✓
+                        </div>
+                        <span class="text-sm text-gray-700">{{ feature }}</span>
+                      </div>
                     </div>
 
-                    <div class="flex justify-end pt-6">
-                        <button
-                            type="submit"
-                            class="rounded-md bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            Next
-                        </button>
+                    <!-- Price -->
+                    <div class="text-center">
+                      <div class="mb-2 text-sm text-gray-500">Starting from</div>
+                      <div
+                        class="text-3xl font-bold"
+                        [ngClass]="{
+                          'text-blue-600': i === 0,
+                          'text-purple-600': i === 1,
+                          'text-amber-600': i === 2
+                        }"
+                      >
+                        USD {{ plan.startingPrice }}
+                      </div>
+                      <div class="text-sm text-gray-400">per person</div>
                     </div>
-                </form>
-            </div>
+                  </div>
 
-            <!-- Step 2: Plan Selection -->
-            <div *ngIf="currentStep === 2" class="p-6">
-                <!-- Error Message for Plan Selection -->
-                <div
-                    *ngIf="!selectedPlan"
-                    class="mb-6 rounded-md border border-amber-200 bg-amber-50 p-4"
-                >
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg
-                                class="h-5 w-5 text-amber-400"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <h3 class="text-sm font-medium text-amber-800">
-                                Plan Selection Required
-                            </h3>
-                            <div class="mt-2 text-sm text-amber-700">
-                                <p>{{ getPlanSelectionError() }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div
-                    class="mb-6 rounded-md border border-blue-200 bg-blue-50 p-4"
-                >
-                    <p class="text-sm text-blue-800">
-                        * All benefit amounts are in United States Dollars
-                    </p>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="min-w-full">
-                        <thead class="bg-indigo-600 text-white">
-                            <tr>
-                                <th
-                                    class="px-6 py-3 text-left text-sm font-medium"
-                                >
-                                    Benefit Name
-                                </th>
-                                <th
-                                    class="px-6 py-3 text-center text-sm font-medium"
-                                >
-                                    Gold Plan
-                                </th>
-                                <th
-                                    class="px-6 py-3 text-center text-sm font-medium"
-                                >
-                                    Premium Outbound
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200 bg-white">
-                            <tr
-                                *ngFor="
-                                    let benefit of plans[0].benefits;
-                                    let i = index
-                                "
-                                [class.bg-gray-50]="i % 2 === 0"
-                            >
-                                <td class="px-6 py-4 text-sm text-gray-900">
-                                    {{ benefit.name }}
-                                </td>
-                                <td
-                                    class="px-6 py-4 text-center text-sm text-gray-900"
-                                >
-                                    {{ benefit.goldPlan }}
-                                </td>
-                                <td
-                                    class="px-6 py-4 text-center text-sm text-gray-900"
-                                >
-                                    {{ benefit.premiumOutbound }}
-                                </td>
-                            </tr>
-                            <tr class="bg-blue-50 font-semibold">
-                                <td class="px-6 py-4 text-sm text-gray-900">
-                                    Total Premiums<br />
-                                    <span class="text-xs text-gray-500"
-                                        >(1 USD = 129.03 KES)</span
-                                    >
-                                </td>
-                                <td class="px-6 py-4 text-center text-sm">
-                                    <div class="text-blue-600">
-                                        27.00 USD / 3,483.81 KES
-                                    </div>
-                                    <button
-                                        (click)="selectPlan('Gold Plan')"
-                                        [class.bg-green-600]="
-                                            selectedPlan === 'Gold Plan'
-                                        "
-                                        [class.bg-blue-600]="
-                                            selectedPlan !== 'Gold Plan'
-                                        "
-                                        [class.hover:bg-green-700]="
-                                            selectedPlan === 'Gold Plan'
-                                        "
-                                        [class.hover:bg-blue-700]="
-                                            selectedPlan !== 'Gold Plan'
-                                        "
-                                        class="mt-2 rounded-md px-4 py-2 text-sm text-white"
-                                    >
-                                        {{
-                                            selectedPlan === 'Gold Plan'
-                                                ? 'Selected'
-                                                : 'Select'
-                                        }}
-                                    </button>
-                                </td>
-                                <td class="px-6 py-4 text-center text-sm">
-                                    <div class="text-blue-600">
-                                        23.00 USD / 2,967.69 KES
-                                    </div>
-                                    <button
-                                        (click)="selectPlan('Premium Outbound')"
-                                        [class.bg-green-600]="
-                                            selectedPlan === 'Premium Outbound'
-                                        "
-                                        [class.bg-blue-600]="
-                                            selectedPlan !== 'Premium Outbound'
-                                        "
-                                        [class.hover:bg-green-700]="
-                                            selectedPlan === 'Premium Outbound'
-                                        "
-                                        [class.hover:bg-blue-700]="
-                                            selectedPlan !== 'Premium Outbound'
-                                        "
-                                        class="mt-2 rounded-md px-4 py-2 text-sm text-white"
-                                    >
-                                        {{
-                                            selectedPlan === 'Premium Outbound'
-                                                ? 'Selected'
-                                                : 'Select'
-                                        }}
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="mt-6 rounded-md bg-gray-50 p-4">
-                    <p class="mb-4 text-sm text-blue-600">
-                        Tick checkboxes to include add-on coverages
-                    </p>
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <label class="flex items-center">
-                            <input
-                                type="checkbox"
-                                [(ngModel)]="includeWarTerrorism"
-                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span class="ml-2 text-sm text-gray-700"
-                                >Include War and Terrorism Premium</span
-                            >
-                        </label>
-                        <label class="flex items-center">
-                            <input
-                                type="checkbox"
-                                [(ngModel)]="includeCovidExtension"
-                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span class="ml-2 text-sm text-gray-700"
-                                >Include Covid Extension Premium</span
-                            >
-                        </label>
-                    </div>
-                </div>
-
-                <div class="flex justify-between pt-6">
-                    <button
-                        (click)="previousStep()"
-                        class="rounded-md border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50"
-                    >
-                        Back
-                    </button>
-                    <button
-                        (click)="nextStep()"
-                        [disabled]="!selectedPlan"
-                        [class.bg-gray-300]="!selectedPlan"
-                        [class.cursor-not-allowed]="!selectedPlan"
-                        [class.bg-blue-600]="selectedPlan"
-                        [class.hover:bg-blue-700]="selectedPlan"
-                        class="rounded-md px-6 py-2 text-white"
-                    >
-                        Next
-                    </button>
-                </div>
-            </div>
-
-            <!-- Step 3: View Quote -->
-            <div *ngIf="currentStep === 3" class="p-6">
-                <h2 class="mb-6 text-2xl font-bold text-gray-900">
-                    Quote Details
-                </h2>
-
-                <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                    <div>
-                        <h3 class="mb-4 text-lg font-semibold">
-                            Quote Details
-                        </h3>
-                        <div class="space-y-3">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Quote Number:</span>
-                                <span class="font-medium">{{
-                                    quoteService.generateQuoteNumber()
-                                }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Quote Date:</span>
-                                <span class="font-medium"
-                                    >June 23, 2025 10:21 AM</span
-                                >
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600"
-                                    >Effective Date:</span
-                                >
-                                <span class="font-medium">June 26, 2025</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Expiry Date:</span>
-                                <span class="font-medium">June 27, 2025</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600"
-                                    >Type of Cover:</span
-                                >
-                                <span class="font-medium">{{
-                                    quote?.selectedPlan?.name
-                                }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600"
-                                    >Premium (in USD):</span
-                                >
-                                <span class="font-medium">{{
-                                    getTotalPremium() | number: '1.2-2'
-                                }}</span>
-                            </div>
-                        </div>
-
-                        <h3 class="mb-4 mt-8 text-lg font-semibold">
-                            Travel Details
-                        </h3>
-                        <div class="space-y-3">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600"
-                                    >Travelling From:</span
-                                >
-                                <span class="font-medium">{{
-                                    quote?.travellingFrom
-                                }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600"
-                                    >Travelling To:</span
-                                >
-                                <span class="font-medium">{{
-                                    quote?.travellingTo
-                                }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600"
-                                    >Exchange rate:</span
-                                >
-                                <span class="font-medium"
-                                    >1 USD = 129.03 KES</span
-                                >
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 class="mb-4 text-lg font-semibold">
-                            Selected Plan
-                        </h3>
-                        <div class="space-y-2 text-sm">
-                            <div
-                                *ngFor="
-                                    let benefit of quote?.selectedPlan?.benefits
-                                "
-                                class="flex justify-between"
-                            >
-                                <span class="text-gray-600"
-                                    >{{ benefit.name }}:</span
-                                >
-                                <span class="font-medium">
-                                    {{
-                                        quote?.selectedPlan?.name ===
-                                        'Gold Plan'
-                                            ? benefit.goldPlan
-                                            : benefit.premiumOutbound
-                                    }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex justify-between pt-8">
-                    <button
-                        (click)="previousStep()"
-                        class="rounded-md border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50"
-                    >
-                        Back
-                    </button>
-                    <div class="space-x-4">
-                        <button
-                            (click)="downloadQuote()"
-                            class="rounded-md border border-blue-600 px-6 py-2 text-blue-600 hover:bg-blue-50"
-                        >
-                            Download Quote
-                        </button>
-                        <button
-                            (click)="nextStep()"
-                            class="rounded-md bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
-                        >
-                            Next
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Step 4: KYC Details -->
-            <div *ngIf="currentStep === 4" class="p-6">
-                <div class="mb-6">
-                    <p class="mb-4 text-sm text-blue-600">
-                        Tip: Click the search icon 🔍 after entering a passport
-                        number to find existing customers
-                    </p>
-                </div>
-
-                <!-- Error Summary -->
-                <div
-                    *ngIf="kycFormSubmitted && getKycFormErrors().length > 0"
-                    class="mb-6 rounded-md border border-red-200 bg-red-50 p-4"
-                >
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg
-                                class="h-5 w-5 text-red-400"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <h3 class="text-sm font-medium text-red-800">
-                                Please correct the following errors:
-                            </h3>
-                            <div class="mt-2 text-sm text-red-700">
-                                <ul class="list-disc space-y-1 pl-5">
-                                    <li
-                                        *ngFor="let error of getKycFormErrors()"
-                                    >
-                                        {{ error }}
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <h2 class="mb-6 text-2xl font-bold text-gray-900">
-                    Main Customer
-                </h2>
-
-                <form
-                    [formGroup]="kycForm"
-                    (ngSubmit)="onKycFormSubmit()"
-                    class="space-y-6"
-                >
-                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Passport Number *</label
-                            >
-                            <div class="relative">
-                                <input
-                                    type="text"
-                                    formControlName="passportNumber"
-                                    [class.border-red-300]="
-                                        isFieldInvalid(
-                                            kycForm,
-                                            'passportNumber',
-                                            kycFormSubmitted
-                                        )
-                                    "
-                                    [class.border-gray-300]="
-                                        !isFieldInvalid(
-                                            kycForm,
-                                            'passportNumber',
-                                            kycFormSubmitted
-                                        )
-                                    "
-                                    class="w-full rounded-md border px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                                <button
-                                    type="button"
-                                    class="absolute inset-y-0 right-0 flex items-center pr-3"
-                                >
-                                    🔍
-                                </button>
-                            </div>
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'passportNumber',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(kycForm, 'passportNumber') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Nationality *</label
-                            >
-                            <select
-                                formControlName="nationality"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'nationality',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                [class.border-gray-300]="
-                                    !isFieldInvalid(
-                                        kycForm,
-                                        'nationality',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">Select nationality</option>
-                                <option
-                                    *ngFor="let nat of nationalities"
-                                    [value]="nat"
-                                >
-                                    {{ nat }}
-                                </option>
-                            </select>
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'nationality',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(kycForm, 'nationality') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >First Name *</label
-                            >
-                            <input
-                                type="text"
-                                formControlName="firstName"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'firstName',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                [class.border-gray-300]="
-                                    !isFieldInvalid(
-                                        kycForm,
-                                        'firstName',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'firstName',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(kycForm, 'firstName') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Other Names *</label
-                            >
-                            <input
-                                type="text"
-                                formControlName="otherNames"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'otherNames',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                [class.border-gray-300]="
-                                    !isFieldInvalid(
-                                        kycForm,
-                                        'otherNames',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'otherNames',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(kycForm, 'otherNames') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Date of birth *</label
-                            >
-                            <input
-                                type="date"
-                                formControlName="dateOfBirth"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'dateOfBirth',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                [class.border-gray-300]="
-                                    !isFieldInvalid(
-                                        kycForm,
-                                        'dateOfBirth',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'dateOfBirth',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(kycForm, 'dateOfBirth') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Age *</label
-                            >
-                            <input
-                                type="number"
-                                formControlName="age"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'age',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                [class.border-gray-300]="
-                                    !isFieldInvalid(
-                                        kycForm,
-                                        'age',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'age',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(kycForm, 'age') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Gender *</label
-                            >
-                            <select
-                                formControlName="gender"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'gender',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                [class.border-gray-300]="
-                                    !isFieldInvalid(
-                                        kycForm,
-                                        'gender',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">Select gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                            </select>
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'gender',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(kycForm, 'gender') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Phone Number *</label
-                            >
-                            <div class="flex">
-                                <select
-                                    class="rounded-l-md border border-gray-300 bg-gray-50 px-3 py-2"
-                                >
-                                    <option value="+254">🇰🇪 +254</option>
-                                </select>
-                                <input
-                                    type="tel"
-                                    formControlName="phoneNumber"
-                                    [class.border-red-300]="
-                                        isFieldInvalid(
-                                            kycForm,
-                                            'phoneNumber',
-                                            kycFormSubmitted
-                                        )
-                                    "
-                                    [class.border-gray-300]="
-                                        !isFieldInvalid(
-                                            kycForm,
-                                            'phoneNumber',
-                                            kycFormSubmitted
-                                        )
-                                    "
-                                    class="flex-1 rounded-r-md border-b border-r border-t px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'phoneNumber',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(kycForm, 'phoneNumber') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Email Address *</label
-                            >
-                            <input
-                                type="email"
-                                formControlName="email"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'email',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                [class.border-gray-300]="
-                                    !isFieldInvalid(
-                                        kycForm,
-                                        'email',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'email',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(kycForm, 'email') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                class="mb-2 block text-sm font-medium text-gray-700"
-                                >Occupation *</label
-                            >
-                            <select
-                                formControlName="occupation"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'occupation',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                [class.border-gray-300]="
-                                    !isFieldInvalid(
-                                        kycForm,
-                                        'occupation',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option
-                                    *ngFor="let occ of occupations"
-                                    [value]="occ"
-                                >
-                                    {{ occ }}
-                                </option>
-                            </select>
-                            <p
-                                *ngIf="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'occupation',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="mt-1 text-sm text-red-600"
-                            >
-                                {{ getFieldError(kycForm, 'occupation') }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="rounded-md border border-red-200 bg-red-50 p-4">
-                        <p class="text-sm text-red-600">
-                            Ensure passport number is correct before uploading
-                            files
-                        </p>
-                    </div>
-
+                  <!-- Hover Overlay -->
+                  <div
+                    class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 transition-all duration-300 group-hover:bg-opacity-10"
+                  >
                     <div
-                        class="rounded-md border border-blue-200 bg-blue-50 p-4"
+                      class="transform rounded-full px-6 py-3 font-bold text-white opacity-0 shadow-lg transition-all duration-300 group-hover:opacity-100 group-hover:scale-105"
+                      [ngClass]="{
+                        'bg-blue-500': i === 0,
+                        'bg-purple-500': i === 1,
+                        'bg-amber-500': i === 2
+                      }"
                     >
-                        <button type="button" class="text-sm text-blue-600">
-                            No dependants
-                        </button>
+                      SELECT PLAN
                     </div>
-
-                    <div class="space-y-4">
-                        <label class="flex items-start">
-                            <input
-                                type="checkbox"
-                                formControlName="kycConsent1"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'kycConsent1',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span class="ml-2 text-sm text-gray-700"
-                                >I confirm I have filled this form to the best
-                                of my knowledge *</span
-                            >
-                        </label>
-                        <label class="flex items-start">
-                            <input
-                                type="checkbox"
-                                formControlName="kycConsent2"
-                                [class.border-red-300]="
-                                    isFieldInvalid(
-                                        kycForm,
-                                        'kycConsent2',
-                                        kycFormSubmitted
-                                    )
-                                "
-                                class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span class="ml-2 text-sm text-gray-700"
-                                >By proceeding, you consent to the collection
-                                and processing of your data in accordance with
-                                our
-                                <a href="#" class="text-blue-600 underline"
-                                    >Privacy Policy</a
-                                >
-                                *</span
-                            >
-                        </label>
-                    </div>
-
-                    <div class="flex justify-between pt-6">
-                        <button
-                            type="button"
-                            (click)="previousStep()"
-                            class="rounded-md border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50"
-                        >
-                            Back
-                        </button>
-                        <button
-                            type="submit"
-                            class="rounded-md bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            Next
-                        </button>
-                    </div>
-                </form>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <!-- Step 5: Confirm Details -->
-            <div *ngIf="currentStep === 5" class="p-6">
-                <h2 class="mb-6 text-2xl font-bold text-gray-900">
-                    Confirm Details
-                </h2>
+            <!-- Navigation -->
+            <div class="mt-12 flex justify-center">
+              <button
+                type="button"
+                (click)="goToNextStep()"
+                [disabled]="!selectedPlan"
+                class="rounded-2xl bg-gradient-to-r from-sky-400 to-sky-500 px-12 py-4 text-lg font-bold text-white shadow-xl transition-all hover:from-sky-500 hover:to-sky-600 hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                CONTINUE WITH {{ selectedPlan || 'SELECTED PLAN' }}
+                <svg class="ml-2 inline h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
 
-                <div class="space-y-8">
-                    <div>
-                        <h3 class="mb-4 text-lg font-semibold">
-                            Quote details
-                        </h3>
-                        <div class="grid grid-cols-2 gap-4 text-sm">
-                            <div class="space-y-2">
-                                <div>
-                                    <span class="text-gray-600"
-                                        >Quote Number:</span
-                                    >
-                                    <span class="font-medium">{{
-                                        quoteService.generateQuoteNumber()
-                                    }}</span>
-                                </div>
-                                <div>
-                                    <span class="text-gray-600"
-                                        >Quote Date:</span
-                                    >
-                                    <span class="font-medium"
-                                        >June 23, 2025 10:21 AM</span
-                                    >
-                                </div>
-                                <div>
-                                    <span class="text-gray-600"
-                                        >Effective Date:</span
-                                    >
-                                    <span class="font-medium"
-                                        >June 26, 2025</span
-                                    >
-                                </div>
-                                <div>
-                                    <span class="text-gray-600"
-                                        >Expiry Date:</span
-                                    >
-                                    <span class="font-medium"
-                                        >June 27, 2025</span
-                                    >
-                                </div>
-                                <div>
-                                    <span class="text-gray-600"
-                                        >Type of Cover:</span
-                                    >
-                                    <span class="font-medium">{{
-                                        quote?.selectedPlan?.name
-                                    }}</span>
-                                </div>
-                                <div>
-                                    <span class="text-gray-600"
-                                        >Premium (in USD):</span
-                                    >
-                                    <span class="font-medium">{{
-                                        getTotalPremium() | number: '1.2-2'
-                                    }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 class="mb-4 text-lg font-semibold">
-                            Travel Details
-                        </h3>
-                        <div class="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                                <span class="text-gray-600"
-                                    >Travelling From:</span
-                                >
-                                <span class="font-medium">{{
-                                    quote?.travellingFrom
-                                }}</span>
-                            </div>
-                            <div>
-                                <span class="text-gray-600"
-                                    >Travelling To:</span
-                                >
-                                <span class="font-medium">{{
-                                    quote?.travellingTo
-                                }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 class="mb-4 text-lg font-semibold">
-                            Contact Details
-                        </h3>
-                        <div class="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                                <span class="text-gray-600">Phone Number:</span>
-                                <span class="font-medium">254799999999</span>
-                            </div>
-                            <div>
-                                <span class="text-gray-600">Email:</span>
-                                <span class="font-medium"
-                                    >gerkimk2&#64;gmail.com</span
-                                >
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 class="mb-4 text-lg font-semibold">Travelers</h3>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full border border-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th
-                                            class="px-4 py-2 text-left text-sm font-medium text-gray-900"
-                                        >
-                                            #
-                                        </th>
-                                        <th
-                                            class="px-4 py-2 text-left text-sm font-medium text-gray-900"
-                                        >
-                                            Name
-                                        </th>
-                                        <th
-                                            class="px-4 py-2 text-left text-sm font-medium text-gray-900"
-                                        >
-                                            Age
-                                        </th>
-                                        <th
-                                            class="px-4 py-2 text-left text-sm font-medium text-gray-900"
-                                        >
-                                            Passport Number
-                                        </th>
-                                        <th
-                                            class="px-4 py-2 text-left text-sm font-medium text-gray-900"
-                                        >
-                                            Phone Number
-                                        </th>
-                                        <th
-                                            class="px-4 py-2 text-left text-sm font-medium text-gray-900"
-                                        >
-                                            Actions
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="border-t">
-                                        <td class="px-4 py-2 text-sm">1</td>
-                                        <td class="px-4 py-2 text-sm">
-                                            <div class="flex items-center">
-                                                <div
-                                                    class="mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-blue-100"
-                                                >
-                                                    <span
-                                                        class="text-xs font-medium text-blue-600"
-                                                        >G</span
-                                                    >
-                                                </div>
-                                                <div>
-                                                    <div class="font-medium">
-                                                        gerson k ✓
-                                                    </div>
-                                                    <div
-                                                        class="text-xs text-gray-500"
-                                                    >
-                                                        gerkimk2&#64;gmail.com
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-4 py-2 text-sm">16</td>
-                                        <td class="px-4 py-2 text-sm">878</td>
-                                        <td class="px-4 py-2 text-sm">
-                                            254799999999
-                                        </td>
-                                        <td class="px-4 py-2 text-sm">
-                                            <button
-                                                class="text-blue-600 hover:text-blue-800"
-                                            >
-                                                📝
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex justify-between pt-8">
-                    <button
-                        (click)="previousStep()"
-                        class="rounded-md border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50"
-                    >
-                        Back
-                    </button>
-                    <button
-                        (click)="nextStep()"
-                        class="rounded-md bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
-                    >
-                        Next
-                    </button>
-                </div>
+          <!-- Step 2: Travel Details -->
+          <div
+            *ngIf="state.currentStep === QuoteStep.TRAVEL_DETAILS"
+            class="flex min-h-full flex-col"
+          >
+            <div class="mb-8 text-center">
+              <h2 class="mb-4 text-3xl font-bold text-gray-800">
+                Your {{ selectedPlan }} Plan
+              </h2>
+              <p class="text-gray-600">
+                Tell us about your trip and who's traveling
+              </p>
             </div>
 
-            <!-- Step 6: Payment -->
-            <div *ngIf="currentStep === 6" class="p-6">
-                <div class="mb-6">
-                    <div
-                        class="inline-block rounded-md bg-blue-600 px-4 py-2 text-white"
-                    >
-                        Payment method (Amount to be paid):
-                        {{ getTotalPremium() | number: '1.2-2' }} USD /
-                        {{ getTotalPremiumKES() | number: '1.2-2' }} KSH
-                    </div>
-                    <p class="mt-2 text-sm text-blue-600">
-                        Update your billing details and address
-                    </p>
-                </div>
-
+            <form #travelerForm="ngForm" class="flex flex-1 flex-col">
+              <!-- Trip & Traveler Count -->
+              <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+                <!-- Trip Details -->
                 <div class="space-y-6">
-                    <div>
-                        <h3 class="mb-4 text-lg font-semibold">M-Pesa</h3>
-                        <p class="mb-4 text-sm text-gray-600">
-                            Use M-Pesa payment method
-                        </p>
-
-                        <label class="mb-4 flex items-center">
-                            <input
-                                type="checkbox"
-                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span class="ml-2 text-sm">Select M-Pesa</span>
-                        </label>
-
-                        <div class="flex items-center space-x-4">
-                            <div class="text-xl font-bold text-green-600">
-                                M-PESA
-                            </div>
-
-                            <div class="flex space-x-4">
-                                <div>
-                                    <label
-                                        class="mb-1 block text-sm text-gray-600"
-                                        >Country Code</label
-                                    >
-                                    <select
-                                        class="rounded-md border border-gray-300 px-3 py-2"
-                                    >
-                                        <option>Kenya (+254)</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label
-                                        class="mb-1 block text-sm text-gray-600"
-                                        >Phone Number *</label
-                                    >
-                                    <input
-                                        type="tel"
-                                        placeholder="Phone Number"
-                                        class="rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                </div>
-                            </div>
+                  <h3
+                    class="border-b pb-2 text-xl font-semibold text-gray-800"
+                  >
+                    Trip Details
+                  </h3>
+                  <!-- Searchable Departure Country Dropdown -->
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700"
+                      >Departure Country</label
+                    >
+                    <div class="relative">
+                      <input
+                        type="text"
+                        [(ngModel)]="departureCountrySearch"
+                        name="departureCountrySearch"
+                        placeholder="Search countries..."
+                        (input)="filterDepartureCountries($event)"
+                        (focus)="showDepartureDropdown = true"
+                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
+                      />
+                      <div
+                        class="absolute left-0 top-full z-10 max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg"
+                        *ngIf="
+                          showDepartureDropdown &&
+                          filteredDepartureCountries.length > 0
+                        "
+                      >
+                        <div
+                          *ngFor="let country of filteredDepartureCountries"
+                          class="cursor-pointer border-b border-gray-100 px-4 py-3 hover:bg-sky-50"
+                          (click)="selectDepartureCountry(country)"
+                        >
+                          {{ country }}
                         </div>
+                      </div>
                     </div>
+                  </div>
+                  <!-- Searchable Destination Country Dropdown -->
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700"
+                      >Destination Country *</label
+                    >
+                    <div class="relative">
+                      <input
+                        type="text"
+                        [(ngModel)]="destinationCountrySearch"
+                        name="destinationCountrySearch"
+                        placeholder="Search destination countries..."
+                        (input)="filterDestinationCountries($event)"
+                        (focus)="showDestinationDropdown = true"
+                        required
+                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
+                      />
+                      <div
+                        class="absolute left-0 top-full z-10 max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg"
+                        *ngIf="
+                          showDestinationDropdown &&
+                          filteredDestinationCountries.length > 0
+                        "
+                      >
+                        <div
+                          *ngFor="let country of filteredDestinationCountries"
+                          class="cursor-pointer border-b border-gray-100 px-4 py-3 hover:bg-sky-50"
+                          (click)="selectDestinationCountry(country)"
+                        >
+                          {{ country }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label
+                        class="mb-2 block text-sm font-medium text-gray-700"
+                        >Departure Date *</label
+                      >
+                      <input
+                        type="date"
+                        [(ngModel)]="quote.startDate"
+                        name="startDate"
+                        required
+                        [min]="getDefaultStartDate()"
+                        (change)="onDateChange()"
+                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        class="mb-2 block text-sm font-medium text-gray-700"
+                        >Return Date *</label
+                      >
+                      <input
+                        type="date"
+                        [(ngModel)]="quote.endDate"
+                        name="endDate"
+                        required
+                        [min]="quote.startDate"
+                        (change)="onDateChange()"
+                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <!-- Traveler Count -->
+                <div class="space-y-6">
+                  <h3
+                    class="border-b pb-2 text-xl font-semibold text-gray-800"
+                  >
+                    Number of Travelers
+                  </h3>
+                  <div class="space-y-4">
+                    <div
+                      class="flex items-center justify-between rounded-lg bg-gray-50 p-4"
+                    >
+                      <div>
+                        <span class="font-medium text-gray-700"
+                          >Adults (18-65 years)</span
+                        >
+                        <p class="text-sm text-gray-500">
+                          USD {{ getPriceForAge('adult') }} per person
+                        </p>
+                      </div>
+                      <div class="flex items-center space-x-3">
+                        <button
+                          type="button"
+                          (click)="
+                            quote.travelers.between18and65 = Math.max(
+                              0,
+                              quote.travelers.between18and65 - 1
+                            );
+                            onTravelerCountChange()
+                          "
+                          class="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-100"
+                        >
+                          -
+                        </button>
+                        <span class="w-8 text-center font-medium">{{
+                          quote.travelers.between18and65
+                        }}</span>
+                        <button
+                          type="button"
+                          (click)="
+                            quote.travelers.between18and65 =
+                              quote.travelers.between18and65 + 1;
+                            onTravelerCountChange()
+                          "
+                          class="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-100"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      class="flex items-center justify-between rounded-lg bg-gray-50 p-4"
+                    >
+                      <div>
+                        <span class="font-medium text-gray-700"
+                          >Children (Under 18)</span
+                        >
+                        <p class="text-sm text-gray-500">
+                          USD {{ getPriceForAge('child') }} per child
+                        </p>
+                      </div>
+                      <div class="flex items-center space-x-3">
+                        <button
+                          type="button"
+                          (click)="
+                            quote.travelers.under18 = Math.max(
+                              0,
+                              quote.travelers.under18 - 1
+                            );
+                            onTravelerCountChange()
+                          "
+                          class="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-100"
+                        >
+                          -
+                        </button>
+                        <span class="w-8 text-center font-medium">{{
+                          quote.travelers.under18
+                        }}</span>
+                        <button
+                          type="button"
+                          (click)="
+                            quote.travelers.under18 =
+                              quote.travelers.under18 + 1;
+                            onTravelerCountChange()
+                          "
+                          class="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-100"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      class="flex items-center justify-between rounded-lg bg-gray-50 p-4"
+                    >
+                      <div>
+                        <span class="font-medium text-gray-700"
+                          >Seniors (Over 65)</span
+                        >
+                        <p class="text-sm text-gray-500">
+                          USD {{ getPriceForAge('senior') }} per person
+                        </p>
+                      </div>
+                      <div class="flex items-center space-x-3">
+                        <button
+                          type="button"
+                          (click)="
+                            quote.travelers.over65 = Math.max(
+                              0,
+                              quote.travelers.over65 - 1
+                            );
+                            onTravelerCountChange()
+                          "
+                          class="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-100"
+                        >
+                          -
+                        </button>
+                        <span class="w-8 text-center font-medium">{{
+                          quote.travelers.over65
+                        }}</span>
+                        <button
+                          type="button"
+                          (click)="
+                            quote.travelers.over65 =
+                              quote.travelers.over65 + 1;
+                            onTravelerCountChange()
+                          "
+                          class="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-100"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Traveler Details Forms -->
+              <div class="mt-10 space-y-6">
+                <h3
+                  class="border-b pb-2 text-xl font-semibold text-gray-800"
+                >
+                  Traveler Information
+                </h3>
+                <div
+                  *ngFor="let traveler of quote.travelerDetails; let i = index"
+                  class="rounded-xl border-2 border-gray-200 bg-gray-50 p-6"
+                >
+                  <h3
+                    class="mb-4 flex items-center text-lg font-bold text-gray-800"
+                  >
+                    <span
+                      class="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-sm text-white"
+                    >
+                      {{ i + 1 }}
+                    </span>
+                    Traveler {{ i + 1 }} Details
+                  </h3>
+                  <div
+                    class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+                  >
+                    <div>
+                      <label
+                        class="mb-2 block text-sm font-medium text-gray-700"
+                        >Full Name *</label
+                      >
+                      <input
+                        type="text"
+                        [(ngModel)]="traveler.name"
+                        name="travelerName{{ i }}"
+                        required
+                        placeholder="As shown on passport"
+                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        class="mb-2 block text-sm font-medium text-gray-700"
+                        >Date of Birth *</label
+                      >
+                      <input
+                        type="date"
+                        [(ngModel)]="traveler.dob"
+                        name="travelerDob{{ i }}"
+                        required
+                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
+                      />
+                    </div>
+                    <!-- Searchable Nationality Dropdown -->
+                    <div>
+                      <label
+                        class="mb-2 block text-sm font-medium text-gray-700"
+                        >Nationality *</label
+                      >
+                      <div class="relative">
+                        <input
+                          type="text"
+                          [(ngModel)]="traveler.nationalitySearch"
+                          name="travelerNationalitySearch{{ i }}"
+                          placeholder="Search nationality..."
+                          (input)="filterNationalities($event, i)"
+                          (focus)="showNationalityDropdown[i] = true"
+                          required
+                          class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
+                        />
+                        <div
+                          class="absolute left-0 top-full z-10 max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg"
+                          *ngIf="
+                            showNationalityDropdown[i] &&
+                            filteredNationalities[i]?.length > 0
+                          "
+                        >
+                          <div
+                            *ngFor="let nationality of filteredNationalities[i]"
+                            class="cursor-pointer border-b border-gray-100 px-4 py-3 hover:bg-sky-50"
+                            (click)="selectNationality(nationality, i)"
+                          >
+                            {{ nationality }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <label
+                        class="mb-2 block text-sm font-medium text-gray-700"
+                        >Passport Number *</label
+                      >
+                      <input
+                        type="text"
+                        [(ngModel)]="traveler.passport"
+                        name="travelerPassport{{ i }}"
+                        required
+                        placeholder="Passport number"
+                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        class="mb-2 block text-sm font-medium text-gray-700"
+                        >Email Address</label
+                      >
+                      <input
+                        type="email"
+                        [(ngModel)]="traveler.email"
+                        name="travelerEmail{{ i }}"
+                        placeholder="Optional"
+                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        class="mb-2 block text-sm font-medium text-gray-700"
+                        >Phone Number</label
+                      >
+                      <input
+                        type="tel"
+                        [(ngModel)]="traveler.phone"
+                        name="travelerPhone{{ i }}"
+                        placeholder="Optional"
+                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Emergency Contact -->
+              <div class="mt-10 rounded-xl border-2 border-red-200 bg-red-50 p-6">
+                <h3
+                  class="mb-4 flex items-center text-lg font-bold text-gray-800"
+                >
+                  <span class="mr-2 text-red-500">🚨</span>
+                  Emergency Contact Information
+                </h3>
+                <p class="mb-4 text-sm text-gray-600">
+                  This person will be contacted in case of emergency during your
+                  travels.
+                </p>
+                <div
+                  class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
+                >
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700"
+                      >Full Name *</label
+                    >
+                    <input
+                      type="text"
+                      [(ngModel)]="quote.emergencyContact.name"
+                      name="emergencyName"
+                      required
+                      class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700"
+                      >Relationship *</label
+                    >
+                    <select
+                      [(ngModel)]="quote.emergencyContact.relationship"
+                      name="emergencyRelationship"
+                      required
+                      class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
+                    >
+                      <option value="">Select relationship...</option>
+                      <option
+                        *ngFor="let relationship of relationships"
+                        [value]="relationship"
+                      >
+                        {{ relationship }}
+                      </option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700"
+                      >Email Address *</label
+                    >
+                    <input
+                      type="email"
+                      [(ngModel)]="quote.emergencyContact.email"
+                      name="emergencyEmail"
+                      required
+                      class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700"
+                      >Phone Number *</label
+                    >
+                    <input
+                      type="tel"
+                      [(ngModel)]="quote.emergencyContact.phone"
+                      name="emergencyPhone"
+                      required
+                      class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Navigation -->
+              <div class="mt-10 flex justify-between border-t pt-6">
+                <button
+                  type="button"
+                  (click)="goToPreviousStep()"
+                  class="rounded-lg px-8 py-3 font-semibold text-gray-600 transition-colors hover:bg-gray-100"
+                >
+                  BACK TO PLAN SELECTION
+                </button>
+                <button
+                  type="button"
+                  (click)="goToNextStep()"
+                  [disabled]="!canProceedToNext"
+                  class="rounded-lg bg-gradient-to-r from-sky-400 to-sky-500 px-8 py-3 font-bold text-white shadow-lg transition-all hover:from-sky-500 hover:to-sky-600 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  CONTINUE TO SUMMARY
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Step 3: Summary -->
+          <div
+            *ngIf="state.currentStep === QuoteStep.SUMMARY"
+            class="flex min-h-full flex-col"
+          >
+            <div class="mb-8 text-center">
+              <h2 class="mb-4 text-3xl font-bold text-gray-800">
+                Review Your Quote
+              </h2>
+              <p class="text-gray-600">
+                Please review all details carefully before proceeding to
+                payment.
+              </p>
+            </div>
+
+            <div class="flex-1">
+              <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                <!-- Left Column: Trip & Travelers -->
+                <div class="space-y-6">
+                  <!-- Trip Information -->
+                  <div class="rounded-xl bg-gray-50 p-6">
+                    <h3
+                      class="mb-4 border-b border-gray-200 pb-3 text-lg font-bold text-gray-800"
+                    >
+                      🧳 Trip Information
+                    </h3>
+                    <div class="space-y-3">
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Plan Type:</span>
+                        <span class="font-semibold">{{ selectedPlan }}</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">From:</span>
+                        <span class="font-semibold">{{
+                          quote.departureCountry
+                        }}</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">To:</span>
+                        <span class="font-semibold">{{
+                          quote.destinationCountry
+                        }}</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Departure:</span>
+                        <span class="font-semibold">{{
+                          quote.startDate | date: "mediumDate"
+                        }}</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Return:</span>
+                        <span class="font-semibold">{{
+                          quote.endDate | date: "mediumDate"
+                        }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Traveler Details -->
+                  <div class="rounded-xl bg-gray-50 p-6">
+                    <h3
+                      class="mb-4 border-b border-gray-200 pb-3 text-lg font-bold text-gray-800"
+                    >
+                      👥 Traveler Details
+                    </h3>
+                    <div class="space-y-4">
+                      <div
+                        *ngFor="
+                          let traveler of quote.travelerDetails;
+                          let i = index
+                        "
+                        class="border-b border-gray-200 pb-2"
+                      >
+                        <p class="font-semibold text-gray-800">
+                          {{ i + 1 }}. {{ traveler.name }}
+                        </p>
+                        <p class="text-sm text-gray-600">
+                          {{ traveler.nationality }} | DOB:
+                          {{ traveler.dob | date: "mediumDate" }} | Passport:
+                          {{ traveler.passport }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div class="flex justify-between pt-8">
-                    <button
-                        (click)="previousStep()"
-                        class="rounded-md border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50"
+                <!-- Right Column: Pricing & Confirmation -->
+                <div class="space-y-6">
+                  <!-- Total Premium -->
+                  <div
+                    class="rounded-xl border-2 border-sky-200 bg-gradient-to-br from-sky-50 to-sky-100 p-6"
+                  >
+                    <h3
+                      class="mb-4 border-b border-sky-200 pb-3 text-lg font-bold text-gray-800"
                     >
-                        Back
-                    </button>
-                    <button
-                        (click)="payNow()"
-                        class="rounded-md bg-green-600 px-6 py-2 text-white hover:bg-green-700"
+                      💰 Pricing Summary
+                    </h3>
+                    <div
+                      class="rounded-lg border-2 border-sky-300 bg-white p-4 text-center"
                     >
-                        Pay Now
-                    </button>
+                      <p class="mb-1 text-sm text-gray-600">Total Premium</p>
+                      <p class="text-4xl font-bold text-sky-600">
+                        USD {{ quote.premium.toFixed(2) }}
+                      </p>
+                      <p class="mt-1 text-xs text-gray-500">
+                        For {{ quote.totalTravelers }} traveler(s) on the
+                        {{ selectedPlan }} plan
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Confirmation -->
+                  <div
+                    class="rounded-xl border-2 border-yellow-300 bg-yellow-50 p-6"
+                  >
+                    <h3
+                      class="mb-4 flex items-center text-lg font-bold text-gray-800"
+                    >
+                      <span class="mr-2">✅</span> Final Confirmation
+                    </h3>
+                    <div class="flex items-start space-x-3">
+                      <input
+                        type="checkbox"
+                        id="confirmDetails"
+                        name="confirmDetails"
+                        [(ngModel)]="summaryConfirmed"
+                        class="mt-1 h-5 w-5 rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                      />
+                      <label for="confirmDetails" class="text-sm text-gray-700">
+                        I have reviewed all the information provided in this
+                        summary and confirm that it is accurate. I understand
+                        this quote is valid for 24 hours.
+                      </label>
+                    </div>
+                  </div>
                 </div>
+              </div>
             </div>
+
+            <!-- Navigation -->
+            <div class="mt-10 flex items-center justify-between">
+              <button
+                (click)="goToPreviousStep()"
+                class="rounded-lg px-8 py-3 font-semibold text-gray-600 transition-colors hover:bg-gray-100"
+              >
+                EDIT DETAILS
+              </button>
+              <div class="flex items-center space-x-4">
+                <button
+                  (click)="saveQuoteForLater()"
+                  class="rounded-lg border-2 border-sky-500 px-8 py-3 font-bold text-sky-600 transition-colors hover:bg-sky-50"
+                >
+                  SAVE FOR LATER
+                </button>
+                <button
+                  (click)="goToNextStep()"
+                  [disabled]="!summaryConfirmed"
+                  class="rounded-lg bg-gradient-to-r from-sky-400 to-sky-500 px-8 py-3 font-bold text-white shadow-lg transition-all hover:from-sky-500 hover:to-sky-600 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  PROCEED TO PAYMENT
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4: Payment -->
+          <div
+            *ngIf="state.currentStep === QuoteStep.PAYMENT"
+            class="flex min-h-full flex-col"
+          >
+            <div
+              class="mx-auto flex max-w-2xl flex-1 flex-col justify-center text-center"
+            >
+              <div class="mb-8">
+                <div
+                  class="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-100"
+                >
+                  <span class="text-4xl">🎉</span>
+                </div>
+                <h2 class="mb-4 text-3xl font-bold text-gray-800">
+                  Ready for Secure Payment
+                </h2>
+                <p class="leading-relaxed text-gray-600">
+                  You're about to complete your purchase for the
+                  <strong>{{ selectedPlan }}</strong> plan. You'll be
+                  redirected to our secure payment gateway powered by
+                  industry-leading encryption.
+                </p>
+              </div>
+
+              <!-- Payment Summary -->
+              <div
+                class="mb-8 rounded-xl border-2 border-sky-200 bg-gradient-to-r from-sky-50 to-green-50 p-6"
+              >
+                <h3 class="mb-4 text-lg font-bold">Payment Summary</h3>
+                <div class="mb-4 space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span>{{ quoteSummary }}</span>
+                    <span>USD {{ quote.premium.toFixed(2) }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span>Processing Fee</span>
+                    <span>USD 0.00</span>
+                  </div>
+                  <div
+                    class="flex justify-between border-t pt-2 text-lg font-bold"
+                  >
+                    <span>Total Amount</span>
+                    <span class="text-sky-600"
+                      >USD {{ quote.premium.toFixed(2) }}</span
+                    >
+                  </div>
+                </div>
+                <p class="text-xs text-gray-500">
+                  All payments are processed securely. Your policy will be
+                  activated immediately upon successful payment.
+                </p>
+              </div>
+
+              <!-- Security Features -->
+              <div class="mb-8 grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
+                <div
+                  class="flex items-center justify-center space-x-2 text-gray-600"
+                >
+                  <span>🔒</span>
+                  <span>256-bit SSL Encryption</span>
+                </div>
+                <div
+                  class="flex items-center justify-center space-x-2 text-gray-600"
+                >
+                  <span>🛡️</span>
+                  <span>PCI DSS Compliant</span>
+                </div>
+                <div
+                  class="flex items-center justify-center space-x-2 text-gray-600"
+                >
+                  <span>✅</span>
+                  <span>Instant Policy Delivery</span>
+                </div>
+              </div>
+
+              <!-- Payment Button -->
+              <div class="space-y-4">
+                <button
+                  (click)="processPayment()"
+                  class="w-full transform rounded-xl bg-gradient-to-r from-sky-400 to-sky-500 px-8 py-4 font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:from-sky-500 hover:to-sky-600"
+                >
+                  <span class="flex items-center justify-center space-x-2">
+                    <span>🔒</span>
+                    <span>PAY SECURELY NOW</span>
+                  </span>
+                </button>
+
+                <button
+                  (click)="goToPreviousStep()"
+                  class="w-full rounded-lg px-8 py-3 font-semibold text-gray-600 transition-colors hover:bg-gray-100"
+                >
+                  Review Details
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-    </main>
+      </div>
+    </div>
+  </div>
 </div>

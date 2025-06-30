@@ -3,7 +3,7 @@ import { initialDataResolver } from "app/app.resolvers";
 import { AuthGuard } from "app/core/auth/guards/auth.guard";
 import { NoAuthGuard } from "app/core/auth/guards/noAuth.guard";
 import { LayoutComponent } from "app/layout/layout.component";
-import { AuthSignUpComponent } from "./modules/auth/sign-up/sign-up.component";
+import { AuthSignUpComponent } from "./modules/auth/home/sign-up.component";
 // @formatter:off
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
@@ -61,7 +61,7 @@ export const appRoutes: Route[] = [
 			{
 				path: "sign-up",
 				loadChildren: () =>
-					import("app/modules/auth/sign-up/sign-up.routes"),
+					import("app/modules/auth/home/sign-up.routes"),
 			},
 		],
 	},

@@ -13,14 +13,7 @@
                         Geminia Marine
                     </h1>
                 </div>
-                <div>
-                    <a
-                        href="/sign-up/dashboard"
-                        class="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    >
-                        Dashboard
-                    </a>
-                </div>
+                <!-- Dashboard button removed as per request -->
             </div>
         </div>
     </header>
@@ -226,12 +219,24 @@
                                         Origin
                                         <span class="text-red-500">*</span>
                                     </label>
+                                    <!-- Searchable input example -->
                                     <input
                                         type="text"
                                         formControlName="origin"
                                         placeholder="e.g. Shanghai, China"
                                         class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        list="origin-list"
                                     />
+                                    <datalist id="origin-list">
+                                        <option
+                                            value="Shanghai, China"
+                                        ></option>
+                                        <option value="Mombasa, Kenya"></option>
+                                        <option
+                                            value="Rotterdam, Netherlands"
+                                        ></option>
+                                        <option value="New York, USA"></option>
+                                    </datalist>
                                 </div>
                                 <div>
                                     <label
@@ -240,12 +245,24 @@
                                         Destination
                                         <span class="text-red-500">*</span>
                                     </label>
+                                    <!-- Searchable input example -->
                                     <input
                                         type="text"
                                         formControlName="destination"
                                         placeholder="e.g. Mombasa, Kenya"
                                         class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        list="destination-list"
                                     />
+                                    <datalist id="destination-list">
+                                        <option value="Mombasa, Kenya"></option>
+                                        <option
+                                            value="Dar es Salaam, Tanzania"
+                                        ></option>
+                                        <option value="Lagos, Nigeria"></option>
+                                        <option
+                                            value="Antwerp, Belgium"
+                                        ></option>
+                                    </datalist>
                                 </div>
                                 <div>
                                     <label
@@ -739,19 +756,52 @@
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="flex space-x-4">
+                    <div class="mt-8 flex items-center justify-between">
                         <button
                             (click)="goToStep(1)"
                             class="rounded-md border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             Back to Edit
                         </button>
-                        <button
-                            (click)="proceedToPayment()"
-                            class="flex-1 rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        >
-                            Proceed to Payment
-                        </button>
+
+                        <!-- Buttons for Logged-OUT Users -->
+                        <div *ngIf="!isLoggedIn" class="flex space-x-4">
+                            <button
+                                (click)="downloadQuote()"
+                                class="rounded-md border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 hover:bg-gray-50"
+                            >
+                                Download Quote
+                            </button>
+                            <a
+                                href="/sign-in"
+                                (click)="proceedToPayment()"
+                                class="rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                            >
+                                Proceed to Payment
+                            </a>
+                        </div>
+
+                        <!-- Buttons for Logged-IN Users -->
+                        <div *ngIf="isLoggedIn" class="flex space-x-4">
+                            <button
+                                (click)="downloadQuote()"
+                                class="rounded-md border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 hover:bg-gray-50"
+                            >
+                                Download Quote
+                            </button>
+                            <button
+                                (click)="saveQuote()"
+                                class="rounded-md border border-blue-600 bg-blue-50 px-4 py-2 font-medium text-blue-700 hover:bg-blue-100"
+                            >
+                                Save Quote
+                            </button>
+                            <button
+                                (click)="proceedToPayment()"
+                                class="rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                            >
+                                Proceed to Payment
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,281 @@
+<!-- Main container adjusted to center the form -->
+<div
+  class="flex min-h-screen min-w-0 flex-auto flex-col items-center justify-center p-4 sm:p-6"
+>
+  <!-- Form container with consistent card styling -->
+  <div class="w-full max-w-sm rounded-2xl bg-card p-8 shadow sm:p-12">
+    <div class="w-full">
+      <!-- Logo and Title -->
+      <div class="text-center">
+        <div class="mb-4 inline-flex items-center">
+          <mat-icon class="mr-2 text-[#1E40AF]">anchor</mat-icon>
+          <span class="text-xl font-bold text-gray-800">
+            Geminia Marine Portal
+          </span>
+        </div>
+        <div class="mb-2 text-lg font-semibold text-gray-700">
+          Create Your Account
+        </div>
+        <div class="mb-8 text-sm text-gray-500">
+          Fill in the details below to get started
+        </div>
+      </div>
+
+      <!-- Alert -->
+      @if (showAlert) {
+      <div
+        class="mb-6 rounded-md border p-4"
+        [ngClass]="{
+          'border-red-400 bg-red-50 text-red-700': alert.type === 'error',
+          'border-green-400 bg-green-50 text-green-700':
+            alert.type === 'success'
+        }"
+        [@shake]="alert.type === 'error'"
+      >
+        {{ alert.message }}
+      </div>
+      }
+
+      <!-- Sign up form -->
+      <form [formGroup]="signUpForm" #signUpNgForm="ngForm">
+        <!-- Role Selection -->
+        <div class="mb-6">
+          <label class="mb-2 block text-sm font-medium text-gray-700">
+            Account Type
+          </label>
+          <div class="grid grid-cols-1 gap-2">
+            <label class="flex items-center">
+              <input
+                type="radio"
+                value="individual"
+                formControlName="accountType"
+                class="mr-2 text-[#1E40AF] focus:ring-[#1E40AF]"
+              />
+              <span class="text-sm text-gray-700">Individual</span>
+            </label>
+            <label class="flex items-center">
+              <input
+                type="radio"
+                value="corporate"
+                formControlName="accountType"
+                class="mr-2 text-[#1E40AF] focus:ring-[#1E40AF]"
+              />
+              <span class="text-sm text-gray-700">Corporate</span>
+            </label>
+            <label class="flex items-center">
+              <input
+                type="radio"
+                value="intermediary"
+                formControlName="accountType"
+                class="mr-2 text-[#1E40AF] focus:ring-[#1E40AF]"
+              />
+              <span class="text-sm text-gray-700">Intermediary</span>
+            </label>
+          </div>
+          @if (signUpForm.get('accountType')?.hasError('required') &&
+          signUpForm.get('accountType')?.touched) {
+          <div class="mt-1 text-sm text-red-600">
+            Please select an account type
+          </div>
+          }
+        </div>
+
+        <!-- Individual/Corporate Fields -->
+        @if (selectedAccountType === 'individual' || selectedAccountType ===
+        'corporate') {
+        <!-- Name Field -->
+        <div class="mb-4">
+          <label class="mb-2 block text-sm font-medium text-gray-700">
+            {{ selectedAccountType === 'corporate' ? 'Company Name' : 'Full
+            Name' }}
+          </label>
+          <input
+            type="text"
+            class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-[#1E40AF] focus:outline-none focus:ring-2 focus:ring-[#1E40AF]"
+            [placeholder]="
+              selectedAccountType === 'corporate'
+                ? 'e.g., ABC Marine Services Ltd'
+                : 'e.g., John Doe'
+            "
+            formControlName="name"
+          />
+          @if (signUpForm.get('name')?.hasError('required') &&
+          signUpForm.get('name')?.touched) {
+          <div class="mt-1 text-sm text-red-600">
+            {{ selectedAccountType === 'corporate' ? 'Company name' : 'Name' }}
+            is required
+          </div>
+          }
+        </div>
+
+        <!-- Email Address -->
+        <div class="mb-4">
+          <label class="mb-2 block text-sm font-medium text-gray-700">
+            Email Address
+          </label>
+          <input
+            type="email"
+            class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-[#1E40AF] focus:outline-none focus:ring-2 focus:ring-[#1E40AF]"
+            [placeholder]="
+              selectedAccountType === 'corporate'
+                ? 'company@example.com'
+                : 'john.doe@example.com'
+            "
+            formControlName="email"
+          />
+          @if (signUpForm.get('email')?.hasError('required') &&
+          signUpForm.get('email')?.touched) {
+          <div class="mt-1 text-sm text-red-600">
+            Email address is required
+          </div>
+          } @if (signUpForm.get('email')?.hasError('email') &&
+          signUpForm.get('email')?.touched) {
+          <div class="mt-1 text-sm text-red-600">
+            Please enter a valid email address
+          </div>
+          }
+        </div>
+
+        <!-- KRA PIN -->
+        <div class="mb-4">
+          <label class="mb-2 block text-sm font-medium text-gray-700">
+            KRA PIN
+          </label>
+          <input
+            type="text"
+            class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-[#1E40AF] focus:outline-none focus:ring-2 focus:ring-[#1E40AF]"
+            placeholder="e.g., A001234567Z"
+            formControlName="kraPin"
+          />
+          @if (signUpForm.get('kraPin')?.hasError('required') &&
+          signUpForm.get('kraPin')?.touched) {
+          <div class="mt-1 text-sm text-red-600">KRA PIN is required</div>
+          }
+        </div>
+
+        <!-- Phone Number -->
+        <div class="mb-4">
+          <label class="mb-2 block text-sm font-medium text-gray-700">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-[#1E40AF] focus:outline-none focus:ring-2 focus:ring-[#1E40AF]"
+            placeholder="e.g., 0712345678"
+            formControlName="phoneNumber"
+          />
+          @if (signUpForm.get('phoneNumber')?.hasError('required') &&
+          signUpForm.get('phoneNumber')?.touched) {
+          <div class="mt-1 text-sm text-red-600">
+            Phone number is required
+          </div>
+          }
+        </div>
+        }
+
+        <!-- Intermediary Fields -->
+        @if (selectedAccountType === 'intermediary') {
+        <!-- IRA Number -->
+        <div class="mb-4">
+          <label class="mb-2 block text-sm font-medium text-gray-700">
+            Intermediary - IRA Number
+          </label>
+          <input
+            type="text"
+            class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-[#1E40AF] focus:outline-none focus:ring-2 focus:ring-[#1E40AF]"
+            placeholder="e.g., IRA/01/12345"
+            formControlName="iraNumber"
+          />
+          @if (signUpForm.get('iraNumber')?.hasError('required') &&
+          signUpForm.get('iraNumber')?.touched) {
+          <div class="mt-1 text-sm text-red-600">IRA Number is required</div>
+          }
+        </div>
+
+        <!-- PIN Number -->
+        <div class="mb-4">
+          <label class="mb-2 block text-sm font-medium text-gray-700">
+            PIN Number
+          </label>
+          <input
+            type="text"
+            class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-[#1E40AF] focus:outline-none focus:ring-2 focus:ring-[#1E40AF]"
+            placeholder="Enter your PIN number"
+            formControlName="pinNumber"
+          />
+          @if (signUpForm.get('pinNumber')?.hasError('required') &&
+          signUpForm.get('pinNumber')?.touched) {
+          <div class="mt-1 text-sm text-red-600">PIN Number is required</div>
+          }
+        </div>
+        }
+
+        <!-- Password (Common for all) -->
+        <div class="mb-6">
+          <label class="mb-2 block text-sm font-medium text-gray-700">
+            Password
+          </label>
+          <div class="relative">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              class="w-full rounded-md border border-gray-300 py-2 px-3 pr-10 shadow-sm placeholder-gray-400 focus:border-[#1E40AF] focus:outline-none focus:ring-2 focus:ring-[#1E40AF]"
+              placeholder="Enter your password"
+              formControlName="password"
+            />
+            <button
+              type="button"
+              class="absolute right-2 top-2 p-1 text-gray-400 hover:text-gray-600"
+              matTooltip="Show/Hide Password"
+              (click)="togglePasswordVisibility()"
+            >
+              <mat-icon class="text-sm">{{
+                showPassword ? 'visibility_off' : 'visibility'
+              }}</mat-icon>
+            </button>
+          </div>
+          @if (signUpForm.get('password')?.hasError('required') &&
+          signUpForm.get('password')?.touched) {
+          <div class="mt-1 text-sm text-red-600">Password is required</div>
+          } @if (signUpForm.get('password')?.hasError('minlength') &&
+          signUpForm.get('password')?.touched) {
+          <div class="mt-1 text-sm text-red-600">
+            Password must be at least 8 characters long
+          </div>
+          }
+        </div>
+
+        <!-- Sign Up Button -->
+        <button
+          type="button"
+          class="w-full rounded-md bg-[#1E40AF] py-2 px-4 font-medium text-white transition-colors hover:bg-[#1E3A8A] focus:outline-none focus:ring-2 focus:ring-[#1E40AF] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          [disabled]="signUpForm.disabled || signUpForm.invalid"
+          (click)="signUp()"
+        >
+          @if (!signUpForm.disabled) {
+          <span>Create Account</span>
+          } @if (signUpForm.disabled) {
+          <div class="flex items-center justify-center">
+            <mat-progress-spinner
+              [diameter]="20"
+              [mode]="'indeterminate'"
+              class="mr-2"
+            ></mat-progress-spinner>
+            <span>Creating Account...</span>
+          </div>
+          }
+        </button>
+
+        <!-- Link to Sign In -->
+        <div class="mt-6 text-center">
+          <span class="text-sm text-gray-600">Already have an account?</span>
+          <a href="/sign-in"
+            class="ml-1 text-sm font-medium text-[#1E40AF] hover:text-[#1E3A8A] hover:underline"
+    
+          >
+            Sign In
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -16,20 +16,21 @@ interface PremiumCalculation {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './marine-cargo-quotation.component.html',
-  styleUrls: ['./marine-cargo-quotation.component.css']
+  styleUrls: ['./marine-cargo-quotation.component.css'],
 })
 export class MarineCargoQuotationComponent implements OnInit {
   quotationForm: FormGroup;
   paymentForm: FormGroup;
   currentStep: number = 1;
   isProcessingPayment: boolean = false;
-  
+  isLoggedIn: boolean = false; // Simulates user authentication status
+
   premiumCalculation: PremiumCalculation = {
     basePremium: 0,
     addOnPremium: 0,
     totalPremium: 0,
     baseRate: 0,
-    currency: 'KES'
+    currency: 'KES',
   };
 
   constructor(private fb: FormBuilder) {
@@ -60,7 +61,7 @@ export class MarineCargoQuotationComponent implements OnInit {
       storageWarehouse: [false],
       warRisk: [false],
       generalAverage: [false],
-      territorialExtension: [false]
+      territorialExtension: [false],
     });
   }
 
@@ -71,16 +72,16 @@ export class MarineCargoQuotationComponent implements OnInit {
       expiryDate: [''],
       cvv: [''],
       cardholderName: [''],
-      phoneNumber: ['']
+      phoneNumber: [''],
     });
   }
 
   private setupFormSubscriptions(): void {
-    // Watch for changes in sum insured and currency
+    // Watch for changes to calculate premium
     this.quotationForm.valueChanges.subscribe(() => {
       const sumInsured = this.quotationForm.get('sumInsured')?.value;
       const currency = this.quotationForm.get('currency')?.value;
-      
+
       if (sumInsured && sumInsured > 0) {
         this.calculatePremium(sumInsured, currency);
       } else {
@@ -89,14 +90,14 @@ export class MarineCargoQuotationComponent implements OnInit {
     });
 
     // Setup payment method validation
-    this.paymentForm.get('paymentMethod')?.valueChanges.subscribe(method => {
+    this.paymentForm.get('paymentMethod')?.valueChanges.subscribe((method) => {
       this.updatePaymentValidation(method);
     });
   }
 
   private calculatePremium(sumInsured: number, currency: string): void {
     let baseRate = 0.002; // 0.2% base rate
-    
+
     // Adjust rate based on cargo type
     const cargoType = this.quotationForm.get('cargoType')?.value;
     switch (cargoType) {
@@ -132,14 +133,15 @@ export class MarineCargoQuotationComponent implements OnInit {
     }
 
     const basePremium = sumInsured * baseRate;
-    
+
     // Calculate add-on premiums
     let addOnRate = 0;
     if (this.quotationForm.get('warRisk')?.value) addOnRate += 0.001;
     if (this.quotationForm.get('concealedLossCover')?.value) addOnRate += 0.0005;
     if (this.quotationForm.get('storageWarehouse')?.value) addOnRate += 0.0003;
     if (this.quotationForm.get('generalAverage')?.value) addOnRate += 0.0002;
-    if (this.quotationForm.get('territorialExtension')?.value) addOnRate += 0.0004;
+    if (this.quotationForm.get('territorialExtension')?.value)
+      addOnRate += 0.0004;
 
     const addOnPremium = sumInsured * addOnRate;
     const totalPremium = basePremium + addOnPremium;
@@ -149,7 +151,7 @@ export class MarineCargoQuotationComponent implements OnInit {
       addOnPremium,
       totalPremium,
       baseRate,
-      currency
+      currency,
     };
   }
 
@@ -159,7 +161,7 @@ export class MarineCargoQuotationComponent implements OnInit {
       addOnPremium: 0,
       totalPremium: 0,
       baseRate: 0,
-      currency: this.quotationForm.get('currency')?.value || 'KES'
+      currency: this.quotationForm.get('currency')?.value || 'KES',
     };
   }
 
@@ -176,37 +178,54 @@ export class MarineCargoQuotationComponent implements OnInit {
       this.paymentForm.get('cardNumber')?.setValidators([Validators.required]);
       this.paymentForm.get('expiryDate')?.setValidators([Validators.required]);
       this.paymentForm.get('cvv')?.setValidators([Validators.required]);
-      this.paymentForm.get('cardholderName')?.setValidators([Validators.required]);
+      this.paymentForm
+        .get('cardholderName')
+        ?.setValidators([Validators.required]);
     } else if (method === 'mpesa') {
-      this.paymentForm.get('phoneNumber')?.setValidators([Validators.required]);
+      this.paymentForm
+        .get('phoneNumber')
+        ?.setValidators([Validators.required]);
     }
 
     // Update validity
-    Object.keys(this.paymentForm.controls).forEach(key => {
+    Object.keys(this.paymentForm.controls).forEach((key) => {
       this.paymentForm.get(key)?.updateValueAndValidity();
     });
   }
 
   onSubmit(): void {
     if (this.quotationForm.valid) {
-      this.goToStep(2);
+      this.goToStep(2); // Go to review page
     } else {
       this.markFormGroupTouched(this.quotationForm);
     }
   }
 
   proceedToPayment(): void {
-    this.goToStep(3);
+    if (this.isLoggedIn) {
+      this.goToStep(3); // Logged-in user goes directly to payment
+    } else {
+      this.goToStep(4); // Logged-out user goes to login/register page
+    }
+  }
+
+  login(): void {
+    // Simulate a successful login
+    this.isLoggedIn = true;
+    alert('Login successful! Proceeding to payment.');
+    this.goToStep(3); // After login, proceed to payment
   }
 
   processPayment(): void {
     if (this.paymentForm.valid) {
       this.isProcessingPayment = true;
-      
+
       // Simulate payment processing
       setTimeout(() => {
         this.isProcessingPayment = false;
-        alert('Payment successful! Your marine cargo insurance policy has been issued.');
+        alert(
+          'Payment successful! Your marine cargo insurance policy has been issued.'
+        );
         // Reset form or redirect to success page
         this.resetForms();
       }, 3000);
@@ -217,24 +236,39 @@ export class MarineCargoQuotationComponent implements OnInit {
 
   goToStep(step: number): void {
     this.currentStep = step;
+    window.scrollTo(0, 0);
+  }
+
+  downloadQuote(): void {
+    // In a real app, this would generate and download a PDF.
+    alert('Downloading quote...');
+  }
+
+  saveQuote(): void {
+    // In a real app, this would save the quote details to the user's account.
+    alert('Quote saved to your account!');
   }
 
   getCoverTypeDisplay(value: string): string {
     const coverTypes: { [key: string]: string } = {
-      'ICC_A': 'ICC (A) - All Risks',
-      'ICC_B': 'ICC (B) - With Average',
-      'ICC_C': 'ICC (C) - Free of Particular Average'
+      ICC_A: 'ICC (A) - All Risks',
+      ICC_B: 'ICC (B) - With Average',
+      ICC_C: 'ICC (C) - Free of Particular Average',
     };
     return coverTypes[value] || value;
   }
 
   getSelectedAddOns(): string[] {
     const addOns: string[] = [];
-    if (this.quotationForm.get('concealedLossCover')?.value) addOns.push('Concealed Loss Cover');
-    if (this.quotationForm.get('storageWarehouse')?.value) addOns.push('Storage & Warehouse');
+    if (this.quotationForm.get('concealedLossCover')?.value)
+      addOns.push('Concealed Loss Cover');
+    if (this.quotationForm.get('storageWarehouse')?.value)
+      addOns.push('Storage & Warehouse');
     if (this.quotationForm.get('warRisk')?.value) addOns.push('War Risk');
-    if (this.quotationForm.get('generalAverage')?.value) addOns.push('General Average');
-    if (this.quotationForm.get('territorialExtension')?.value) addOns.push('Territorial Extension');
+    if (this.quotationForm.get('generalAverage')?.value)
+      addOns.push('General Average');
+    if (this.quotationForm.get('territorialExtension')?.value)
+      addOns.push('Territorial Extension');
     return addOns;
   }
 
@@ -243,7 +277,7 @@ export class MarineCargoQuotationComponent implements OnInit {
   }
 
   private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(key => {
+    Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
       control?.markAsTouched();
     });
@@ -253,21 +287,7 @@ export class MarineCargoQuotationComponent implements OnInit {
     this.quotationForm.reset();
     this.paymentForm.reset();
     this.currentStep = 1;
+    this.isLoggedIn = false; // Log user out on reset
     this.resetPremiumCalculation();
-  }
-
-  // Utility methods for template
-  isFieldInvalid(fieldName: string, formGroup: FormGroup = this.quotationForm): boolean {
-    const field = formGroup.get(fieldName);
-    return !!(field && field.invalid && (field.dirty || field.touched));
-  }
-
-  getFieldError(fieldName: string, formGroup: FormGroup = this.quotationForm): string {
-    const field = formGroup.get(fieldName);
-    if (field?.errors) {
-      if (field.errors['required']) return `${fieldName} is required`;
-      if (field.errors['min']) return `${fieldName} must be greater than 0`;
-    }
-    return '';
   }
 }

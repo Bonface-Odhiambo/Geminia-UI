@@ -1,35 +1,60 @@
+// Custom gradient for sidebar - brighter version
+.sidebar-gradient {
+  background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+  // Slightly brighter overlay
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.05); // Light overlay for brightness
+    pointer-events: none;
+  }
+  position: relative;
+}
+
+// M-Pesa modal styling
+::ng-deep .mpesa-modal-panel {
+  .mat-mdc-dialog-container {
+    padding: 0;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+}
+
+// Enhanced sidebar brightness
+.w-64.sidebar-gradient {
+  // Increase brightness slightly
+  filter: brightness(1.1);
+  
+  // Enhanced text contrast
+  .text-white\/70 {
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+  
+  .text-white\/80 {
+    color: rgba(255, 255, 255, 0.95) !important;
+  }
+  
+  // Brighter hover states
+  .hover\:bg-white\/10:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+  }
+  
+  .bg-white\/20 {
+    background-color: rgba(255, 255, 255, 0.25) !important;
+  }
+}
+
+// Smooth transitions
+.transition-transform {
+  transition: transform 0.2s ease-in-out;
+}
+
 .rotate-180 {
   transform: rotate(180deg);
-}
-
-// Custom scrollbar
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-// Responsive sidebar
-@media (max-width: 1024px) {
-  .sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.3s ease-in-out;
-    
-    &.open {
-      transform: translateX(0);
-    }
-  }
 }
 
 // Card hover effects
@@ -37,32 +62,19 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-// Smooth transitions
-.transition-shadow {
-  transition: box-shadow 0.15s ease-in-out;
-}
-
-.transition-colors {
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
-}
-
-.transition-transform {
-  transition: transform 0.15s ease-in-out;
-}
-
-// Quick Actions button styles
+// Button hover effects for quick actions
 .group:hover .group-hover\:text-blue-600 {
-  color: #2563eb;
+  color: #2563eb !important;
 }
 
-.group:hover .group-hover\:text-blue-700 {
-  color: #1d4ed8;
+.group:hover .group-hover\:text-purple-600 {
+  color: #9333ea !important;
 }
 
-.group:hover .group-hover\:bg-blue-50 {
-  background-color: #eff6ff;
+.group:hover .group-hover\:text-green-700 {
+  color: #15803d !important;
 }
 
-.group:hover .group-hover\:border-blue-500 {
-  border-color: #3b82f6;
+.group:hover .group-hover\:text-orange-600 {
+  color: #ea580c !important;
 }
