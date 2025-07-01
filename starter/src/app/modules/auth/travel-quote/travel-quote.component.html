@@ -22,9 +22,9 @@
             </div>
           </div>
           <button
-            (click)="resetToStart()"
+            (click)="returnToHomepage()"
             class="text-3xl text-white transition-colors hover:text-blue-200"
-            aria-label="Close quote"
+            aria-label="Return to homepage"
           >
             &times;
           </button>
@@ -44,9 +44,7 @@
               class="flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-300"
               [ngClass]="{
                 'border-sky-500 bg-sky-500 text-white':
-                  state.currentStep === i + 1,
-                'border-sky-500 bg-sky-500 text-white':
-                  state.currentStep > i + 1,
+                  state.currentStep >= i + 1,
                 'border-gray-300 bg-white text-gray-400':
                   state.currentStep < i + 1
               }"
@@ -61,8 +59,7 @@
             <span
               class="ml-2 hidden text-sm font-medium md:inline"
               [ngClass]="{
-                'text-sky-600': state.currentStep === i + 1,
-                'text-sky-600': state.currentStep > i + 1,
+                'text-sky-600': state.currentStep >= i + 1,
                 'text-gray-400': state.currentStep < i + 1
               }"
             >
@@ -108,140 +105,125 @@
             </div>
           </div>
 
-          <!-- Step 1: Plan Selection - Modern Card Design -->
+          <!-- Step 1: Plan Selection - Redesigned -->
           <div
             *ngIf="state.currentStep === QuoteStep.PLAN_SELECTION"
             class="flex min-h-full flex-col"
           >
             <div class="mb-12 text-center">
               <h2 class="mb-4 text-4xl font-bold text-gray-800">
-                Choose Your <span class="text-sky-500">Perfect Plan</span>
+                Choose Your <span class="text-sky-500">Travel Plan</span>
               </h2>
               <p class="text-xl text-gray-600">
-                Select the coverage that matches your travel style
+                Select the coverage level that best fits your needs
               </p>
             </div>
 
             <!-- Plan Cards Grid -->
             <div class="flex flex-1 items-center justify-center">
-              <div class="grid w-full max-w-7xl grid-cols-1 gap-8 lg:grid-cols-3">
+              <div
+                class="grid w-full max-w-7xl grid-cols-1 gap-8 lg:grid-cols-3"
+              >
                 <div
                   *ngFor="let plan of productCards; let i = index"
-                  class="group relative cursor-pointer overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-3"
+                  class="group relative overflow-hidden rounded-2xl bg-white shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
                   [class.ring-4]="selectedPlan === plan.name"
                   [class.ring-sky-400]="selectedPlan === plan.name"
                   [class.shadow-sky-200]="selectedPlan === plan.name"
-                  (click)="selectPlan(plan.name)"
-                >
-                  <!-- Background Gradient -->
-                  <div
-                    class="absolute inset-0 bg-gradient-to-br opacity-5 transition-opacity group-hover:opacity-10"
-                    [ngClass]="{
-                      'from-blue-400 to-sky-500': i === 0,
-                      'from-purple-400 to-pink-500': i === 1,
-                      'from-amber-400 to-orange-500': i === 2
-                    }"
-                  ></div>
-
+                  > <!-- No comment inside the opening tag here -->
                   <!-- Popular Badge -->
                   <div
                     *ngIf="plan.popular"
-                    class="absolute -right-12 top-8 rotate-45 bg-gradient-to-r from-sky-400 to-sky-500 px-12 py-2 text-sm font-bold text-white shadow-lg"
+                    class="absolute -right-10 top-6 rotate-45 bg-gradient-to-r from-sky-400 to-sky-500 px-10 py-1 text-xs font-bold text-white shadow-lg"
                   >
                     POPULAR
                   </div>
 
-                  <!-- Selection Check -->
-                  <div
-                    *ngIf="selectedPlan === plan.name"
-                    class="absolute right-6 top-6 z-10"
-                  >
-                    <div
-                      class="flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-white shadow-lg"
-                    >
-                      <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                          fill-rule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-
-                  <div class="relative p-8">
-                    <!-- Icon -->
-                    <div
-                      class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl text-4xl shadow-lg transition-transform group-hover:scale-110"
-                      [ngClass]="{
-                        'bg-gradient-to-br from-blue-100 to-sky-100': i === 0,
-                        'bg-gradient-to-br from-purple-100 to-pink-100': i === 1,
-                        'bg-gradient-to-br from-amber-100 to-orange-100': i === 2
-                      }"
-                    >
-                      {{ plan.icon }}
-                    </div>
-
-                    <!-- Title -->
-                    <h3 class="mb-4 text-2xl font-bold text-gray-800">
-                      {{ plan.name }}
-                    </h3>
-
-                    <!-- Description -->
-                    <p class="mb-6 text-gray-600 leading-relaxed">
-                      {{ plan.description }}
-                    </p>
-
-                    <!-- Features -->
-                    <div class="mb-8 space-y-3">
+                  <div class="p-6">
+                    <!-- Plan Header -->
+                    <div class="mb-6 text-center">
                       <div
-                        *ngFor="let feature of plan.features"
-                        class="flex items-center space-x-3"
+                        class="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full text-2xl font-bold text-white"
+                        [ngClass]="{
+                          'bg-blue-500': plan.color === 'blue',
+                          'bg-purple-500': plan.color === 'purple',
+                          'bg-amber-500': plan.color === 'amber'
+                        }"
                       >
-                        <div
-                          class="flex h-5 w-5 items-center justify-center rounded-full text-xs text-white"
-                          [ngClass]="{
-                            'bg-blue-500': i === 0,
-                            'bg-purple-500': i === 1,
-                            'bg-amber-500': i === 2
-                          }"
-                        >
-                          ✓
-                        </div>
-                        <span class="text-sm text-gray-700">{{ feature }}</span>
+                        {{ plan.name.charAt(5) }}
                       </div>
+                      <h3 class="text-xl font-bold text-gray-800">
+                        {{ plan.name }}
+                      </h3>
+                      <p class="mt-2 text-sm text-gray-600">
+                        {{ plan.description }}
+                      </p>
                     </div>
 
                     <!-- Price -->
-                    <div class="text-center">
-                      <div class="mb-2 text-sm text-gray-500">Starting from</div>
+                    <div class="mb-6 text-center">
+                      <div class="text-sm text-gray-500">Starting from</div>
                       <div
                         class="text-3xl font-bold"
                         [ngClass]="{
-                          'text-blue-600': i === 0,
-                          'text-purple-600': i === 1,
-                          'text-amber-600': i === 2
+                          'text-blue-600': plan.color === 'blue',
+                          'text-purple-600': plan.color === 'purple',
+                          'text-amber-600': plan.color === 'amber'
                         }"
                       >
                         USD {{ plan.startingPrice }}
                       </div>
                       <div class="text-sm text-gray-400">per person</div>
                     </div>
-                  </div>
 
-                  <!-- Hover Overlay -->
-                  <div
-                    class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 transition-all duration-300 group-hover:bg-opacity-10"
-                  >
-                    <div
-                      class="transform rounded-full px-6 py-3 font-bold text-white opacity-0 shadow-lg transition-all duration-300 group-hover:opacity-100 group-hover:scale-105"
-                      [ngClass]="{
-                        'bg-blue-500': i === 0,
-                        'bg-purple-500': i === 1,
-                        'bg-amber-500': i === 2
-                      }"
-                    >
-                      SELECT PLAN
+                    <!-- Benefits List -->
+                    <div class="space-y-3">
+                      <div
+                        class="border-b pb-2 text-sm font-semibold text-gray-700"
+                      >
+                        Coverage Benefits:
+                      </div>
+                      <div
+                        *ngFor="let benefit of plan.benefits"
+                        class="flex items-start space-x-3"
+                      >
+                        <div
+                          class="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full text-xs text-white"
+                          [ngClass]="{
+                            'bg-blue-500': plan.color === 'blue',
+                            'bg-purple-500': plan.color === 'purple',
+                            'bg-amber-500': plan.color === 'amber'
+                          }"
+                        >
+                          ✓
+                        </div>
+                        <span class="leading-relaxed text-sm text-gray-700">{{
+                          benefit
+                        }}</span>
+                      </div>
+                    </div>
+
+                    <!-- Select Button -->
+                    <div class="mt-6">
+                      <button
+                        (click)="selectPlan(plan.name)"
+                        [ngClass]="{
+                          'bg-blue-500 hover:bg-blue-600': plan.color === 'blue' && selectedPlan !== plan.name,
+                          'bg-purple-500 hover:bg-purple-600': plan.color === 'purple' && selectedPlan !== plan.name,
+                          'bg-amber-500 hover:bg-amber-600': plan.color === 'amber' && selectedPlan !== plan.name,
+                          'bg-gray-400 cursor-not-allowed': selectedPlan === plan.name,
+                          'bg-green-500': selectedPlan === plan.name
+                        }"
+                        [disabled]="selectedPlan === plan.name"
+                        class="w-full rounded-lg py-3 px-4 font-bold text-white transition-all duration-300 hover:shadow-lg"
+                      >
+                        <span *ngIf="selectedPlan !== plan.name">
+                          SELECT {{ plan.name.split(' ')[1].toUpperCase() }}
+                        </span>
+                        <span *ngIf="selectedPlan === plan.name">
+                          <span class="mr-2">✓</span> SELECTED
+                        </span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -257,7 +239,11 @@
                 class="rounded-2xl bg-gradient-to-r from-sky-400 to-sky-500 px-12 py-4 text-lg font-bold text-white shadow-xl transition-all hover:from-sky-500 hover:to-sky-600 hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-50"
               >
                 CONTINUE WITH {{ selectedPlan || 'SELECTED PLAN' }}
-                <svg class="ml-2 inline h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <svg
+                  class="ml-2 inline h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
                   <path
                     fill-rule="evenodd"
                     d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
@@ -661,7 +647,7 @@
                 <h3
                   class="mb-4 flex items-center text-lg font-bold text-gray-800"
                 >
-                  <span class="mr-2 text-red-500">🚨</span>
+                  <span class="mr-2 text-red-500">Alert</span>
                   Emergency Contact Information
                 </h3>
                 <p class="mb-4 text-sm text-gray-600">
@@ -684,6 +670,7 @@
                       class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
                     />
                   </div>
+
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700"
@@ -748,178 +735,13 @@
                   [disabled]="!canProceedToNext"
                   class="rounded-lg bg-gradient-to-r from-sky-400 to-sky-500 px-8 py-3 font-bold text-white shadow-lg transition-all hover:from-sky-500 hover:to-sky-600 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  CONTINUE TO SUMMARY
+                  PROCEED TO PAYMENT
                 </button>
               </div>
             </form>
           </div>
 
-          <!-- Step 3: Summary -->
-          <div
-            *ngIf="state.currentStep === QuoteStep.SUMMARY"
-            class="flex min-h-full flex-col"
-          >
-            <div class="mb-8 text-center">
-              <h2 class="mb-4 text-3xl font-bold text-gray-800">
-                Review Your Quote
-              </h2>
-              <p class="text-gray-600">
-                Please review all details carefully before proceeding to
-                payment.
-              </p>
-            </div>
-
-            <div class="flex-1">
-              <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                <!-- Left Column: Trip & Travelers -->
-                <div class="space-y-6">
-                  <!-- Trip Information -->
-                  <div class="rounded-xl bg-gray-50 p-6">
-                    <h3
-                      class="mb-4 border-b border-gray-200 pb-3 text-lg font-bold text-gray-800"
-                    >
-                      🧳 Trip Information
-                    </h3>
-                    <div class="space-y-3">
-                      <div class="flex justify-between">
-                        <span class="text-gray-600">Plan Type:</span>
-                        <span class="font-semibold">{{ selectedPlan }}</span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-gray-600">From:</span>
-                        <span class="font-semibold">{{
-                          quote.departureCountry
-                        }}</span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-gray-600">To:</span>
-                        <span class="font-semibold">{{
-                          quote.destinationCountry
-                        }}</span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-gray-600">Departure:</span>
-                        <span class="font-semibold">{{
-                          quote.startDate | date: "mediumDate"
-                        }}</span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-gray-600">Return:</span>
-                        <span class="font-semibold">{{
-                          quote.endDate | date: "mediumDate"
-                        }}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Traveler Details -->
-                  <div class="rounded-xl bg-gray-50 p-6">
-                    <h3
-                      class="mb-4 border-b border-gray-200 pb-3 text-lg font-bold text-gray-800"
-                    >
-                      👥 Traveler Details
-                    </h3>
-                    <div class="space-y-4">
-                      <div
-                        *ngFor="
-                          let traveler of quote.travelerDetails;
-                          let i = index
-                        "
-                        class="border-b border-gray-200 pb-2"
-                      >
-                        <p class="font-semibold text-gray-800">
-                          {{ i + 1 }}. {{ traveler.name }}
-                        </p>
-                        <p class="text-sm text-gray-600">
-                          {{ traveler.nationality }} | DOB:
-                          {{ traveler.dob | date: "mediumDate" }} | Passport:
-                          {{ traveler.passport }}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Right Column: Pricing & Confirmation -->
-                <div class="space-y-6">
-                  <!-- Total Premium -->
-                  <div
-                    class="rounded-xl border-2 border-sky-200 bg-gradient-to-br from-sky-50 to-sky-100 p-6"
-                  >
-                    <h3
-                      class="mb-4 border-b border-sky-200 pb-3 text-lg font-bold text-gray-800"
-                    >
-                      💰 Pricing Summary
-                    </h3>
-                    <div
-                      class="rounded-lg border-2 border-sky-300 bg-white p-4 text-center"
-                    >
-                      <p class="mb-1 text-sm text-gray-600">Total Premium</p>
-                      <p class="text-4xl font-bold text-sky-600">
-                        USD {{ quote.premium.toFixed(2) }}
-                      </p>
-                      <p class="mt-1 text-xs text-gray-500">
-                        For {{ quote.totalTravelers }} traveler(s) on the
-                        {{ selectedPlan }} plan
-                      </p>
-                    </div>
-                  </div>
-
-                  <!-- Confirmation -->
-                  <div
-                    class="rounded-xl border-2 border-yellow-300 bg-yellow-50 p-6"
-                  >
-                    <h3
-                      class="mb-4 flex items-center text-lg font-bold text-gray-800"
-                    >
-                      <span class="mr-2">✅</span> Final Confirmation
-                    </h3>
-                    <div class="flex items-start space-x-3">
-                      <input
-                        type="checkbox"
-                        id="confirmDetails"
-                        name="confirmDetails"
-                        [(ngModel)]="summaryConfirmed"
-                        class="mt-1 h-5 w-5 rounded border-gray-300 text-sky-600 focus:ring-sky-500"
-                      />
-                      <label for="confirmDetails" class="text-sm text-gray-700">
-                        I have reviewed all the information provided in this
-                        summary and confirm that it is accurate. I understand
-                        this quote is valid for 24 hours.
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Navigation -->
-            <div class="mt-10 flex items-center justify-between">
-              <button
-                (click)="goToPreviousStep()"
-                class="rounded-lg px-8 py-3 font-semibold text-gray-600 transition-colors hover:bg-gray-100"
-              >
-                EDIT DETAILS
-              </button>
-              <div class="flex items-center space-x-4">
-                <button
-                  (click)="saveQuoteForLater()"
-                  class="rounded-lg border-2 border-sky-500 px-8 py-3 font-bold text-sky-600 transition-colors hover:bg-sky-50"
-                >
-                  SAVE FOR LATER
-                </button>
-                <button
-                  (click)="goToNextStep()"
-                  [disabled]="!summaryConfirmed"
-                  class="rounded-lg bg-gradient-to-r from-sky-400 to-sky-500 px-8 py-3 font-bold text-white shadow-lg transition-all hover:from-sky-500 hover:to-sky-600 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  PROCEED TO PAYMENT
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 4: Payment -->
+          <!-- Step 3: Payment (was Step 4) -->
           <div
             *ngIf="state.currentStep === QuoteStep.PAYMENT"
             class="flex min-h-full flex-col"
@@ -931,7 +753,11 @@
                 <div
                   class="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-100"
                 >
-                  <span class="text-4xl">🎉</span>
+                  <img
+                    src="https://www.freeiconspng.com/uploads/secure-payment-icon-4.png"
+                    alt="Secure Payment Icon"
+                    class="h-16 w-16"
+                  />
                 </div>
                 <h2 class="mb-4 text-3xl font-bold text-gray-800">
                   Ready for Secure Payment
@@ -978,19 +804,19 @@
                 <div
                   class="flex items-center justify-center space-x-2 text-gray-600"
                 >
-                  <span>🔒</span>
+                  <span>Security</span>
                   <span>256-bit SSL Encryption</span>
                 </div>
                 <div
                   class="flex items-center justify-center space-x-2 text-gray-600"
                 >
-                  <span>🛡️</span>
+                  <span>Shield</span>
                   <span>PCI DSS Compliant</span>
                 </div>
                 <div
                   class="flex items-center justify-center space-x-2 text-gray-600"
                 >
-                  <span>✅</span>
+                  <span>Check</span>
                   <span>Instant Policy Delivery</span>
                 </div>
               </div>
@@ -1002,7 +828,7 @@
                   class="w-full transform rounded-xl bg-gradient-to-r from-sky-400 to-sky-500 px-8 py-4 font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:from-sky-500 hover:to-sky-600"
                 >
                   <span class="flex items-center justify-center space-x-2">
-                    <span>🔒</span>
+                    <span>Secure</span>
                     <span>PAY SECURELY NOW</span>
                   </span>
                 </button>

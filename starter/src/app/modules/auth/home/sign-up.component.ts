@@ -17,7 +17,6 @@ import { FuseAlertComponent, FuseAlertType } from "@fuse/components/alert";
 import { AuthService } from "app/core/auth/auth.service";
 import { QuoteModalComponent } from "../shared";
 
-
 @Component({
   selector: "auth-sign-up",
   templateUrl: "./sign-up.component.html",
