@@ -1,6 +1,6 @@
 <div class="min-h-screen w-screen bg-gray-50 flex">
-  <!-- Sidebar with Custom Blue Color -->
-  <div class="w-64 sidebar-gradient text-white flex flex-col">
+  <!-- Sidebar -->
+  <div class="w-64 sidebar-gradient text-white flex flex-col" [class.mobile-open]="isMobileSidebarOpen">
     <!-- Logo/Brand -->
     <div class="p-6 border-b border-white/20">
       <div class="flex items-center space-x-3">
@@ -13,164 +13,91 @@
         </div>
         <div>
           <h1 class="text-lg font-semibold">GEMINIA INSURANCE</h1>
-          <p class="text-xs text-white/70">Client Portal</p>
+          <p class="text-xs text-white/70">{{ getRoleDisplayName() }}</p>
         </div>
       </div>
     </div>
 
     <!-- User Profile -->
-    <div class="p-6 border-b border-white/20">
+    <div class="p-6 border-b border-white/20 user-profile-section">
       <div class="flex items-center space-x-3">
-        <div
-          class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center"
-        >
-          <span class="text-white font-semibold text-lg">{{
-            getInitials(user.name)
-          }}</span>
+        <div class="relative">
+          <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+            <span class="text-white font-semibold text-lg">{{ getInitials(user.name) }}</span>
+          </div>
+          <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full {{ getRoleColor() }} border-2 border-white"></div>
         </div>
-        <div>
+        <div class="flex-1">
           <h3 class="font-medium text-white">Welcome, {{ user.name }}</h3>
           <p class="text-white/70 text-sm">{{ user.email }}</p>
           <p class="text-white/70 text-xs">{{ user.phoneNumber }}</p>
+          <div *ngIf="user.role === 'corporate' && user.companyName" class="text-white/80 text-xs mt-1">
+            {{ user.companyName }}
+          </div>
+          <div *ngIf="user.role === 'intermediary' && user.intermediaryCode" class="text-white/80 text-xs mt-1">
+            ID: {{ user.intermediaryCode }}
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Navigation Menu -->
+    <!-- Dynamic Navigation Menu -->
     <nav class="flex-1 p-4">
       <div class="space-y-2">
-        <a
-          [routerLink]="['/sign-up/dashboard']"
-          routerLinkActive="bg-white/20 text-white"
-          class="flex items-center space-x-3 px-4 py-3 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
-        >
-          <mat-icon>dashboard</mat-icon>
-          <span>Dashboard</span>
-        </a>
+        <ng-container *ngFor="let item of navigationItems">
+          <!-- Simple menu item -->
+          <a *ngIf="!item.children && item.route"
+             [routerLink]="item.route"
+             routerLinkActive="active-menu-item"
+             class="nav-menu-item flex items-center space-x-3 px-4 py-3 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-all">
+            <mat-icon>{{ item.icon }}</mat-icon>
+            <span>{{ item.label }}</span>
+            <span *ngIf="item.badge && item.badge > 0" 
+                  class="ml-auto bg-white/20 text-xs px-2 py-1 rounded-full">
+              {{ item.badge }}
+            </span>
+          </a>
 
-        <!-- Saved Quotes Dropdown -->
-        <div class="space-y-1">
-          <button
-            (click)="toggleQuotes()"
-            class="w-full flex items-center justify-between px-4 py-3 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
-          >
-            <div class="flex items-center space-x-3">
-              <mat-icon>description</mat-icon>
-              <span>Saved Quotes</span>
-              <span
-                class="bg-white/20 text-xs px-2 py-1 rounded-full"
-                *ngIf="getPendingQuotes().length > 0"
-              >
-                {{ getPendingQuotes().length }}
-              </span>
-            </div>
-            <mat-icon
-              [class.rotate-180]="isQuotesOpen"
-              class="transition-transform"
-            >
-              expand_more
-            </mat-icon>
-          </button>
-          <div *ngIf="isQuotesOpen" class="ml-6 space-y-1">
-            <div *ngFor="let quote of savedQuotes" class="mb-2">
-              <button
-                (click)="editQuoteByType(quote.id, quote.type)"
-                class="w-full text-left px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg"
-              >
-                <div class="flex justify-between items-center">
-                  <span class="truncate">{{ quote.title }}</span>
-                  <span
-                    class="text-xs px-2 py-1 rounded-full"
-                    [ngClass]="getStatusColor(quote.status)"
-                  >
-                    {{ quote.status }}
-                  </span>
-                </div>
-                <div class="text-xs text-white/60 mt-1">
-                  KES {{ quote.amount | number }}
-                </div>
-              </button>
+          <!-- Dropdown menu item -->
+          <div *ngIf="item.children" class="space-y-1">
+            <button 
+              (click)="toggleNavItem(item)"
+              class="nav-menu-item w-full flex items-center justify-between px-4 py-3 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-all">
+              <div class="flex items-center space-x-3">
+                <mat-icon>{{ item.icon }}</mat-icon>
+                <span>{{ item.label }}</span>
+                <span *ngIf="item.badge && item.badge > 0" 
+                      class="bg-white/20 text-xs px-2 py-1 rounded-full">
+                  {{ item.badge }}
+                </span>
+              </div>
+              <mat-icon [class.rotate-180]="item.isExpanded" class="transition-transform">
+                expand_more
+              </mat-icon>
+            </button>
+            
+            <div *ngIf="item.isExpanded" class="ml-6 space-y-1">
+              <ng-container *ngFor="let child of item.children">
+                <a *ngIf="child.route"
+                   [routerLink]="child.route"
+                   class="block w-full text-left px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                  <div class="flex items-center space-x-2">
+                    <mat-icon class="!text-sm">{{ child.icon }}</mat-icon>
+                    <span>{{ child.label }}</span>
+                  </div>
+                </a>
+                <button *ngIf="child.action"
+                        (click)="child.action!()"
+                        class="block w-full text-left px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                  <div class="flex items-center space-x-2">
+                    <mat-icon class="!text-sm">{{ child.icon }}</mat-icon>
+                    <span>{{ child.label }}</span>
+                  </div>
+                </button>
+              </ng-container>
             </div>
           </div>
-        </div>
-
-        <!-- Marine Insurance Dropdown -->
-        <div class="space-y-1">
-          <button
-            (click)="toggleLifeInsurance()"
-            class="w-full flex items-center justify-between px-4 py-3 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
-          >
-            <div class="flex items-center space-x-3">
-              <mat-icon>directions_boat</mat-icon>
-              <span>Marine Insurance</span>
-            </div>
-            <mat-icon
-              [class.rotate-180]="isLifeInsuranceOpen"
-              class="transition-transform"
-            >
-              expand_more
-            </mat-icon>
-          </button>
-          <div *ngIf="isLifeInsuranceOpen" class="ml-6 space-y-1">
-            <button
-              (click)="router.navigate(['/marine-policies'])"
-              class="block w-full text-left px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg"
-            >
-              Active Policies
-            </button>
-            <button
-              (click)="router.navigate(['/marine-transactions'])"
-              class="block w-full text-left px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg"
-            >
-              Pending Transactions
-            </button>
-            <a href="/sign-up/marine-quote"
-              (click)="createNewQuote('marine')"
-              class="block w-full text-left px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg"
-            >
-              New Quote
-            </a>
-          </div>
-        </div>
-
-        <!-- Travel Insurance Dropdown -->
-        <div class="space-y-1">
-          <button
-            (click)="toggleGeneralInsurance()"
-            class="w-full flex items-center justify-between px-4 py-3 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
-          >
-            <div class="flex items-center space-x-3">
-              <mat-icon>flight</mat-icon>
-              <span>Travel Insurance</span>
-            </div>
-            <mat-icon
-              [class.rotate-180]="isGeneralInsuranceOpen"
-              class="transition-transform"
-            >
-              expand_more
-            </mat-icon>
-          </button>
-          <div *ngIf="isGeneralInsuranceOpen" class="ml-6 space-y-1">
-            <button
-              (click)="router.navigate(['/travel-policies'])"
-              class="block w-full text-left px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg"
-            >
-              Active Policies
-            </button>
-            <button
-              (click)="router.navigate(['/travel-claims'])"
-              class="block w-full text-left px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg"
-            >
-              Claims History
-            </button>
-            <a href="/sign-up/travel-quote"
-              (click)="createNewQuote('travel')"
-              class="block w-full text-left px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg"
-            >
-              New Quote
-            </a>
-          </div>
-        </div>
+        </ng-container>
       </div>
     </nav>
   </div>
@@ -181,11 +108,10 @@
     <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4">
-          <button mat-icon-button class="lg:hidden">
+          <button mat-icon-button (click)="toggleMobileSidebar()" class="lg:hidden">
             <mat-icon>menu</mat-icon>
           </button>
           <div class="flex items-center space-x-3">
-            <!-- Logo in header for mobile/tablet -->
             <div class="w-8 h-8 lg:hidden">
               <img 
                 src="https://geminialife.co.ke/wp-content/uploads/2022/06/thumbnail_GEMINIA-FINAL-LOGO-png.png" 
@@ -196,36 +122,27 @@
             <div>
               <h2 class="text-xl font-semibold text-gray-900">Dashboard</h2>
               <p class="text-sm text-gray-500">
-                Overview of your insurance portfolio
+                {{ user.role === 'individual' ? 'Overview of your insurance portfolio' : 
+                   user.role === 'corporate' ? 'Corporate insurance overview' : 
+                   'Client portfolio management' }}
               </p>
             </div>
           </div>
         </div>
 
         <div class="flex items-center space-x-4">
-        
           <!-- Notifications -->
-          <button
-            mat-icon-button
-            [matMenuTriggerFor]="notificationMenu"
-            class="relative"
-          >
+          <button mat-icon-button [matMenuTriggerFor]="notificationMenu" class="relative">
             <mat-icon>notifications</mat-icon>
-            <span
-              class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
-            >
+            <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
               3
             </span>
           </button>
 
           <!-- User Menu -->
           <button mat-icon-button [matMenuTriggerFor]="userMenu">
-            <div
-              class="w-8 h-8 sidebar-gradient rounded-full flex items-center justify-center"
-            >
-              <span class="text-white font-semibold text-sm">{{
-                getInitials(user.name)
-              }}</span>
+            <div class="w-8 h-8 sidebar-gradient rounded-full flex items-center justify-center">
+              <span class="text-white font-semibold text-sm">{{ getInitials(user.name) }}</span>
             </div>
           </button>
         </div>
@@ -234,106 +151,98 @@
 
     <!-- Dashboard Content -->
     <main class="flex-1 p-6 overflow-y-auto">
-      <!-- Stats Cards -->
+      <!-- Role-Based Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <!-- Marine Insurance Card -->
-        <div
-          class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-        >
+        <div class="dashboard-card p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-medium text-gray-600">Marine Insurance</h3>
-            <div
-              class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center"
-            >
-              <mat-icon class="text-blue-600">directions_boat</mat-icon>
+            <h3 class="text-sm font-medium text-gray-600">
+              {{ user.role === 'intermediary' ? 'Client Marine Policies' : 'Marine Insurance' }}
+            </h3>
+            <div class="stats-icon marine-icon">
+              <mat-icon class="text-white">directions_boat</mat-icon>
             </div>
           </div>
           <div class="text-3xl font-bold text-gray-900 mb-2">
             {{ dashboardStats.marinePolicies }}
           </div>
-          <div class="text-sm text-gray-500">Active policies</div>
+          <div class="text-sm text-gray-500">
+            {{ user.role === 'intermediary' ? 'Client policies' : 'Active policies' }}
+          </div>
         </div>
 
         <!-- Travel Insurance Card -->
-        <div
-          class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-        >
+        <div class="dashboard-card p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-medium text-gray-600">Travel Insurance</h3>
-            <div
-              class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center"
-            >
-              <mat-icon class="text-purple-600">flight</mat-icon>
+            <h3 class="text-sm font-medium text-gray-600">
+              {{ user.role === 'intermediary' ? 'Client Travel Policies' : 'Travel Insurance' }}
+            </h3>
+            <div class="stats-icon travel-icon">
+              <mat-icon class="text-white">flight</mat-icon>
             </div>
           </div>
           <div class="text-3xl font-bold text-gray-900 mb-2">
             {{ dashboardStats.travelPolicies }}
           </div>
-          <div class="text-sm text-gray-500">Active policies</div>
+          <div class="text-sm text-gray-500">
+            {{ user.role === 'intermediary' ? 'Client policies' : 'Active policies' }}
+          </div>
         </div>
 
-        <!-- Pending Quotes Card -->
-        <div
-          class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-        >
+        <!-- Pending/Active Items Card -->
+        <div class="dashboard-card p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-medium text-gray-600">Pending Quotes</h3>
-            <div
-              class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center"
-            >
-              <mat-icon class="text-orange-600">pending_actions</mat-icon>
+            <h3 class="text-sm font-medium text-gray-600">
+              {{ user.role === 'intermediary' ? 'Active Quotes' : 'Pending Quotes' }}
+            </h3>
+            <div class="stats-icon pending-icon">
+              <mat-icon class="text-white">pending_actions</mat-icon>
             </div>
           </div>
           <div class="text-3xl font-bold text-gray-900 mb-2">
             {{ dashboardStats.pendingQuotes }}
           </div>
-          <div class="text-sm text-gray-500">Awaiting payment</div>
+          <div class="text-sm text-gray-500">
+            {{ user.role === 'intermediary' ? 'In progress' : 'Awaiting payment' }}
+          </div>
         </div>
 
-        <!-- Total Premium Card -->
-        <div
-          class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-        >
+        <!-- Total Premium/Client Count Card -->
+        <div class="dashboard-card p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-medium text-gray-600">Total Premium</h3>
-            <div
-              class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center"
-            >
-              <mat-icon class="text-green-600">payments</mat-icon>
+            <h3 class="text-sm font-medium text-gray-600">
+              {{ user.role === 'intermediary' ? 'Total Clients' : 
+                 user.role === 'corporate' ? 'Employees Covered' : 'Total Premium' }}
+            </h3>
+            <div class="stats-icon premium-icon">
+              <mat-icon class="text-white">
+                {{ user.role === 'intermediary' || user.role === 'corporate' ? 'group' : 'payments' }}
+              </mat-icon>
             </div>
           </div>
           <div class="text-3xl font-bold text-gray-900 mb-2">
-            KES {{ dashboardStats.totalPremium | number }}
+            {{ user.role === 'intermediary' || user.role === 'corporate' ? 
+               dashboardStats.clientCount : 
+               'KES ' + (dashboardStats.totalPremium | number) }}
           </div>
-          <div class="text-sm text-gray-500">Annual premium</div>
+          <div class="text-sm text-gray-500">
+            {{ user.role === 'intermediary' ? 'Active clients' : 
+               user.role === 'corporate' ? 'Covered employees' : 'Annual premium' }}
+          </div>
         </div>
       </div>
 
-      <!-- Pending Quotes Section -->
-      <div class="mb-8" *ngIf="getPendingQuotes().length > 0">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Quotes Awaiting Payment
-        </h3>
+      <!-- Pending Quotes Section (Individual/Corporate) -->
+      <div class="mb-8" *ngIf="(user.role === 'individual' || user.role === 'corporate') && getPendingQuotes().length > 0">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Quotes Awaiting Payment</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div
-            *ngFor="let quote of getPendingQuotes()"
-            class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-          >
+          <div *ngFor="let quote of getPendingQuotes()" class="dashboard-card p-6">
             <div class="flex items-start justify-between mb-4">
               <div class="flex items-center space-x-2">
-                <mat-icon
-                  [class]="
-                    quote.type === 'marine' ? 'text-blue-600' : 'text-purple-600'
-                  "
-                >
-                  {{
-                    quote.type === "marine" ? "directions_boat" : "flight"
-                  }}</mat-icon
-                >
-                <span
-                  class="text-xs px-2 py-1 rounded-full"
-                  [ngClass]="getStatusColor(quote.status)"
-                >
+                <mat-icon [class]="quote.type === 'marine' ? 'text-blue-600' : 'text-purple-600'">
+                  {{ quote.type === "marine" ? "directions_boat" : "flight" }}
+                </mat-icon>
+                <span class="text-xs px-2 py-1 rounded-full" [ngClass]="getStatusColor(quote.status)">
                   {{ quote.status }}
                 </span>
               </div>
@@ -352,41 +261,21 @@
             </div>
 
             <div class="flex space-x-2">
-              <!-- Marine Quote Edit Button -->
-              <button
-                *ngIf="quote.type === 'marine'"
-                mat-button
-                (click)="router.navigate(['/sign-up/marine-quote'], { queryParams: { editId: quote.id } })"
-                class="flex-1 bg-blue-50 text-blue-600 hover:bg-blue-100"
-              >
+              <button mat-button
+                      (click)="editQuoteByType(quote.id, quote.type)"
+                      class="flex-1 bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors">
                 <mat-icon class="mr-2">edit</mat-icon>
-                Edit Marine Quote
+                Edit Quote
               </button>
               
-              <!-- Travel Quote Edit Button -->
-              <button
-                *ngIf="quote.type === 'travel'"
-                mat-button
-                (click)="router.navigate(['/sign-up/travel-quote'], { queryParams: { editId: quote.id } })"
-                class="flex-1 bg-purple-50 text-purple-600 hover:bg-purple-100"
-              >
-                <mat-icon class="mr-2">edit</mat-icon>
-                Edit Travel Quote
-              </button>
-              
-              <!-- Pay via M-Pesa buttons in pending quotes -->
-              <button
-                mat-button
-                (click)="initiateMpesaPayment(quote.id)"
-                class="flex-1 bg-green-50 text-green-600 hover:bg-green-100 border border-green-200"
-                *ngIf="quote.status === 'pending'"
-              >
+              <button mat-button
+                      (click)="initiateMpesaPayment(quote.id)"
+                      class="flex-1 bg-green-50 text-green-600 hover:bg-green-100 border border-green-200 transition-colors"
+                      *ngIf="quote.status === 'pending'">
                 <div class="flex items-center justify-center">
-                  <img 
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLnyv6AXS3DPxlSvGmTSRhW6BV5yUFqVMOKw&s" 
-                    alt="M-Pesa" 
-                    class="w-4 h-1.5 object-contain mr-2"
-                  />
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLnyv6AXS3DPxlSvGmTSRhW6BV5yUFqVMOKw&s" 
+                       alt="M-Pesa" 
+                       class="w-4 h-1.5 object-contain mr-2" />
                   Pay via M-Pesa
                 </div>
               </button>
@@ -398,119 +287,69 @@
       <!-- Main Dashboard Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Active Policies -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="dashboard-card p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Active Policies</h3>
-          
+            <h3 class="text-lg font-semibold text-gray-900">
+              {{ user.role === 'intermediary' ? 'Recent Client Policies' : 'Active Policies' }}
+            </h3>
           </div>
 
-          <div id="active-policies" class="space-y-4">
-            <div
-              *ngFor="let policy of activePolicies"
-              class="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-            >
+          <div class="space-y-4">
+            <div *ngFor="let policy of activePolicies" 
+                 class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
               <div class="flex items-center space-x-3">
-                <div
-                  class="w-10 h-10 rounded-lg flex items-center justify-center"
-                  [class]="
-                    policy.type === 'marine'
-                      ? 'bg-blue-100'
-                      : 'bg-purple-100'
-                  "
-                >
-                  <mat-icon
-                    [class]="
-                      policy.type === 'marine'
-                        ? 'text-blue-600'
-                        : 'text-purple-600'
-                    "
-                  >
-                    {{
-                      policy.type === "marine" ? "directions_boat" : "flight"
-                    }}
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center"
+                     [class]="policy.type === 'marine' ? 'bg-blue-100' : 'bg-purple-100'">
+                  <mat-icon [class]="policy.type === 'marine' ? 'text-blue-600' : 'text-purple-600'">
+                    {{ policy.type === "marine" ? "directions_boat" : "flight" }}
                   </mat-icon>
                 </div>
                 <div>
                   <h4 class="font-medium text-gray-900">{{ policy.title }}</h4>
-                  <p class="text-sm text-gray-500">
-                    {{ policy.policyNumber }}
-                  </p>
-                  <p class="text-sm text-gray-500">
-                    KES {{ policy.premium | number }}/year
-                  </p>
+                  <p class="text-sm text-gray-500">{{ policy.policyNumber }}</p>
+                  <p class="text-sm text-gray-500">KES {{ policy.premium | number }}/year</p>
                 </div>
               </div>
               <div class="flex space-x-2">
-                <button
-                  mat-icon-button
-                  (click)="downloadCertificate(policy.id)"
-                  matTooltip="Download Certificate"
-                  class="text-gray-500 hover:text-blue-600"
-                >
+                <button mat-icon-button
+                        (click)="downloadCertificate(policy.id)"
+                        matTooltip="Download Certificate"
+                        class="text-gray-500 hover:text-blue-600 transition-colors">
                   <mat-icon>download</mat-icon>
                 </button>
-           
               </div>
             </div>
           </div>
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">
-            Quick Actions
-          </h3>
+        <div class="dashboard-card p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
           <div class="grid grid-cols-2 gap-4">
-            <button
-              (click)="router.navigate(['/sign-up/marine-quote'])"
-              class="group h-20 flex flex-col items-center justify-center space-y-2 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all duration-200"
-            >
-              <mat-icon class="text-gray-600 group-hover:text-blue-600"
-                >directions_boat</mat-icon
-              >
-              <span
-                class="text-sm text-gray-700 group-hover:text-blue-700 font-medium"
-                >Marine Quote</span
-              >
+            <button (click)="router.navigate(['/sign-up/marine-quote'])"
+                    class="quick-action-btn marine-action h-20 flex flex-col items-center justify-center space-y-2 border-2 border-gray-200 rounded-lg transition-all duration-200">
+              <mat-icon class="text-gray-600">directions_boat</mat-icon>
+              <span class="text-sm text-gray-700 font-medium">Marine Quote</span>
             </button>
-            <button
-              (click)="router.navigate(['/sign-up/travel-quote'])"
-              class="group h-20 flex flex-col items-center justify-center space-y-2 border-2 border-gray-200 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-all duration-200"
-            >
-              <mat-icon class="text-gray-600 group-hover:text-purple-600"
-                >flight</mat-icon
-              >
-              <span
-                class="text-sm text-gray-700 group-hover:text-purple-700 font-medium"
-                >Travel Quote</span
-              >
+            
+            <button (click)="router.navigate(['/sign-up/travel-quote'])"
+                    class="quick-action-btn travel-action h-20 flex flex-col items-center justify-center space-y-2 border-2 border-gray-200 rounded-lg transition-all duration-200">
+              <mat-icon class="text-gray-600">flight</mat-icon>
+              <span class="text-sm text-gray-700 font-medium">Travel Quote</span>
             </button>
-            <!-- Quick Actions M-Pesa button -->
-            <button
-              (click)="router.navigate(['/mpesa-payment'])"
-              class="group h-20 flex flex-col items-center justify-center space-y-2 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-all duration-200"
-            >
-              <img 
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLnyv6AXS3DPxlSvGmTSRhW6BV5yUFqVMOKw&s" 
-                alt="M-Pesa" 
-                class="w-8 h-3.5 object-contain"
-              />
-              <span
-                class="text-sm text-gray-700 group-hover:text-green-700 font-medium"
-                >M-Pesa Payment</span
-              >
+            
+            <button (click)="router.navigate(['/mpesa-payment'])"
+                    class="quick-action-btn payment-action h-20 flex flex-col items-center justify-center space-y-2 border-2 border-gray-200 rounded-lg transition-all duration-200">
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLnyv6AXS3DPxlSvGmTSRhW6BV5yUFqVMOKw&s" 
+                   alt="M-Pesa" 
+                   class="w-8 h-3.5 object-contain" />
+              <span class="text-sm text-gray-700 font-medium">M-Pesa Payment</span>
             </button>
-            <button
-              (click)="router.navigate(['/support'])"
-              class="group h-20 flex flex-col items-center justify-center space-y-2 border-2 border-gray-200 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-all duration-200"
-            >
-              <mat-icon class="text-gray-600 group-hover:text-orange-600"
-                >support</mat-icon
-              >
-              <span
-                class="text-sm text-gray-700 group-hover:text-orange-700 font-medium"
-                >Support</span
-              >
+            
+            <button (click)="router.navigate(['/support'])"
+                    class="quick-action-btn support-action h-20 flex flex-col items-center justify-center space-y-2 border-2 border-gray-200 rounded-lg transition-all duration-200">
+              <mat-icon class="text-gray-600">support</mat-icon>
+              <span class="text-sm text-gray-700 font-medium">Support</span>
             </button>
           </div>
         </div>
@@ -525,14 +364,11 @@
     <mat-icon>mail</mat-icon>
     <span>Quote expires in 2 days</span>
   </button>
-  <!-- Notification menu M-Pesa item -->
   <button mat-menu-item>
     <div class="flex items-center">
-      <img 
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLnyv6AXS3DPxlSvGmTSRhW6BV5yUFqVMOKw&s" 
-        alt="M-Pesa" 
-        class="w-5 h-2 object-contain mr-3"
-      />
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLnyv6AXS3DPxlSvGmTSRhW6BV5yUFqVMOKw&s" 
+           alt="M-Pesa" 
+           class="w-5 h-2 object-contain mr-3" />
       <span>M-Pesa payment received</span>
     </div>
   </button>
@@ -551,14 +387,11 @@
     <mat-icon>settings</mat-icon>
     <span>Settings</span>
   </button>
-  <!-- User menu M-Pesa settings -->
   <button mat-menu-item (click)="router.navigate(['/mpesa-settings'])">
     <div class="flex items-center">
-      <img 
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLnyv6AXS3DPxlSvGmTSRhW6BV5yUFqVMOKw&s" 
-        alt="M-Pesa" 
-        class="w-5 h-2 object-contain mr-3"
-      />
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLnyv6AXS3DPxlSvGmTSRhW6BV5yUFqVMOKw&s" 
+           alt="M-Pesa" 
+           class="w-5 h-2 object-contain mr-3" />
       <span>M-Pesa Settings</span>
     </div>
   </button>

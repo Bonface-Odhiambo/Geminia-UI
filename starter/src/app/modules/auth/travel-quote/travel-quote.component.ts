@@ -4,19 +4,36 @@ import { FormsModule } from '@angular/forms';
 
 // --- ENUMS ---
 export enum PlanType {
-  PLAN_A = 'Plan A - Essential',
-  PLAN_B = 'Plan B - Comprehensive',
-  PLAN_C = 'Plan C - Premium',
+  PLAN_A = 'Plan A',
+  PLAN_B = 'Plan B',
+  PLAN_C = 'Plan C',
 }
 
 export enum QuoteStep {
   PLAN_SELECTION = 1,
-  TRAVEL_DETAILS = 2,
-  // SUMMARY = 3, // Removed as per request
-  PAYMENT = 3, // Now the 3rd step
+  TRAVELER_DETAILS = 2,
+  PAYMENT = 3,
 }
 
 // --- INTERFACES ---
+export interface TravelerDetails {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  passportNumber: string;
+  destination: string;
+  travelPurpose: string;
+  departureDate: string;
+  returnDate: string;
+  emergencyContact: {
+    name: string;
+    phone: string;
+    relationship: string;
+  };
+}
+
 export interface Traveler {
   name: string;
   dob: string;
@@ -86,20 +103,37 @@ export class TravelQuoteComponent implements OnInit {
     hasErrors: false,
   };
 
-  selectedPlan: PlanType | null = null;
-  // summaryConfirmed: boolean = false; // Removed
+  selectedPlan: string | null = null;
+
+  // --- ADD-ON OPTIONS ---
+  includeWarTerrorism: boolean = false;
+  includeCovidExtension: boolean = false;
+
+  // --- TRAVELER DETAILS ---
+  travelerDetails: TravelerDetails = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    dateOfBirth: '',
+    passportNumber: '',
+    destination: '',
+    travelPurpose: '',
+    departureDate: '',
+    returnDate: '',
+    emergencyContact: {
+      name: '',
+      phone: '',
+      relationship: ''
+    }
+  };
 
   // --- VALIDATION ---
   validationErrors: ValidationErrors = {};
 
   // --- SEARCHABLE DROPDOWN PROPERTIES ---
-  departureCountrySearch: string = '';
-  destinationCountrySearch: string = '';
-  showDepartureDropdown: boolean = false;
+  destinationSearch: string = '';
   showDestinationDropdown: boolean = false;
-  showNationalityDropdown: boolean[] = [];
-  filteredNationalities: string[][] = [];
-  filteredDepartureCountries: string[] = [];
   filteredDestinationCountries: string[] = [];
 
   // --- DATA ---
@@ -114,7 +148,7 @@ export class TravelQuoteComponent implements OnInit {
         '24/7 Emergency Assistance',
         'Personal Liability up to $100,000',
       ],
-      startingPrice: 25.99,
+      startingPrice: 18.00,
       color: 'blue',
     },
     {
@@ -130,7 +164,7 @@ export class TravelQuoteComponent implements OnInit {
         'Emergency Evacuation',
         'Rental Car Coverage',
       ],
-      startingPrice: 45.99,
+      startingPrice: 25.00,
       popular: true,
       color: 'purple',
     },
@@ -151,209 +185,48 @@ export class TravelQuoteComponent implements OnInit {
         'Cancel for Any Reason',
         'Concierge Services',
       ],
-      startingPrice: 75.99,
+      startingPrice: 35.00,
       color: 'amber',
     },
   ];
 
-  // Updated step labels
-  stepLabels = ['Select Plan', 'Travel Details', 'Payment']; // Now 3 steps
+  stepLabels = ['Select Plan', 'Traveler Details', 'Payment'];
 
   countries = [
-    'Afghanistan',
-    'Albania',
-    'Algeria',
-    'Andorra',
-    'Angola',
-    'Antigua and Barbuda',
-    'Argentina',
-    'Armenia',
-    'Australia',
-    'Austria',
-    'Azerbaijan',
-    'Bahamas',
-    'Bahrain',
-    'Bangladesh',
-    'Barbados',
-    'Belarus',
-    'Belgium',
-    'Belize',
-    'Benin',
-    'Bhutan',
-    'Bolivia',
-    'Bosnia and Herzegovina',
-    'Botswana',
-    'Brazil',
-    'Brunei',
-    'Bulgaria',
-    'Burkina Faso',
-    'Burundi',
-    'Cambodia',
-    'Cameroon',
-    'Canada',
-    'Cape Verde',
-    'Central African Republic',
-    'Chad',
-    'Chile',
-    'China',
-    'Colombia',
-    'Comoros',
-    'Congo',
-    'Costa Rica',
-    'Croatia',
-    'Cuba',
-    'Cyprus',
-    'Czech Republic',
-    'Denmark',
-    'Djibouti',
-    'Dominica',
-    'Dominican Republic',
-    'East Timor',
-    'Ecuador',
-    'Egypt',
-    'El Salvador',
-    'Equatorial Guinea',
-    'Eritrea',
-    'Estonia',
-    'Ethiopia',
-    'Fiji',
-    'Finland',
-    'France',
-    'Gabon',
-    'Gambia',
-    'Georgia',
-    'Germany',
-    'Ghana',
-    'Greece',
-    'Grenada',
-    'Guatemala',
-    'Guinea',
-    'Guinea-Bissau',
-    'Guyana',
-    'Haiti',
-    'Honduras',
-    'Hungary',
-    'Iceland',
-    'India',
-    'Indonesia',
-    'Iran',
-    'Iraq',
-    'Ireland',
-    'Israel',
-    'Italy',
-    'Jamaica',
-    'Japan',
-    'Jordan',
-    'Kazakhstan',
-    'Kenya',
-    'Kiribati',
-    'Korea North',
-    'Korea South',
-    'Kosovo',
-    'Kuwait',
-    'Kyrgyzstan',
-    'Laos',
-    'Latvia',
-    'Lebanon',
-    'Lesotho',
-    'Liberia',
-    'Libya',
-    'Liechtenstein',
-    'Lithuania',
-    'Luxembourg',
-    'Macedonia',
-    'Madagascar',
-    'Malawi',
-    'Malaysia',
-    'Maldives',
-    'Mali',
-    'Malta',
-    'Marshall Islands',
-    'Mauritania',
-    'Mauritius',
-    'Mexico',
-    'Micronesia',
-    'Moldova',
-    'Monaco',
-    'Mongolia',
-    'Montenegro',
-    'Morocco',
-    'Mozambique',
-    'Myanmar',
-    'Namibia',
-    'Nauru',
-    'Nepal',
-    'Netherlands',
-    'New Zealand',
-    'Nicaragua',
-    'Niger',
-    'Nigeria',
-    'Norway',
-    'Oman',
-    'Pakistan',
-    'Palau',
-    'Panama',
-    'Papua New Guinea',
-    'Paraguay',
-    'Peru',
-    'Philippines',
-    'Poland',
-    'Portugal',
-    'Qatar',
-    'Romania',
-    'Russia',
-    'Rwanda',
-    'Saint Kitts and Nevis',
-    'Saint Lucia',
-    'Saint Vincent and the Grenadines',
-    'Samoa',
-    'San Marino',
-    'Sao Tome and Principe',
-    'Saudi Arabia',
-    'Senegal',
-    'Serbia',
-    'Seychelles',
-    'Sierra Leone',
-    'Singapore',
-    'Slovakia',
-    'Slovenia',
-    'Solomon Islands',
-    'Somalia',
-    'South Africa',
-    'South Sudan',
-    'Spain',
-    'Sri Lanka',
-    'Sudan',
-    'Suriname',
-    'Swaziland',
-    'Sweden',
-    'Switzerland',
-    'Syria',
-    'Taiwan',
-    'Tajikistan',
-    'Tanzania',
-    'Thailand',
-    'Togo',
-    'Tonga',
-    'Trinidad and Tobago',
-    'Tunisia',
-    'Turkey',
-    'Turkmenistan',
-    'Tuvalu',
-    'Uganda',
-    'Ukraine',
-    'United Arab Emirates',
-    'United Kingdom',
-    'United States',
-    'Uruguay',
-    'Uzbekistan',
-    'Vanuatu',
-    'Vatican City',
-    'Venezuela',
-    'Vietnam',
-    'Yemen',
-    'Zambia',
-    'Zimbabwe',
+    'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda',
+    'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas',
+    'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize',
+    'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil',
+    'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon',
+    'Canada', 'Cape Verde', 'Central African Republic', 'Chad', 'Chile', 'China',
+    'Colombia', 'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba',
+    'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic',
+    'East Timor', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea',
+    'Estonia', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon',
+    'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada',
+    'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras',
+    'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq',
+    'Ireland', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jordan',
+    'Kazakhstan', 'Kenya', 'Kiribati', 'Korea North', 'Korea South', 'Kosovo',
+    'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho',
+    'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macedonia',
+    'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta',
+    'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova',
+    'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar',
+    'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua',
+    'Niger', 'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Palau',
+    'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland',
+    'Portugal', 'Qatar', 'Romania', 'Russia', 'Rwanda', 'Saint Kitts and Nevis',
+    'Saint Lucia', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino',
+    'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles',
+    'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia',
+    'South Africa', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan',
+    'Suriname', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Taiwan',
+    'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tonga', 'Trinidad and Tobago',
+    'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine',
+    'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan',
+    'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen',
+    'Zambia', 'Zimbabwe',
   ];
 
   relationships = ['Spouse', 'Parent', 'Child', 'Sibling', 'Friend', 'Other'];
@@ -361,16 +234,13 @@ export class TravelQuoteComponent implements OnInit {
   quote!: QuoteData;
 
   ngOnInit(): void {
-    this.filteredDepartureCountries = [...this.countries];
     this.filteredDestinationCountries = [...this.countries];
-    this.departureCountrySearch = 'Kenya';
-    this.destinationCountrySearch = '';
   }
 
   // --- PLAN SELECTION ---
-  selectPlan(planType: PlanType): void {
+  selectPlan(planType: string): void {
     this.selectedPlan = planType;
-    this.initializeQuote(planType);
+    this.initializeQuote(planType as PlanType);
   }
 
   private initializeQuote(planType: PlanType): void {
@@ -394,74 +264,36 @@ export class TravelQuoteComponent implements OnInit {
       expiresAt: expiryDate,
     };
 
-    this.departureCountrySearch = this.quote.departureCountry;
-    this.destinationCountrySearch = '';
-    this.showNationalityDropdown = [];
-    this.filteredNationalities = [];
-
     this.onTravelerCountChange();
   }
 
   // --- SEARCHABLE DROPDOWN METHODS ---
-  filterDepartureCountries(event: any): void {
-    const query = event.target.value.toLowerCase();
-    this.filteredDepartureCountries = this.countries.filter((country) =>
-      country.toLowerCase().includes(query),
-    );
-    this.showDepartureDropdown = true;
-  }
-
   filterDestinationCountries(event: any): void {
     const query = event.target.value.toLowerCase();
+    this.destinationSearch = event.target.value;
+    this.travelerDetails.destination = event.target.value;
     this.filteredDestinationCountries = this.countries.filter((country) =>
       country.toLowerCase().includes(query),
     );
     this.showDestinationDropdown = true;
   }
 
-  selectDepartureCountry(country: string): void {
-    this.quote.departureCountry = country;
-    this.departureCountrySearch = country;
-    this.showDepartureDropdown = false;
-  }
-
   selectDestinationCountry(country: string): void {
-    this.quote.destinationCountry = country;
-    this.destinationCountrySearch = country;
+    this.travelerDetails.destination = country;
+    this.destinationSearch = country;
     this.showDestinationDropdown = false;
-    this.calculatePremium();
-  }
-
-  filterNationalities(event: any, index: number): void {
-    const query = event.target.value.toLowerCase();
-    if (!this.filteredNationalities[index]) {
-      this.filteredNationalities[index] = [];
-    }
-    this.filteredNationalities[index] = this.countries.filter((country) =>
-      country.toLowerCase().includes(query),
-    );
-    this.showNationalityDropdown[index] = true;
-  }
-
-  selectNationality(nationality: string, index: number): void {
-    this.quote.travelerDetails[index].nationality = nationality;
-    this.quote.travelerDetails[index].nationalitySearch = nationality;
-    this.showNationalityDropdown[index] = false;
   }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: any): void {
     const target = event.target as HTMLElement;
-    if (!target.closest('.relative')) {
-      this.showDepartureDropdown = false;
+    if (!target.closest('.destination-dropdown-container')) {
       this.showDestinationDropdown = false;
-      this.showNationalityDropdown.fill(false);
     }
   }
 
   // --- STEP NAVIGATION ---
   goToStep(step: QuoteStep): void {
-    // Only validate if moving forward or specifically to a step where validation is needed
     if (step > this.state.currentStep) {
       if (!this.validateCurrentStep()) {
         return;
@@ -474,25 +306,24 @@ export class TravelQuoteComponent implements OnInit {
   goToNextStep(): void {
     if (this.state.currentStep === QuoteStep.PLAN_SELECTION) {
       if (this.validatePlanSelection()) {
-        this.state.currentStep = QuoteStep.TRAVEL_DETAILS;
+        this.state.currentStep = QuoteStep.TRAVELER_DETAILS;
         this.clearValidationErrors();
       }
-    } else if (this.state.currentStep === QuoteStep.TRAVEL_DETAILS) {
+    } else if (this.state.currentStep === QuoteStep.TRAVELER_DETAILS) {
       if (this.validateTravelerDetails()) {
-        this.state.currentStep = QuoteStep.PAYMENT; // Direct to payment
+        this.state.currentStep = QuoteStep.PAYMENT;
         this.clearValidationErrors();
       }
     }
-    // No other next steps from PAYMENT
   }
 
   goToPreviousStep(): void {
     if (this.state.currentStep === QuoteStep.PAYMENT) {
-      this.state.currentStep = QuoteStep.TRAVEL_DETAILS;
-    } else if (this.state.currentStep === QuoteStep.TRAVEL_DETAILS) {
+      this.state.currentStep = QuoteStep.TRAVELER_DETAILS;
+    } else if (this.state.currentStep === QuoteStep.TRAVELER_DETAILS) {
       this.state.currentStep = QuoteStep.PLAN_SELECTION;
     }
-    this.clearValidationErrors(); // Clear errors when going back
+    this.clearValidationErrors();
   }
 
   returnToHomepage(): void {
@@ -520,14 +351,13 @@ export class TravelQuoteComponent implements OnInit {
   }
 
   private getPricingRates() {
-    const baseRates = { adult: 25.99, child: 18.0, senior: 45.0 };
+    const baseRates = { adult: 18.00, child: 12.0, senior: 30.0 };
 
     if (!this.selectedPlan) return baseRates;
 
-    // Apply multipliers based on plan type
     let multiplier = 1.0;
-    if (this.selectedPlan === PlanType.PLAN_B) multiplier = 1.77;
-    if (this.selectedPlan === PlanType.PLAN_C) multiplier = 2.92;
+    if (this.selectedPlan === 'Plan B') multiplier = 1.39;
+    if (this.selectedPlan === 'Plan C') multiplier = 1.94;
 
     return {
       adult: Math.round(baseRates.adult * multiplier * 100) / 100,
@@ -538,15 +368,14 @@ export class TravelQuoteComponent implements OnInit {
 
   // --- VALIDATION ---
   validateCurrentStep(): boolean {
-    this.clearValidationErrors(); // Clear previous errors before validating
+    this.clearValidationErrors();
 
     switch (this.state.currentStep) {
       case QuoteStep.PLAN_SELECTION:
         return this.validatePlanSelection();
-      case QuoteStep.TRAVEL_DETAILS:
+      case QuoteStep.TRAVELER_DETAILS:
         return this.validateTravelerDetails();
       case QuoteStep.PAYMENT:
-        // No explicit validation needed for the payment view itself
         return true;
       default:
         return true;
@@ -569,55 +398,56 @@ export class TravelQuoteComponent implements OnInit {
   private validateTravelerDetails(): boolean {
     const errors: string[] = [];
 
-    // Trip details validation
-    if (!this.quote.destinationCountry) {
+    // Personal Information validation
+    if (!this.travelerDetails.firstName?.trim()) {
+      errors.push('First name is required');
+    }
+    if (!this.travelerDetails.lastName?.trim()) {
+      errors.push('Last name is required');
+    }
+    if (!this.travelerDetails.email?.trim()) {
+      errors.push('Email is required');
+    } else if (!this.isValidEmail(this.travelerDetails.email)) {
+      errors.push('Email is invalid');
+    }
+    if (!this.travelerDetails.phone?.trim()) {
+      errors.push('Phone number is required');
+    }
+    if (!this.travelerDetails.dateOfBirth) {
+      errors.push('Date of birth is required');
+    }
+    if (!this.travelerDetails.passportNumber?.trim()) {
+      errors.push('Passport number is required');
+    }
+
+    // Travel Information validation
+    if (!this.travelerDetails.destination?.trim()) {
       errors.push('Destination country is required');
     }
-    if (!this.quote.startDate) {
-      errors.push('Departure Date is required');
+    if (!this.travelerDetails.travelPurpose) {
+      errors.push('Purpose of travel is required');
     }
-    if (!this.quote.endDate) {
-      errors.push('Return Date is required');
+    if (!this.travelerDetails.departureDate) {
+      errors.push('Departure date is required');
     }
-    if (this.quote.startDate && this.quote.endDate) {
-      if (new Date(this.quote.startDate) >= new Date(this.quote.endDate)) {
-        errors.push('Return Date must be after Departure Date');
+    if (!this.travelerDetails.returnDate) {
+      errors.push('Return date is required');
+    }
+    if (this.travelerDetails.departureDate && this.travelerDetails.returnDate) {
+      if (new Date(this.travelerDetails.departureDate) >= new Date(this.travelerDetails.returnDate)) {
+        errors.push('Return date must be after departure date');
       }
-    }
-    if (this.quote.totalTravelers === 0) {
-      errors.push('At least one traveler is required');
     }
 
-    // Traveler details validation
-    this.quote.travelerDetails.forEach((traveler, index) => {
-      if (!traveler.name || !traveler.name.trim()) {
-        errors.push(`Traveler ${index + 1}: Name is required`);
-      }
-      if (!traveler.dob) {
-        errors.push(`Traveler ${index + 1}: Date of birth is required`);
-      }
-      if (!traveler.passport || !traveler.passport.trim()) {
-        errors.push(`Traveler ${index + 1}: Passport number is required`);
-      }
-      if (!traveler.nationality) {
-        errors.push(`Traveler ${index + 1}: Nationality is required`);
-      }
-    });
-
-    // Emergency contact validation
-    if (!this.quote.emergencyContact.name || !this.quote.emergencyContact.name.trim()) {
+    // Emergency Contact validation
+    if (!this.travelerDetails.emergencyContact.name?.trim()) {
       errors.push('Emergency contact name is required');
     }
-    if (!this.quote.emergencyContact.relationship) {
-      errors.push('Emergency contact relationship is required');
-    }
-    if (!this.quote.emergencyContact.email || !this.quote.emergencyContact.email.trim()) {
-      errors.push('Emergency contact email is required');
-    } else if (!this.isValidEmail(this.quote.emergencyContact.email)) {
-      errors.push('Emergency contact email is invalid');
-    }
-    if (!this.quote.emergencyContact.phone || !this.quote.emergencyContact.phone.trim()) {
+    if (!this.travelerDetails.emergencyContact.phone?.trim()) {
       errors.push('Emergency contact phone is required');
+    }
+    if (!this.travelerDetails.emergencyContact.relationship) {
+      errors.push('Emergency contact relationship is required');
     }
 
     if (errors.length > 0) {
@@ -629,7 +459,6 @@ export class TravelQuoteComponent implements OnInit {
   }
 
   private isValidEmail(email: string): boolean {
-    // Simple email regex for basic validation
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
@@ -668,13 +497,6 @@ export class TravelQuoteComponent implements OnInit {
     } else if (this.quote.totalTravelers < currentDetailsCount) {
       this.quote.travelerDetails.length = this.quote.totalTravelers;
     }
-
-    this.showNationalityDropdown = new Array(this.quote.totalTravelers).fill(
-      false,
-    );
-    this.filteredNationalities = new Array(this.quote.totalTravelers)
-      .fill(null)
-      .map(() => [...this.countries]);
   }
 
   // --- EVENT HANDLERS ---
@@ -691,22 +513,20 @@ export class TravelQuoteComponent implements OnInit {
     this.calculatePremium();
   }
 
+  // --- METHODS CALLED FROM HTML ---
   downloadQuote(): void {
     const quoteData = {
-      quoteId: this.quote.id,
+      quoteId: this.quote?.id || 'N/A',
       planType: this.selectedPlan,
-      premium: this.quote.premium,
-      travelers: this.quote.totalTravelers,
-      destination: this.quote.destinationCountry,
-      dates: `${this.quote.startDate} to ${this.quote.endDate}`,
+      travelerDetails: this.travelerDetails,
+      includeWarTerrorism: this.includeWarTerrorism,
+      includeCovidExtension: this.includeCovidExtension,
       createdAt: new Date().toISOString(),
     };
 
     const dataStr = JSON.stringify(quoteData, null, 2);
-    // Correctly define dataUri here
     const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-
-    const exportFileDefaultName = `travel-quote-${this.quote.id}.json`;
+    const exportFileDefaultName = `travel-quote-${Date.now()}.json`;
 
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
@@ -715,14 +535,7 @@ export class TravelQuoteComponent implements OnInit {
   }
 
   proceedToPayment(): void {
-    // This button now directly calls processPayment, as validation is done by goToNextStep
-    this.processPayment();
-  }
-
-  processPayment(): void {
-    console.log('Processing payment for quote:', this.quote);
-    // In a real app, you would integrate with a payment gateway here.
-    // For this example, we'll simulate a redirect.
+    console.log('Processing payment for traveler:', this.travelerDetails);
     window.location.href = '/sign-in';
   }
 
@@ -736,8 +549,30 @@ export class TravelQuoteComponent implements OnInit {
   }
 
   get quoteSummary(): string {
-    if (!this.quote || !this.selectedPlan) return '';
-    return `${this.selectedPlan} for ${this.quote.totalTravelers} traveler(s)`;
+    if (!this.selectedPlan) return '';
+    return `${this.selectedPlan} for traveler`;
+  }
+
+  // Method called from HTML template - updated for proper validation
+  isFormValid(): boolean {
+    // Check if all required fields are filled
+    return !!(
+      this.travelerDetails.firstName?.trim() &&
+      this.travelerDetails.lastName?.trim() &&
+      this.travelerDetails.email?.trim() &&
+      this.travelerDetails.phone?.trim() &&
+      this.travelerDetails.dateOfBirth &&
+      this.travelerDetails.passportNumber?.trim() &&
+      this.travelerDetails.destination?.trim() &&
+      this.travelerDetails.travelPurpose &&
+      this.travelerDetails.departureDate &&
+      this.travelerDetails.returnDate &&
+      this.travelerDetails.emergencyContact.name?.trim() &&
+      this.travelerDetails.emergencyContact.phone?.trim() &&
+      this.travelerDetails.emergencyContact.relationship &&
+      this.isValidEmail(this.travelerDetails.email) &&
+      new Date(this.travelerDetails.departureDate) < new Date(this.travelerDetails.returnDate)
+    );
   }
 
   get Math() {

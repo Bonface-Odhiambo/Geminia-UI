@@ -1,849 +1,637 @@
-<!-- Main container -->
-<div class="font-sans">
-  <!-- =================================================================== -->
-  <!--                     MULTI-STEP QUOTE FORM - FULL SCREEN             -->
-  <!-- =================================================================== -->
-  <div class="fixed inset-0 z-50 bg-gradient-to-br from-gray-50 to-blue-50">
-    <div class="flex h-full w-full flex-col">
-      <!-- Enhanced Form Header with Sky Blue Background -->
-      <div class="flex-shrink-0 bg-sky-400 p-6">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <img
-              src="https://geminialife.co.ke/wp-content/uploads/2022/06/thumbnail_GEMINIA-FINAL-LOGO-png.png"
-              alt="Geminia Insurance Logo"
-              class="h-12 w-12 object-contain"
-            />
-            <div class="text-white">
-              <h1 class="text-2xl font-bold">Travel Insurance Application</h1>
-              <p class="mt-1 text-blue-100" *ngIf="quote?.id">
-                Quote ID: {{ quote.id }}
-              </p>
-            </div>
+<!-- Step 1: Plan Selection - Redesigned as Table -->
+<div
+  *ngIf="state.currentStep === QuoteStep.PLAN_SELECTION"
+  class="flex min-h-full flex-col w-full px-4 py-8 sm:px-6 lg:px-8"
+>
+  <!-- Close Button -->
+  <div class="mb-4 flex justify-end">
+    <button
+      type="button"
+      (click)="returnToHomepage()"
+      class="flex items-center space-x-2 rounded-lg bg-gray-100 px-4 py-2 text-gray-600 transition-colors hover:bg-gray-200 hover:text-gray-800"
+      title="Close and return to homepage"
+    >
+      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+      <span>Close</span>
+    </button>
+  </div>
+
+  <div class="mb-12 text-center">
+    <h2 class="mb-4 text-4xl font-bold text-gray-800">
+      Choose Your <span class="text-sky-500">Travel Plan</span>
+    </h2>
+    <p class="text-xl text-gray-600">
+      Select the coverage level that best fits your needs
+    </p>
+  </div>
+
+  <!-- Benefits Note -->
+  <div class="mb-6 rounded-lg bg-sky-50 p-4">
+    <p class="text-center text-sky-700 font-medium">
+      * All benefit amounts are in United States Dollars
+    </p>
+  </div>
+
+  <!-- Plans Comparison Table -->
+  <div class="flex flex-1 items-center justify-center">
+    <div class="w-full max-w-6xl overflow-hidden rounded-2xl bg-white shadow-xl">
+      
+      <!-- Table Header -->
+      <div class="bg-[#4338ca] text-white">
+        <div class="grid grid-cols-4 gap-0">
+          <div class="border-r border-indigo-300 p-6">
+            <h3 class="text-lg font-bold">Benefit Name</h3>
           </div>
-          <button
-            (click)="returnToHomepage()"
-            class="text-3xl text-white transition-colors hover:text-blue-200"
-            aria-label="Return to homepage"
-          >
-            &times;
-          </button>
-        </div>
-      </div>
-
-      <!-- Enhanced Progress Bar -->
-      <div class="flex-shrink-0 bg-sky-50 px-6 py-4">
-        <div class="flex items-center justify-between">
-          <div
-            *ngFor="let step of stepLabels; let i = index"
-            class="flex items-center"
-            [class.flex-1]="i < stepLabels.length - 1"
-          >
-            <!-- Step Circle -->
-            <div
-              class="flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-300"
-              [ngClass]="{
-                'border-sky-500 bg-sky-500 text-white':
-                  state.currentStep >= i + 1,
-                'border-gray-300 bg-white text-gray-400':
-                  state.currentStep < i + 1
-              }"
-            >
-              <span *ngIf="state.currentStep > i + 1" class="text-sm">✓</span>
-              <span *ngIf="state.currentStep <= i + 1" class="text-sm font-bold"
-                >{{ i + 1 }}</span
-              >
-            </div>
-
-            <!-- Step Label -->
-            <span
-              class="ml-2 hidden text-sm font-medium md:inline"
-              [ngClass]="{
-                'text-sky-600': state.currentStep >= i + 1,
-                'text-gray-400': state.currentStep < i + 1
-              }"
-            >
-              {{ step }}
-            </span>
-
-            <!-- Connector Line -->
-            <div
-              *ngIf="i < stepLabels.length - 1"
-              class="mx-4 h-0.5 flex-1 transition-all duration-300"
-              [ngClass]="{
-                'bg-sky-500': state.currentStep > i + 1,
-                'bg-gray-300': state.currentStep <= i + 1
-              }"
-            ></div>
+          <div class="border-r border-indigo-300 p-6 text-center">
+            <h3 class="text-lg font-bold">Plan A</h3>
+            <p class="text-sm text-indigo-100 mt-1">Basic Coverage</p>
+          </div>
+          <div class="border-r border-indigo-300 p-6 text-center">
+            <h3 class="text-lg font-bold">Plan B</h3>
+            <p class="text-sm text-indigo-100 mt-1">Enhanced Coverage</p>
+          </div>
+          <div class="p-6 text-center">
+            <h3 class="text-lg font-bold">Plan C</h3>
+            <p class="text-sm text-indigo-100 mt-1">Premium Coverage</p>
           </div>
         </div>
       </div>
 
-      <!-- Form Content - Full Height with Scroll -->
-      <div class="flex-1 overflow-auto bg-white">
-        <div class="min-h-full p-8">
-          <!-- Validation Errors -->
-          <div *ngIf="validationErrors | keyvalue as errors" class="mb-6">
-            <div
-              *ngFor="let errorGroup of errors"
-              class="mb-4 border-l-4 border-red-400 bg-red-50 p-4"
-            >
-              <div class="flex">
-                <div class="ml-3">
-                  <h3 class="text-sm font-medium text-red-800">
-                    Please correct the following errors:
-                  </h3>
-                  <div class="mt-2 text-sm text-red-700">
-                    <ul class="list-inside list-disc space-y-1">
-                      <li *ngFor="let error of errorGroup.value">
-                        {{ error }}
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+      <!-- Table Body -->
+      <div class="divide-y divide-gray-200">
+        <!-- Personal Accident -->
+        <div class="grid grid-cols-4 gap-0 hover:bg-gray-50">
+          <div class="border-r border-gray-200 p-4">
+            <span class="font-medium text-gray-800">Personal Accident</span>
+          </div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">15,000</div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">20,000</div>
+          <div class="p-4 text-center text-gray-700">25,000</div>
+        </div>
+
+        <!-- Emergency Medical Expenses & Evacuation -->
+        <div class="grid grid-cols-4 gap-0 hover:bg-gray-50">
+          <div class="border-r border-gray-200 p-4">
+            <span class="font-medium text-gray-800">Emergency Medical Expenses & Evacuation</span>
+          </div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">50,000</div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">100,000</div>
+          <div class="p-4 text-center text-gray-700">200,000</div>
+        </div>
+
+        <!-- Repatriation of Mortal Remains -->
+        <div class="grid grid-cols-4 gap-0 hover:bg-gray-50">
+          <div class="border-r border-gray-200 p-4">
+            <span class="font-medium text-gray-800">Repatriation of Mortal Remains</span>
+          </div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">8,000</div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">10,000</div>
+          <div class="p-4 text-center text-gray-700">12,500</div>
+        </div>
+
+        <!-- Emergency Dental Care -->
+        <div class="grid grid-cols-4 gap-0 hover:bg-gray-50">
+          <div class="border-r border-gray-200 p-4">
+            <span class="font-medium text-gray-800">Emergency Dental Care</span>
+          </div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">400</div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">600</div>
+          <div class="p-4 text-center text-gray-700">750</div>
+        </div>
+
+        <!-- Hospital Benefits -->
+        <div class="grid grid-cols-4 gap-0 hover:bg-gray-50">
+          <div class="border-r border-gray-200 p-4">
+            <span class="font-medium text-gray-800">Hospital Benefits</span>
+          </div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">5 Accumulation 50</div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">15 Accumulation 150</div>
+          <div class="p-4 text-center text-gray-700">25 Accumulation 250</div>
+        </div>
+
+        <!-- Delayed Baggage -->
+        <div class="grid grid-cols-4 gap-0 hover:bg-gray-50">
+          <div class="border-r border-gray-200 p-4">
+            <span class="font-medium text-gray-800">Delayed Baggage</span>
+          </div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">$30 per 12 hrs upto max $ 150</div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">$40 per 12 hrs upto max $ 300</div>
+          <div class="p-4 text-center text-gray-700">$50 per 12 hrs upto max $ 400</div>
+        </div>
+
+        <!-- Loss of Checked Baggage & Personal Effects -->
+        <div class="grid grid-cols-4 gap-0 hover:bg-gray-50">
+          <div class="border-r border-gray-200 p-4">
+            <span class="font-medium text-gray-800">Loss of Checked Baggage & Personal Effects</span>
+          </div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">800</div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">1,000</div>
+          <div class="p-4 text-center text-gray-700">1,000</div>
+        </div>
+
+        <!-- Personal Liability -->
+        <div class="grid grid-cols-4 gap-0 hover:bg-gray-50">
+          <div class="border-r border-gray-200 p-4">
+            <span class="font-medium text-gray-800">Personal Liability</span>
+          </div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">100,000</div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">150,000</div>
+          <div class="p-4 text-center text-gray-700">150,000</div>
+        </div>
+
+        <!-- Hijack -->
+        <div class="grid grid-cols-4 gap-0 hover:bg-gray-50">
+          <div class="border-r border-gray-200 p-4">
+            <span class="font-medium text-gray-800">Hijack</span>
+          </div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">$50 per 24 hrs upto max $ 2,500</div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">$75 per 24 hrs upto max $ 5,000</div>
+          <div class="p-4 text-center text-gray-700">$100 per 24 hrs upto max $ 7,500</div>
+        </div>
+
+        <!-- Loss of passport -->
+        <div class="grid grid-cols-4 gap-0 hover:bg-gray-50">
+          <div class="border-r border-gray-200 p-4">
+            <span class="font-medium text-gray-800">Loss of passport</span>
+          </div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">150</div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">150</div>
+          <div class="p-4 text-center text-gray-700">150</div>
+        </div>
+
+        <!-- Cancellation and Curtailment -->
+        <div class="grid grid-cols-4 gap-0 hover:bg-gray-50">
+          <div class="border-r border-gray-200 p-4">
+            <span class="font-medium text-gray-800">Cancellation and Curtailment</span>
+          </div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">1,000</div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">1,500</div>
+          <div class="p-4 text-center text-gray-700">1,500</div>
+        </div>
+
+        <!-- Travel Delay -->
+        <div class="grid grid-cols-4 gap-0 hover:bg-gray-50">
+          <div class="border-r border-gray-200 p-4">
+            <span class="font-medium text-gray-800">Travel Delay</span>
+          </div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">$30 per 12 hrs upto max $ 150</div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">$40 per 12 hrs upto max $ 200</div>
+          <div class="p-4 text-center text-gray-700">$50 per 12 hrs upto max $ 200</div>
+        </div>
+
+        <!-- War, Political Violence and Terrorism -->
+        <div class="grid grid-cols-4 gap-0 hover:bg-gray-50">
+          <div class="border-r border-gray-200 p-4">
+            <span class="font-medium text-gray-800">War, Political Violence and Terrorism</span>
+          </div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">Covered at an extra premium of 25 percent of the Basic premiums</div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">Covered at an extra premium of 25 percent of the Basic premiums</div>
+          <div class="p-4 text-center text-gray-700">Covered at an extra premium of 25 percent of the Basic premiums</div>
+        </div>
+
+        <!-- Covid Extension -->
+        <div class="grid grid-cols-4 gap-0 hover:bg-gray-50">
+          <div class="border-r border-gray-200 p-4">
+            <span class="font-medium text-gray-800">Covid Extension</span>
+          </div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">Covered at an extra premium of 20 percent of the Basic premiums</div>
+          <div class="border-r border-gray-200 p-4 text-center text-gray-700">Covered at an extra premium of 20 percent of the Basic premiums</div>
+          <div class="p-4 text-center text-gray-700">Covered at an extra premium of 20 percent of the Basic premiums</div>
+        </div>
+
+        <!-- Total Premiums Row -->
+        <div class="grid grid-cols-4 gap-0 bg-gray-100 font-bold">
+          <div class="border-r border-gray-300 p-4">
+            <div class="text-center">
+              <div class="font-bold text-gray-800">Total Premiums</div>
+              <div class="text-sm text-gray-600">(1 USD = 129.03 KES)</div>
             </div>
           </div>
-
-          <!-- Step 1: Plan Selection - Redesigned -->
-          <div
-            *ngIf="state.currentStep === QuoteStep.PLAN_SELECTION"
-            class="flex min-h-full flex-col"
-          >
-            <div class="mb-12 text-center">
-              <h2 class="mb-4 text-4xl font-bold text-gray-800">
-                Choose Your <span class="text-sky-500">Travel Plan</span>
-              </h2>
-              <p class="text-xl text-gray-600">
-                Select the coverage level that best fits your needs
-              </p>
-            </div>
-
-            <!-- Plan Cards Grid -->
-            <div class="flex flex-1 items-center justify-center">
-              <div
-                class="grid w-full max-w-7xl grid-cols-1 gap-8 lg:grid-cols-3"
-              >
-                <div
-                  *ngFor="let plan of productCards; let i = index"
-                  class="group relative overflow-hidden rounded-2xl bg-white shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
-                  [class.ring-4]="selectedPlan === plan.name"
-                  [class.ring-sky-400]="selectedPlan === plan.name"
-                  [class.shadow-sky-200]="selectedPlan === plan.name"
-                  > <!-- No comment inside the opening tag here -->
-                  <!-- Popular Badge -->
-                  <div
-                    *ngIf="plan.popular"
-                    class="absolute -right-10 top-6 rotate-45 bg-gradient-to-r from-sky-400 to-sky-500 px-10 py-1 text-xs font-bold text-white shadow-lg"
-                  >
-                    POPULAR
-                  </div>
-
-                  <div class="p-6">
-                    <!-- Plan Header -->
-                    <div class="mb-6 text-center">
-                      <div
-                        class="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full text-2xl font-bold text-white"
-                        [ngClass]="{
-                          'bg-blue-500': plan.color === 'blue',
-                          'bg-purple-500': plan.color === 'purple',
-                          'bg-amber-500': plan.color === 'amber'
-                        }"
-                      >
-                        {{ plan.name.charAt(5) }}
-                      </div>
-                      <h3 class="text-xl font-bold text-gray-800">
-                        {{ plan.name }}
-                      </h3>
-                      <p class="mt-2 text-sm text-gray-600">
-                        {{ plan.description }}
-                      </p>
-                    </div>
-
-                    <!-- Price -->
-                    <div class="mb-6 text-center">
-                      <div class="text-sm text-gray-500">Starting from</div>
-                      <div
-                        class="text-3xl font-bold"
-                        [ngClass]="{
-                          'text-blue-600': plan.color === 'blue',
-                          'text-purple-600': plan.color === 'purple',
-                          'text-amber-600': plan.color === 'amber'
-                        }"
-                      >
-                        USD {{ plan.startingPrice }}
-                      </div>
-                      <div class="text-sm text-gray-400">per person</div>
-                    </div>
-
-                    <!-- Benefits List -->
-                    <div class="space-y-3">
-                      <div
-                        class="border-b pb-2 text-sm font-semibold text-gray-700"
-                      >
-                        Coverage Benefits:
-                      </div>
-                      <div
-                        *ngFor="let benefit of plan.benefits"
-                        class="flex items-start space-x-3"
-                      >
-                        <div
-                          class="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full text-xs text-white"
-                          [ngClass]="{
-                            'bg-blue-500': plan.color === 'blue',
-                            'bg-purple-500': plan.color === 'purple',
-                            'bg-amber-500': plan.color === 'amber'
-                          }"
-                        >
-                          ✓
-                        </div>
-                        <span class="leading-relaxed text-sm text-gray-700">{{
-                          benefit
-                        }}</span>
-                      </div>
-                    </div>
-
-                    <!-- Select Button -->
-                    <div class="mt-6">
-                      <button
-                        (click)="selectPlan(plan.name)"
-                        [ngClass]="{
-                          'bg-blue-500 hover:bg-blue-600': plan.color === 'blue' && selectedPlan !== plan.name,
-                          'bg-purple-500 hover:bg-purple-600': plan.color === 'purple' && selectedPlan !== plan.name,
-                          'bg-amber-500 hover:bg-amber-600': plan.color === 'amber' && selectedPlan !== plan.name,
-                          'bg-gray-400 cursor-not-allowed': selectedPlan === plan.name,
-                          'bg-green-500': selectedPlan === plan.name
-                        }"
-                        [disabled]="selectedPlan === plan.name"
-                        class="w-full rounded-lg py-3 px-4 font-bold text-white transition-all duration-300 hover:shadow-lg"
-                      >
-                        <span *ngIf="selectedPlan !== plan.name">
-                          SELECT {{ plan.name.split(' ')[1].toUpperCase() }}
-                        </span>
-                        <span *ngIf="selectedPlan === plan.name">
-                          <span class="mr-2">✓</span> SELECTED
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Navigation -->
-            <div class="mt-12 flex justify-center">
+          <div class="border-r border-gray-300 p-4">
+            <div class="text-center">
+              <div class="text-2xl font-bold text-blue-600">18.00 USD / 2,322.54 KES</div>
               <button
-                type="button"
-                (click)="goToNextStep()"
-                [disabled]="!selectedPlan"
-                class="rounded-2xl bg-gradient-to-r from-sky-400 to-sky-500 px-12 py-4 text-lg font-bold text-white shadow-xl transition-all hover:from-sky-500 hover:to-sky-600 hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-50"
+                (click)="selectPlan('Plan A')"
+                class="mt-3 w-full rounded-2xl bg-gradient-to-r from-sky-400 to-sky-500 px-4 py-2 font-bold text-white shadow-xl transition-all hover:from-sky-500 hover:to-sky-600 hover:shadow-2xl"
               >
-                CONTINUE WITH {{ selectedPlan || 'SELECTED PLAN' }}
-                <svg
-                  class="ml-2 inline h-5 w-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
+                <span *ngIf="selectedPlan !== 'Plan A'">Select</span>
+                <span *ngIf="selectedPlan === 'Plan A'">✓ Selected</span>
               </button>
             </div>
           </div>
-
-          <!-- Step 2: Travel Details -->
-          <div
-            *ngIf="state.currentStep === QuoteStep.TRAVEL_DETAILS"
-            class="flex min-h-full flex-col"
-          >
-            <div class="mb-8 text-center">
-              <h2 class="mb-4 text-3xl font-bold text-gray-800">
-                Your {{ selectedPlan }} Plan
-              </h2>
-              <p class="text-gray-600">
-                Tell us about your trip and who's traveling
-              </p>
-            </div>
-
-            <form #travelerForm="ngForm" class="flex flex-1 flex-col">
-              <!-- Trip & Traveler Count -->
-              <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-                <!-- Trip Details -->
-                <div class="space-y-6">
-                  <h3
-                    class="border-b pb-2 text-xl font-semibold text-gray-800"
-                  >
-                    Trip Details
-                  </h3>
-                  <!-- Searchable Departure Country Dropdown -->
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700"
-                      >Departure Country</label
-                    >
-                    <div class="relative">
-                      <input
-                        type="text"
-                        [(ngModel)]="departureCountrySearch"
-                        name="departureCountrySearch"
-                        placeholder="Search countries..."
-                        (input)="filterDepartureCountries($event)"
-                        (focus)="showDepartureDropdown = true"
-                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
-                      />
-                      <div
-                        class="absolute left-0 top-full z-10 max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg"
-                        *ngIf="
-                          showDepartureDropdown &&
-                          filteredDepartureCountries.length > 0
-                        "
-                      >
-                        <div
-                          *ngFor="let country of filteredDepartureCountries"
-                          class="cursor-pointer border-b border-gray-100 px-4 py-3 hover:bg-sky-50"
-                          (click)="selectDepartureCountry(country)"
-                        >
-                          {{ country }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- Searchable Destination Country Dropdown -->
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700"
-                      >Destination Country *</label
-                    >
-                    <div class="relative">
-                      <input
-                        type="text"
-                        [(ngModel)]="destinationCountrySearch"
-                        name="destinationCountrySearch"
-                        placeholder="Search destination countries..."
-                        (input)="filterDestinationCountries($event)"
-                        (focus)="showDestinationDropdown = true"
-                        required
-                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
-                      />
-                      <div
-                        class="absolute left-0 top-full z-10 max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg"
-                        *ngIf="
-                          showDestinationDropdown &&
-                          filteredDestinationCountries.length > 0
-                        "
-                      >
-                        <div
-                          *ngFor="let country of filteredDestinationCountries"
-                          class="cursor-pointer border-b border-gray-100 px-4 py-3 hover:bg-sky-50"
-                          (click)="selectDestinationCountry(country)"
-                        >
-                          {{ country }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="grid grid-cols-2 gap-4">
-                    <div>
-                      <label
-                        class="mb-2 block text-sm font-medium text-gray-700"
-                        >Departure Date *</label
-                      >
-                      <input
-                        type="date"
-                        [(ngModel)]="quote.startDate"
-                        name="startDate"
-                        required
-                        [min]="getDefaultStartDate()"
-                        (change)="onDateChange()"
-                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        class="mb-2 block text-sm font-medium text-gray-700"
-                        >Return Date *</label
-                      >
-                      <input
-                        type="date"
-                        [(ngModel)]="quote.endDate"
-                        name="endDate"
-                        required
-                        [min]="quote.startDate"
-                        (change)="onDateChange()"
-                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <!-- Traveler Count -->
-                <div class="space-y-6">
-                  <h3
-                    class="border-b pb-2 text-xl font-semibold text-gray-800"
-                  >
-                    Number of Travelers
-                  </h3>
-                  <div class="space-y-4">
-                    <div
-                      class="flex items-center justify-between rounded-lg bg-gray-50 p-4"
-                    >
-                      <div>
-                        <span class="font-medium text-gray-700"
-                          >Adults (18-65 years)</span
-                        >
-                        <p class="text-sm text-gray-500">
-                          USD {{ getPriceForAge('adult') }} per person
-                        </p>
-                      </div>
-                      <div class="flex items-center space-x-3">
-                        <button
-                          type="button"
-                          (click)="
-                            quote.travelers.between18and65 = Math.max(
-                              0,
-                              quote.travelers.between18and65 - 1
-                            );
-                            onTravelerCountChange()
-                          "
-                          class="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-100"
-                        >
-                          -
-                        </button>
-                        <span class="w-8 text-center font-medium">{{
-                          quote.travelers.between18and65
-                        }}</span>
-                        <button
-                          type="button"
-                          (click)="
-                            quote.travelers.between18and65 =
-                              quote.travelers.between18and65 + 1;
-                            onTravelerCountChange()
-                          "
-                          class="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-100"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                    <div
-                      class="flex items-center justify-between rounded-lg bg-gray-50 p-4"
-                    >
-                      <div>
-                        <span class="font-medium text-gray-700"
-                          >Children (Under 18)</span
-                        >
-                        <p class="text-sm text-gray-500">
-                          USD {{ getPriceForAge('child') }} per child
-                        </p>
-                      </div>
-                      <div class="flex items-center space-x-3">
-                        <button
-                          type="button"
-                          (click)="
-                            quote.travelers.under18 = Math.max(
-                              0,
-                              quote.travelers.under18 - 1
-                            );
-                            onTravelerCountChange()
-                          "
-                          class="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-100"
-                        >
-                          -
-                        </button>
-                        <span class="w-8 text-center font-medium">{{
-                          quote.travelers.under18
-                        }}</span>
-                        <button
-                          type="button"
-                          (click)="
-                            quote.travelers.under18 =
-                              quote.travelers.under18 + 1;
-                            onTravelerCountChange()
-                          "
-                          class="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-100"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                    <div
-                      class="flex items-center justify-between rounded-lg bg-gray-50 p-4"
-                    >
-                      <div>
-                        <span class="font-medium text-gray-700"
-                          >Seniors (Over 65)</span
-                        >
-                        <p class="text-sm text-gray-500">
-                          USD {{ getPriceForAge('senior') }} per person
-                        </p>
-                      </div>
-                      <div class="flex items-center space-x-3">
-                        <button
-                          type="button"
-                          (click)="
-                            quote.travelers.over65 = Math.max(
-                              0,
-                              quote.travelers.over65 - 1
-                            );
-                            onTravelerCountChange()
-                          "
-                          class="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-100"
-                        >
-                          -
-                        </button>
-                        <span class="w-8 text-center font-medium">{{
-                          quote.travelers.over65
-                        }}</span>
-                        <button
-                          type="button"
-                          (click)="
-                            quote.travelers.over65 =
-                              quote.travelers.over65 + 1;
-                            onTravelerCountChange()
-                          "
-                          class="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-100"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Traveler Details Forms -->
-              <div class="mt-10 space-y-6">
-                <h3
-                  class="border-b pb-2 text-xl font-semibold text-gray-800"
-                >
-                  Traveler Information
-                </h3>
-                <div
-                  *ngFor="let traveler of quote.travelerDetails; let i = index"
-                  class="rounded-xl border-2 border-gray-200 bg-gray-50 p-6"
-                >
-                  <h3
-                    class="mb-4 flex items-center text-lg font-bold text-gray-800"
-                  >
-                    <span
-                      class="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-sm text-white"
-                    >
-                      {{ i + 1 }}
-                    </span>
-                    Traveler {{ i + 1 }} Details
-                  </h3>
-                  <div
-                    class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
-                  >
-                    <div>
-                      <label
-                        class="mb-2 block text-sm font-medium text-gray-700"
-                        >Full Name *</label
-                      >
-                      <input
-                        type="text"
-                        [(ngModel)]="traveler.name"
-                        name="travelerName{{ i }}"
-                        required
-                        placeholder="As shown on passport"
-                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        class="mb-2 block text-sm font-medium text-gray-700"
-                        >Date of Birth *</label
-                      >
-                      <input
-                        type="date"
-                        [(ngModel)]="traveler.dob"
-                        name="travelerDob{{ i }}"
-                        required
-                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
-                      />
-                    </div>
-                    <!-- Searchable Nationality Dropdown -->
-                    <div>
-                      <label
-                        class="mb-2 block text-sm font-medium text-gray-700"
-                        >Nationality *</label
-                      >
-                      <div class="relative">
-                        <input
-                          type="text"
-                          [(ngModel)]="traveler.nationalitySearch"
-                          name="travelerNationalitySearch{{ i }}"
-                          placeholder="Search nationality..."
-                          (input)="filterNationalities($event, i)"
-                          (focus)="showNationalityDropdown[i] = true"
-                          required
-                          class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
-                        />
-                        <div
-                          class="absolute left-0 top-full z-10 max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg"
-                          *ngIf="
-                            showNationalityDropdown[i] &&
-                            filteredNationalities[i]?.length > 0
-                          "
-                        >
-                          <div
-                            *ngFor="let nationality of filteredNationalities[i]"
-                            class="cursor-pointer border-b border-gray-100 px-4 py-3 hover:bg-sky-50"
-                            (click)="selectNationality(nationality, i)"
-                          >
-                            {{ nationality }}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <label
-                        class="mb-2 block text-sm font-medium text-gray-700"
-                        >Passport Number *</label
-                      >
-                      <input
-                        type="text"
-                        [(ngModel)]="traveler.passport"
-                        name="travelerPassport{{ i }}"
-                        required
-                        placeholder="Passport number"
-                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        class="mb-2 block text-sm font-medium text-gray-700"
-                        >Email Address</label
-                      >
-                      <input
-                        type="email"
-                        [(ngModel)]="traveler.email"
-                        name="travelerEmail{{ i }}"
-                        placeholder="Optional"
-                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        class="mb-2 block text-sm font-medium text-gray-700"
-                        >Phone Number</label
-                      >
-                      <input
-                        type="tel"
-                        [(ngModel)]="traveler.phone"
-                        name="travelerPhone{{ i }}"
-                        placeholder="Optional"
-                        class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Emergency Contact -->
-              <div class="mt-10 rounded-xl border-2 border-red-200 bg-red-50 p-6">
-                <h3
-                  class="mb-4 flex items-center text-lg font-bold text-gray-800"
-                >
-                  <span class="mr-2 text-red-500">Alert</span>
-                  Emergency Contact Information
-                </h3>
-                <p class="mb-4 text-sm text-gray-600">
-                  This person will be contacted in case of emergency during your
-                  travels.
-                </p>
-                <div
-                  class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
-                >
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700"
-                      >Full Name *</label
-                    >
-                    <input
-                      type="text"
-                      [(ngModel)]="quote.emergencyContact.name"
-                      name="emergencyName"
-                      required
-                      class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700"
-                      >Relationship *</label
-                    >
-                    <select
-                      [(ngModel)]="quote.emergencyContact.relationship"
-                      name="emergencyRelationship"
-                      required
-                      class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
-                    >
-                      <option value="">Select relationship...</option>
-                      <option
-                        *ngFor="let relationship of relationships"
-                        [value]="relationship"
-                      >
-                        {{ relationship }}
-                      </option>
-                    </select>
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700"
-                      >Email Address *</label
-                    >
-                    <input
-                      type="email"
-                      [(ngModel)]="quote.emergencyContact.email"
-                      name="emergencyEmail"
-                      required
-                      class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700"
-                      >Phone Number *</label
-                    >
-                    <input
-                      type="tel"
-                      [(ngModel)]="quote.emergencyContact.phone"
-                      name="emergencyPhone"
-                      required
-                      class="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-sky-400"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <!-- Navigation -->
-              <div class="mt-10 flex justify-between border-t pt-6">
-                <button
-                  type="button"
-                  (click)="goToPreviousStep()"
-                  class="rounded-lg px-8 py-3 font-semibold text-gray-600 transition-colors hover:bg-gray-100"
-                >
-                  BACK TO PLAN SELECTION
-                </button>
-                <button
-                  type="button"
-                  (click)="goToNextStep()"
-                  [disabled]="!canProceedToNext"
-                  class="rounded-lg bg-gradient-to-r from-sky-400 to-sky-500 px-8 py-3 font-bold text-white shadow-lg transition-all hover:from-sky-500 hover:to-sky-600 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  PROCEED TO PAYMENT
-                </button>
-              </div>
-            </form>
-          </div>
-
-          <!-- Step 3: Payment (was Step 4) -->
-          <div
-            *ngIf="state.currentStep === QuoteStep.PAYMENT"
-            class="flex min-h-full flex-col"
-          >
-            <div
-              class="mx-auto flex max-w-2xl flex-1 flex-col justify-center text-center"
-            >
-              <div class="mb-8">
-                <div
-                  class="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-100"
-                >
-                  <img
-                    src="https://www.freeiconspng.com/uploads/secure-payment-icon-4.png"
-                    alt="Secure Payment Icon"
-                    class="h-16 w-16"
-                  />
-                </div>
-                <h2 class="mb-4 text-3xl font-bold text-gray-800">
-                  Ready for Secure Payment
-                </h2>
-                <p class="leading-relaxed text-gray-600">
-                  You're about to complete your purchase for the
-                  <strong>{{ selectedPlan }}</strong> plan. You'll be
-                  redirected to our secure payment gateway powered by
-                  industry-leading encryption.
-                </p>
-              </div>
-
-              <!-- Payment Summary -->
-              <div
-                class="mb-8 rounded-xl border-2 border-sky-200 bg-gradient-to-r from-sky-50 to-green-50 p-6"
+          <div class="border-r border-gray-300 p-4">
+            <div class="text-center">
+              <div class="text-2xl font-bold text-purple-600">25.00 USD / 3,225.75 KES</div>
+              <button
+                (click)="selectPlan('Plan B')"
+                class="mt-3 w-full rounded-2xl bg-gradient-to-r from-sky-400 to-sky-500 px-4 py-2 font-bold text-white shadow-xl transition-all hover:from-sky-500 hover:to-sky-600 hover:shadow-2xl"
               >
-                <h3 class="mb-4 text-lg font-bold">Payment Summary</h3>
-                <div class="mb-4 space-y-2 text-sm">
-                  <div class="flex justify-between">
-                    <span>{{ quoteSummary }}</span>
-                    <span>USD {{ quote.premium.toFixed(2) }}</span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span>Processing Fee</span>
-                    <span>USD 0.00</span>
-                  </div>
-                  <div
-                    class="flex justify-between border-t pt-2 text-lg font-bold"
-                  >
-                    <span>Total Amount</span>
-                    <span class="text-sky-600"
-                      >USD {{ quote.premium.toFixed(2) }}</span
-                    >
-                  </div>
-                </div>
-                <p class="text-xs text-gray-500">
-                  All payments are processed securely. Your policy will be
-                  activated immediately upon successful payment.
-                </p>
-              </div>
-
-              <!-- Security Features -->
-              <div class="mb-8 grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
-                <div
-                  class="flex items-center justify-center space-x-2 text-gray-600"
-                >
-                  <span>Security</span>
-                  <span>256-bit SSL Encryption</span>
-                </div>
-                <div
-                  class="flex items-center justify-center space-x-2 text-gray-600"
-                >
-                  <span>Shield</span>
-                  <span>PCI DSS Compliant</span>
-                </div>
-                <div
-                  class="flex items-center justify-center space-x-2 text-gray-600"
-                >
-                  <span>Check</span>
-                  <span>Instant Policy Delivery</span>
-                </div>
-              </div>
-
-              <!-- Payment Button -->
-              <div class="space-y-4">
-                <button
-                  (click)="processPayment()"
-                  class="w-full transform rounded-xl bg-gradient-to-r from-sky-400 to-sky-500 px-8 py-4 font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:from-sky-500 hover:to-sky-600"
-                >
-                  <span class="flex items-center justify-center space-x-2">
-                    <span>Secure</span>
-                    <span>PAY SECURELY NOW</span>
-                  </span>
-                </button>
-
-                <button
-                  (click)="goToPreviousStep()"
-                  class="w-full rounded-lg px-8 py-3 font-semibold text-gray-600 transition-colors hover:bg-gray-100"
-                >
-                  Review Details
-                </button>
-              </div>
+                <span *ngIf="selectedPlan !== 'Plan B'">Select</span>
+                <span *ngIf="selectedPlan === 'Plan B'">✓ Selected</span>
+              </button>
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="text-center">
+              <div class="text-2xl font-bold text-amber-600">35.00 USD / 4,516.05 KES</div>
+              <button
+                (click)="selectPlan('Plan C')"
+                class="mt-3 w-full rounded-2xl bg-gradient-to-r from-sky-400 to-sky-500 px-4 py-2 font-bold text-white shadow-xl transition-all hover:from-sky-500 hover:to-sky-600 hover:shadow-2xl"
+              >
+                <span *ngIf="selectedPlan !== 'Plan C'">Select</span>
+                <span *ngIf="selectedPlan === 'Plan C'">✓ Selected</span>
+              </button>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Add-on Coverage Options -->
+  <div class="mt-8 rounded-lg bg-sky-50 p-6">
+    <h4 class="mb-4 text-lg font-semibold text-sky-800">
+      Tick checkboxes to include add-on coverages
+    </h4>
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div class="flex items-center space-x-3">
+        <input
+          type="checkbox"
+          id="warTerrorism"
+          [(ngModel)]="includeWarTerrorism"
+          name="warTerrorism"
+          class="h-4 w-4 rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+        />
+        <label for="warTerrorism" class="text-sm font-medium text-gray-700">
+          Include War and Terrorism Premium
+        </label>
+      </div>
+      <div class="flex items-center space-x-3">
+        <input
+          type="checkbox"
+          id="covidExtension"
+          [(ngModel)]="includeCovidExtension"
+          name="covidExtension"
+          class="h-4 w-4 rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+        />
+        <label for="covidExtension" class="text-sm font-medium text-gray-700">
+          Include Covid Extension Premium
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="mt-12 flex justify-between">
+    <button
+      type="button"
+      (click)="goToPreviousStep()"
+      class="rounded-lg px-8 py-3 font-semibold text-gray-600 transition-colors hover:bg-gray-100"
+    >
+      Back
+    </button>
+    <button
+      type="button"
+      (click)="goToNextStep()"
+      [disabled]="!selectedPlan"
+      class="rounded-2xl bg-gradient-to-r from-sky-400 to-sky-500 px-12 py-4 text-lg font-bold text-white shadow-xl transition-all hover:from-sky-500 hover:to-sky-600 hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      CONTINUE WITH {{ selectedPlan || 'SELECTED PLAN' }}
+      <svg
+        class="ml-2 inline h-5 w-5"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- Step 2: Traveler Details -->
+<div
+  *ngIf="state.currentStep === QuoteStep.TRAVELER_DETAILS"
+  class="flex min-h-full flex-col w-full px-4 py-8 sm:px-6 lg:px-8"
+>
+  <!-- Close Button -->
+  <div class="mb-4 flex justify-end">
+    <button
+      type="button"
+      (click)="returnToHomepage()"
+      class="flex items-center space-x-2 rounded-lg bg-gray-100 px-4 py-2 text-gray-600 transition-colors hover:bg-gray-200 hover:text-gray-800"
+      title="Close and return to homepage"
+    >
+      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+      <span>Close</span>
+    </button>
+  </div>
+
+  <div class="mb-12 text-center">
+    <h2 class="mb-4 text-4xl font-bold text-gray-800">
+      <span class="text-sky-500">Traveler</span> Details
+    </h2>
+    <p class="text-xl text-gray-600">
+      Please provide your travel information to complete your quote
+    </p>
+  </div>
+
+  <!-- Selected Plan Summary -->
+  <div class="mb-8 rounded-lg bg-sky-50 p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-lg font-semibold text-sky-800">Selected Plan: {{ selectedPlan }}</h3>
+        <p class="text-sm text-sky-600 mt-1">
+          <span *ngIf="selectedPlan === 'Plan A'">Basic Coverage - 18.00 USD / 2,322.54 KES</span>
+          <span *ngIf="selectedPlan === 'Plan B'">Enhanced Coverage - 25.00 USD / 3,225.75 KES</span>
+          <span *ngIf="selectedPlan === 'Plan C'">Premium Coverage - 35.00 USD / 4,516.05 KES</span>
+        </p>
+      </div>
+      <button
+        type="button"
+        (click)="goToPreviousStep()"
+        class="text-sky-600 hover:text-sky-800 font-medium"
+      >
+        Change Plan
+      </button>
+    </div>
+  </div>
+
+  <!-- Traveler Details Form -->
+  <div class="flex-1">
+    <form class="space-y-8">
+      <!-- Personal Information -->
+      <div class="rounded-lg bg-white p-6 shadow-md">
+        <h3 class="mb-6 text-xl font-semibold text-gray-800">Personal Information</h3>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div>
+            <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">
+              First Name *
+            </label>
+            <input
+              type="text"
+              id="firstName"
+              [(ngModel)]="travelerDetails.firstName"
+              name="firstName"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+              placeholder="Enter your first name"
+            />
+          </div>
+          <div>
+            <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">
+              Last Name *
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              [(ngModel)]="travelerDetails.lastName"
+              name="lastName"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+              placeholder="Enter your last name"
+            />
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+              Email Address *
+            </label>
+            <input
+              type="email"
+              id="email"
+              [(ngModel)]="travelerDetails.email"
+              name="email"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+              placeholder="Enter your email address"
+            />
+          </div>
+          <div>
+            <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+              Phone Number *
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              [(ngModel)]="travelerDetails.phone"
+              name="phone"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+              placeholder="Enter your phone number"
+            />
+          </div>
+          <div>
+            <label for="dateOfBirth" class="block text-sm font-medium text-gray-700 mb-2">
+              Date of Birth *
+            </label>
+            <input
+              type="date"
+              id="dateOfBirth"
+              [(ngModel)]="travelerDetails.dateOfBirth"
+              name="dateOfBirth"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+            />
+          </div>
+          <div>
+            <label for="passportNumber" class="block text-sm font-medium text-gray-700 mb-2">
+              Passport Number *
+            </label>
+            <input
+              type="text"
+              id="passportNumber"
+              [(ngModel)]="travelerDetails.passportNumber"
+              name="passportNumber"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+              placeholder="Enter your passport number"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Travel Information -->
+      <div class="rounded-lg bg-white p-6 shadow-md">
+        <h3 class="mb-6 text-xl font-semibold text-gray-800">Travel Information</h3>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div class="destination-dropdown-container relative">
+            <label for="destination" class="block text-sm font-medium text-gray-700 mb-2">
+              Destination Country *
+            </label>
+            <input
+              type="text"
+              id="destination"
+              [(ngModel)]="destinationSearch"
+              (input)="filterDestinationCountries($event)"
+              (focus)="showDestinationDropdown = true"
+              name="destination"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+              placeholder="Search and select destination country"
+              autocomplete="off"
+            />
+            <div
+              *ngIf="showDestinationDropdown && filteredDestinationCountries.length > 0"
+              class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+            >
+              <div
+                *ngFor="let country of filteredDestinationCountries"
+                (click)="selectDestinationCountry(country)"
+                class="px-4 py-2 hover:bg-sky-50 hover:text-sky-700 cursor-pointer border-b border-gray-100 last:border-b-0"
+              >
+                {{ country }}
+              </div>
+            </div>
+          </div>
+          <div>
+            <label for="travelPurpose" class="block text-sm font-medium text-gray-700 mb-2">
+              Purpose of Travel *
+            </label>
+            <select
+              id="travelPurpose"
+              [(ngModel)]="travelerDetails.travelPurpose"
+              name="travelPurpose"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+            >
+              <option value="">Select purpose</option>
+              <option value="tourism">Tourism</option>
+              <option value="business">Business</option>
+              <option value="education">Education</option>
+              <option value="medical">Medical</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="departureDate" class="block text-sm font-medium text-gray-700 mb-2">
+              Departure Date *
+            </label>
+            <input
+              type="date"
+              id="departureDate"
+              [(ngModel)]="travelerDetails.departureDate"
+              name="departureDate"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+            />
+          </div>
+          <div>
+            <label for="returnDate" class="block text-sm font-medium text-gray-700 mb-2">
+              Return Date *
+            </label>
+            <input
+              type="date"
+              id="returnDate"
+              [(ngModel)]="travelerDetails.returnDate"
+              name="returnDate"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Emergency Contact -->
+      <div class="rounded-lg bg-white p-6 shadow-md">
+        <h3 class="mb-6 text-xl font-semibold text-gray-800">Emergency Contact</h3>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div>
+            <label for="emergencyName" class="block text-sm font-medium text-gray-700 mb-2">
+              Contact Name *
+            </label>
+            <input
+              type="text"
+              id="emergencyName"
+              [(ngModel)]="travelerDetails.emergencyContact.name"
+              name="emergencyName"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+              placeholder="Enter emergency contact name"
+            />
+          </div>
+          <div>
+            <label for="emergencyPhone" class="block text-sm font-medium text-gray-700 mb-2">
+              Contact Phone *
+            </label>
+            <input
+              type="tel"
+              id="emergencyPhone"
+              [(ngModel)]="travelerDetails.emergencyContact.phone"
+              name="emergencyPhone"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+              placeholder="Enter emergency contact phone"
+            />
+          </div>
+          <div>
+            <label for="relationship" class="block text-sm font-medium text-gray-700 mb-2">
+              Relationship *
+            </label>
+            <select
+              id="relationship"
+              [(ngModel)]="travelerDetails.emergencyContact.relationship"
+              name="relationship"
+              required
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+            >
+              <option value="">Select relationship</option>
+              <option value="spouse">Spouse</option>
+              <option value="parent">Parent</option>
+              <option value="child">Child</option>
+              <option value="sibling">Sibling</option>
+              <option value="friend">Friend</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="mt-12 flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0 sm:justify-between">
+    <button
+      type="button"
+      (click)="goToPreviousStep()"
+      class="rounded-lg px-8 py-3 font-semibold text-gray-600 transition-colors hover:bg-gray-100"
+    >
+      Back to Plan Selection
+    </button>
+    
+    <div class="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
+      <button
+        type="button"
+        (click)="downloadQuote()"
+        class="rounded-2xl border-2 border-sky-500 bg-white px-8 py-3 font-bold text-sky-500 shadow-md transition-all hover:bg-sky-50 hover:shadow-lg"
+      >
+        Download Quote
+      </button>
+      <button
+        type="button"
+        (click)="proceedToPayment()"
+        [disabled]="!isFormValid()"
+        class="rounded-2xl bg-gradient-to-r from-sky-400 to-sky-500 px-12 py-4 text-lg font-bold text-white shadow-xl transition-all hover:from-sky-500 hover:to-sky-600 hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        PROCEED TO PAYMENT
+        <svg
+          class="ml-2 inline h-5 w-5"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </button>
     </div>
   </div>
 </div>

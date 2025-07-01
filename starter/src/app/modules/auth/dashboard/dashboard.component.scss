@@ -1,7 +1,7 @@
-// Custom gradient for sidebar - brighter version
+// Custom gradient for sidebar - vibrant blue from screenshot
 .sidebar-gradient {
-  background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
-  // Slightly brighter overlay
+  background: linear-gradient(135deg, #1da1f2 0%, #0891b2 100%);
+  // Clean overlay for depth
   &::before {
     content: '';
     position: absolute;
@@ -9,46 +9,75 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.05); // Light overlay for brightness
+    background: rgba(255, 255, 255, 0.03);
     pointer-events: none;
   }
   position: relative;
 }
 
-// M-Pesa modal styling
-::ng-deep .mpesa-modal-panel {
-  .mat-mdc-dialog-container {
-    padding: 0;
-    border-radius: 16px;
-    overflow: hidden;
-  }
-}
-
-// Enhanced sidebar brightness
+// Enhanced sidebar brightness and contrast
 .w-64.sidebar-gradient {
-  // Increase brightness slightly
-  filter: brightness(1.1);
+  // Perfect brightness for readability
+  filter: brightness(1.05);
   
-  // Enhanced text contrast
+  // Enhanced text contrast for clean look
   .text-white\/70 {
-    color: rgba(255, 255, 255, 0.85) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
   }
   
   .text-white\/80 {
     color: rgba(255, 255, 255, 0.95) !important;
   }
   
-  // Brighter hover states
+  // Clean hover states
   .hover\:bg-white\/10:hover {
-    background-color: rgba(255, 255, 255, 0.15) !important;
+    background-color: rgba(255, 255, 255, 0.12) !important;
   }
   
   .bg-white\/20 {
-    background-color: rgba(255, 255, 255, 0.25) !important;
+    background-color: rgba(255, 255, 255, 0.18) !important;
+  }
+  
+  // Active state styling
+  .router-link-active,
+  .active-menu-item {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    font-weight: 600 !important;
   }
 }
 
-// Smooth transitions
+// User profile section styling
+.user-profile-section {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+// Role-based color indicators
+.role-indicator {
+  &.individual {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+  
+  &.corporate {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+  
+  &.intermediary {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  }
+}
+
+// Clean smooth transitions
+.transition-all {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-colors {
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
 .transition-transform {
   transition: transform 0.2s ease-in-out;
 }
@@ -57,24 +86,122 @@
   transform: rotate(180deg);
 }
 
-// Card hover effects
-.hover\:shadow-md:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+// Enhanced card styling
+.dashboard-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+  }
 }
 
-// Button hover effects for quick actions
-.group:hover .group-hover\:text-blue-600 {
-  color: #2563eb !important;
+// Quick action buttons
+.quick-action-btn {
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  &.marine-action:hover {
+    border-color: #1da1f2;
+    background-color: rgba(29, 161, 242, 0.05);
+    color: #1da1f2;
+  }
+  
+  &.travel-action:hover {
+    border-color: #8b5cf6;
+    background-color: rgba(139, 92, 246, 0.05);
+    color: #8b5cf6;
+  }
+  
+  &.payment-action:hover {
+    border-color: #10b981;
+    background-color: rgba(16, 185, 129, 0.05);
+    color: #10b981;
+  }
+  
+  &.support-action:hover {
+    border-color: #f59e0b;
+    background-color: rgba(245, 158, 11, 0.05);
+    color: #f59e0b;
+  }
 }
 
-.group:hover .group-hover\:text-purple-600 {
-  color: #9333ea !important;
+// Clean M-Pesa modal styling
+::ng-deep .mpesa-modal-panel {
+  .mat-mdc-dialog-container {
+    padding: 0;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
 }
 
-.group:hover .group-hover\:text-green-700 {
-  color: #15803d !important;
+// Navigation menu styling
+.nav-menu-item {
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0;
+    background: white;
+    border-radius: 0 2px 2px 0;
+    transition: height 0.2s ease-in-out;
+  }
+  
+  &.active::before,
+  &:hover::before {
+    height: 24px;
+  }
 }
 
-.group:hover .group-hover\:text-orange-600 {
-  color: #ea580c !important;
+// Stats card icons
+.stats-icon {
+  background: linear-gradient(135deg, var(--icon-color-start), var(--icon-color-end));
+  border-radius: 12px;
+  padding: 12px;
+  
+  &.marine-icon {
+    --icon-color-start: #1da1f2;
+    --icon-color-end: #0891b2;
+  }
+  
+  &.travel-icon {
+    --icon-color-start: #8b5cf6;
+    --icon-color-end: #7c3aed;
+  }
+  
+  &.pending-icon {
+    --icon-color-start: #f59e0b;
+    --icon-color-end: #d97706;
+  }
+  
+  &.premium-icon {
+    --icon-color-start: #10b981;
+    --icon-color-end: #059669;
+  }
+}
+
+// Responsive design
+@media (max-width: 1024px) {
+  .sidebar-gradient {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    
+    &.mobile-open {
+      transform: translateX(0);
+    }
+  }
 }
