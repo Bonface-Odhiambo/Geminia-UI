@@ -467,11 +467,14 @@
                                 </div>
                             </div>
 
-                            <!-- Submit Button -->
+                            <!-- Submit Button - UPDATED WITH INLINE STYLES FOR CYAN-BLUE COLOR -->
                             <button
                                 type="submit"
                                 [disabled]="quotationForm.invalid"
-                                class="w-full rounded-md bg-blue-600 px-4 py-3 font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300"
+                                style="background-color: #1DAEEB; border: none; box-shadow: 0 4px 14px 0 rgba(29, 174, 235, 0.25);"
+                                class="w-full rounded-md px-4 py-3 font-medium text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:opacity-50 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                                onmouseover="this.style.backgroundColor='#1B9FD1'; this.style.boxShadow='0 6px 20px 0 rgba(29, 174, 235, 0.35)'"
+                                onmouseout="this.style.backgroundColor='#1DAEEB'; this.style.boxShadow='0 4px 14px 0 rgba(29, 174, 235, 0.25)'"
                             >
                                 Get Quote
                             </button>
