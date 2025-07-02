@@ -115,10 +115,14 @@
         </div>
         }
 
-        <!-- Sign In Button -->
+        <!-- Sign In Button with Dynamic Color -->
         <button
           type="submit"
-          class="w-full rounded-md bg-[#1E40AF] py-2 px-4 font-medium text-white transition-colors hover:bg-[#1E3A8A] focus:outline-none focus:ring-2 focus:ring-[#1E40AF] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          class="w-full rounded-md py-2 px-4 font-medium text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          [ngClass]="{
+            'bg-[#2196F3] hover:bg-[#1976D2] focus:ring-[#2196F3]': isFormValid(),
+            'bg-gray-400 hover:bg-gray-400 focus:ring-gray-400': !isFormValid()
+          }"
           [disabled]="signInForm.disabled || signInForm.invalid"
         >
           @if (!signInForm.disabled) {

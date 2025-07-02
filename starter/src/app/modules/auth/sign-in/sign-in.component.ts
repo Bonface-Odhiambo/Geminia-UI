@@ -80,6 +80,27 @@ export class AuthSignInComponent implements OnInit {
     this.toggleOTP(false);
   }
 
+  /**
+   * Check if the form is valid based on the current mode (OTP or Email/Password)
+   */
+  isFormValid(): boolean {
+    if (this.useOTP) {
+      // For OTP mode, only check if OTP code is valid
+      const otpControl = this.signInForm.get('otpCode');
+      return otpControl ? otpControl.valid && otpControl.value?.trim() : false;
+    } else {
+      // For email/password mode, check both fields
+      const usernameControl = this.signInForm.get('username');
+      const passwordControl = this.signInForm.get('password');
+      return (
+        usernameControl?.valid &&
+        passwordControl?.valid &&
+        usernameControl.value?.trim() &&
+        passwordControl.value?.trim()
+      );
+    }
+  }
+
   toggleOTP(state: boolean): void {
     this.useOTP = state;
     if (this.useOTP) {

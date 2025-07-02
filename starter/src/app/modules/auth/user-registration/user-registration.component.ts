@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 interface PremiumCalculation {
   basePremium: number;
@@ -33,13 +34,23 @@ export class MarineCargoQuotationComponent implements OnInit {
     currency: 'KES',
   };
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router
+  ) {
     this.quotationForm = this.createQuotationForm();
     this.paymentForm = this.createPaymentForm();
   }
 
   ngOnInit(): void {
     this.setupFormSubscriptions();
+  }
+
+  /**
+   * Close the form and navigate back to /page
+   */
+  closeForm(): void {
+    this.router.navigate(['/page']);
   }
 
   private createQuotationForm(): FormGroup {

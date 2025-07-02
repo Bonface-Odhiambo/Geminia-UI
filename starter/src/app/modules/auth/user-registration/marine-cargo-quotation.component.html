@@ -13,7 +13,17 @@
                         Geminia Marine
                     </h1>
                 </div>
-                <!-- Dashboard button removed as per request -->
+                <!-- Close Button -->
+                <button
+                    (click)="closeForm()"
+                    class="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+                    title="Close and return to homepage"
+                >
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    Close
+                </button>
             </div>
         </div>
     </header>
