@@ -403,10 +403,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   };
 
   dashboardStats: DashboardStats = {
-    marinePolicies: 0,
-    travelPolicies: 0,
-    pendingQuotes: 0,
-    totalPremium: 0,
+    marinePolicies: 1,
+    travelPolicies: 1,
+    pendingQuotes: 2,
+    totalPremium: 15500,
     clientCount: 0,
     monthlyGrowth: 12.5,
     renewalsThisMonth: 3
@@ -477,18 +477,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       endDate: new Date('2025-12-31'),
       certificateUrl: '/certificates/MAR-2025-001.pdf',
       renewalDate: new Date('2025-11-01')
-    },
-    {
-      id: 'P002',
-      type: 'travel',
-      title: 'Annual Travel Policy',
-      policyNumber: 'TRV-2025-001',
-      status: 'active',
-      premium: 3500,
-      startDate: new Date('2025-01-01'),
-      endDate: new Date('2025-12-31'),
-      certificateUrl: '/certificates/TRV-2025-001.pdf',
-      renewalDate: new Date('2025-10-15')
     }
   ];
 
@@ -496,7 +484,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   
   // UI State
   isMobileSidebarOpen = false;
-  isQuotesOpen = false; // Add this property for dropdown functionality
+  isQuotesOpen = false;
   isLoading = false;
   currentTime = new Date();
   screenSize: 'mobile' | 'tablet' | 'desktop' = 'desktop';
@@ -729,7 +717,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return this.notifications.filter(n => !n.read).length;
   }
 
-  // Navigation Methods - Fixed dropdown functionality
+  // Navigation Methods
   toggleQuotes(): void {
     this.isQuotesOpen = !this.isQuotesOpen;
   }

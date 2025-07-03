@@ -14,8 +14,7 @@
                     </h1>
                 </div>
                 <!-- Close Button -->
-                <button
-                    (click)="closeForm()"
+                <a href="/"
                     class="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
                     title="Close and return to homepage"
                 >
@@ -23,7 +22,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                     Close
-                </button>
+                </a>
             </div>
         </div>
     </header>
@@ -38,7 +37,7 @@
                         <div
                             [class]="
                                 currentStep >= 1
-                                    ? 'flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-sm font-medium text-white'
+                                    ? 'flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-sm font-medium text-white'
                                     : 'flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-sm font-medium text-gray-600'
                             "
                         >
@@ -47,7 +46,7 @@
                         <span
                             [class]="
                                 currentStep >= 1
-                                    ? 'ml-2 text-sm font-medium text-blue-600'
+                                    ? 'ml-2 text-sm font-medium text-sky-500'
                                     : 'ml-2 text-sm text-gray-500'
                             "
                             >Shipment Details</span
@@ -58,7 +57,7 @@
                         <div
                             [class]="
                                 currentStep >= 2
-                                    ? 'flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-sm font-medium text-white'
+                                    ? 'flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-sm font-medium text-white'
                                     : 'flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-sm font-medium text-gray-600'
                             "
                         >
@@ -67,7 +66,7 @@
                         <span
                             [class]="
                                 currentStep >= 2
-                                    ? 'ml-2 text-sm font-medium text-blue-600'
+                                    ? 'ml-2 text-sm font-medium text-sky-500'
                                     : 'ml-2 text-sm text-gray-500'
                             "
                             >Quote Review</span
@@ -78,7 +77,7 @@
                         <div
                             [class]="
                                 currentStep >= 3
-                                    ? 'flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-sm font-medium text-white'
+                                    ? 'flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-sm font-medium text-white'
                                     : 'flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-sm font-medium text-gray-600'
                             "
                         >
@@ -87,7 +86,7 @@
                         <span
                             [class]="
                                 currentStep >= 3
-                                    ? 'ml-2 text-sm font-medium text-blue-600'
+                                    ? 'ml-2 text-sm font-medium text-sky-500'
                                     : 'ml-2 text-sm text-gray-500'
                             "
                             >Payment</span

@@ -8,7 +8,7 @@
       <!-- Logo and Title -->
       <div class="text-center">
         <div class="mb-4 inline-flex items-center">
-          <mat-icon class="mr-2 text-[#1E40AF]">anchor</mat-icon>
+          <mat-icon class="mr-2 text-sky-500">anchor</mat-icon>
           <span class="text-xl font-bold text-gray-800"
             >Geminia Marine Portal</span
           >
@@ -27,7 +27,7 @@
           type="button"
           class="flex-1 rounded-md py-2 px-4 text-sm font-medium transition-colors"
           [class.bg-white]="!useOTP"
-          [class.text-[#1E40AF]]="!useOTP"
+          [class.text-sky-500]="!useOTP"
           [class.shadow-sm]="!useOTP"
           [class.text-gray-600]="useOTP"
           (click)="toggleOTP(false)"
@@ -39,7 +39,7 @@
           type="button"
           class="flex-1 rounded-md py-2 px-4 text-sm font-medium transition-colors"
           [class.bg-white]="useOTP"
-          [class.text-[#1E40AF]]="useOTP"
+          [class.text-sky-500]="useOTP"
           [class.shadow-sm]="useOTP"
           [class.text-gray-600]="!useOTP"
           (click)="toggleOTP(true)"
@@ -74,7 +74,7 @@
           </label>
           <input
             type="email"
-            class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-[#1E40AF] focus:outline-none focus:ring-2 focus:ring-[#1E40AF]"
+            class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
             [formControlName]="'username'"
           />
         </div>
@@ -86,7 +86,7 @@
           <div class="relative">
             <input
               [type]="showPassword ? 'text' : 'password'"
-              class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-[#1E40AF] focus:outline-none focus:ring-2 focus:ring-[#1E40AF]"
+              class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
               [formControlName]="'password'"
             />
             <button
@@ -108,7 +108,7 @@
           </label>
           <input
             type="text"
-            class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-[#1E40AF] focus:outline-none focus:ring-2 focus:ring-[#1E40AF]"
+            class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
             [formControlName]="'otpCode'"
             maxlength="6"
           />
@@ -120,7 +120,7 @@
           type="submit"
           class="w-full rounded-md py-2 px-4 font-medium text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           [ngClass]="{
-            'bg-[#2196F3] hover:bg-[#1976D2] focus:ring-[#2196F3]': isFormValid(),
+            'bg-sky-500 hover:bg-sky-600 focus:ring-sky-500': isFormValid(),
             'bg-gray-400 hover:bg-gray-400 focus:ring-gray-400': !isFormValid()
           }"
           [disabled]="signInForm.disabled || signInForm.invalid"
@@ -142,7 +142,7 @@
         <!-- Links -->
         <div class="mt-6 flex items-center justify-between">
           <a
-            class="text-sm font-medium text-[#1E40AF] hover:text-[#1E3A8A] hover:underline"
+            class="text-sm font-medium text-sky-500 hover:text-sky-600 hover:underline"
             [routerLink]="['/forgot-password']"
           >
             Forgot password?
@@ -150,7 +150,7 @@
           <div>
             <span class="text-sm text-gray-600">No account?</span>
             <a
-              class="ml-1 text-sm font-medium text-green-600 hover:text-green-700 hover:underline"
+              class="ml-1 text-sm font-medium text-sky-500 hover:text-sky-600 hover:underline"
               [routerLink]="['/sign-up/user-registration']"
             >
               Register here
@@ -168,7 +168,7 @@
           <!-- Marine Quote Button -->
           <a
             href="/sign-up/marine-quote"
-            class="flex w-full items-center justify-center rounded-md border-2 border-green-500 py-2 px-4 font-medium text-green-600 transition-colors hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            class="flex w-full items-center justify-center rounded-md border-2 border-sky-500 py-2 px-4 font-medium text-sky-500 transition-colors hover:bg-sky-50 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
             (click)="getMarineQuote()"
           >
             <mat-icon class="mr-2 text-sm">directions_boat</mat-icon>
@@ -177,7 +177,7 @@
           <!-- Travel Quote Button -->
           <a
             href="/sign-up/travel-quote"
-            class="flex w-full items-center justify-center rounded-md border-2 border-blue-500 py-2 px-4 font-medium text-blue-600 transition-colors hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            class="flex w-full items-center justify-center rounded-md border-2 border-sky-500 py-2 px-4 font-medium text-sky-500 transition-colors hover:bg-sky-50 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
             (click)="getTravelQuote()"
           >
             <mat-icon class="mr-2 text-sm">flight_takeoff</mat-icon>
