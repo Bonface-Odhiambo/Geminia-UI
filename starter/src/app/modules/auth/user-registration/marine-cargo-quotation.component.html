@@ -466,7 +466,23 @@
                                 </div>
                             </div>
 
-                            <!-- Submit Button - UPDATED WITH INLINE STYLES FOR CYAN-BLUE COLOR -->
+                            <!-- Data Privacy Consent -->
+                            <div class="mb-6">
+                                <label class="flex items-start">
+                                    <input
+                                        type="checkbox"
+                                        formControlName="dataPrivacyConsent"
+                                        class="h-4 w-4 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <span class="ml-3 text-sm text-gray-700">
+                                        I have read and agree to the 
+                                        <a href="/privacy-policy" target="_blank" class="font-medium text-blue-600 hover:underline">Data Privacy Policy</a>.
+                                        <span class="text-red-500">*</span>
+                                    </span>
+                                </label>
+                            </div>
+
+                            <!-- Submit Button -->
                             <button
                                 type="submit"
                                 [disabled]="quotationForm.invalid"
@@ -505,50 +521,41 @@
                             class="mb-6 space-y-4"
                         >
                             <div class="rounded-lg bg-blue-50 p-4">
-                                <div
-                                    class="mb-2 flex items-center justify-between"
-                                >
-                                    <span class="text-sm text-gray-600"
-                                        >Base Premium</span
-                                    >
-                                    <span class="font-medium"
-                                        >{{ premiumCalculation.currency }}
-                                        {{
-                                            premiumCalculation.basePremium
-                                                | number: '1.2-2'
-                                        }}</span
-                                    >
+                                <!-- Base and Add-ons -->
+                                <div class="mb-2 flex items-center justify-between text-sm text-gray-600">
+                                    <span>Base Premium</span>
+                                    <span class="font-medium">{{ premiumCalculation.currency }} {{ premiumCalculation.basePremium | number: '1.2-2' }}</span>
                                 </div>
-                                <div
-                                    *ngIf="premiumCalculation.addOnPremium > 0"
-                                    class="mb-2 flex items-center justify-between"
-                                >
-                                    <span class="text-sm text-gray-600"
-                                        >Add-ons</span
-                                    >
-                                    <span class="font-medium"
-                                        >{{ premiumCalculation.currency }}
-                                        {{
-                                            premiumCalculation.addOnPremium
-                                                | number: '1.2-2'
-                                        }}</span
-                                    >
+                                <div *ngIf="premiumCalculation.addOnPremium > 0" class="mb-2 flex items-center justify-between text-sm text-gray-600">
+                                    <span>Add-ons</span>
+                                    <span class="font-medium">{{ premiumCalculation.currency }} {{ premiumCalculation.addOnPremium | number: '1.2-2' }}</span>
                                 </div>
+                        
+                                <!-- Sub-total (Net Premium) -->
+                                <div class="mb-2 flex items-center justify-between border-t pt-2 text-sm">
+                                    <span class="font-semibold text-gray-700">Net Premium</span>
+                                    <span class="font-semibold text-gray-800">{{ premiumCalculation.currency }} {{ premiumCalculation.netPremium | number: '1.2-2' }}</span>
+                                </div>
+                        
+                                <!-- Taxes -->
+                                <div class="mb-1 flex items-center justify-between text-xs text-gray-500">
+                                    <span>Policy Holder's Fund (0.45%)</span>
+                                    <span>+ {{ premiumCalculation.currency }} {{ premiumCalculation.ipl | number: '1.2-2' }}</span>
+                                </div>
+                                <div class="mb-1 flex items-center justify-between text-xs text-gray-500">
+                                    <span>Training Levy (0.25%)</span>
+                                    <span>+ {{ premiumCalculation.currency }} {{ premiumCalculation.trainingLevy | number: '1.2-2' }}</span>
+                                </div>
+                                <div class="mb-2 flex items-center justify-between text-xs text-gray-500">
+                                    <span>Stamp Duty</span>
+                                    <span>+ {{ premiumCalculation.currency }} {{ premiumCalculation.stampDuty | number: '1.2-2' }}</span>
+                                </div>
+                        
+                                <!-- Grand Total -->
                                 <div class="border-t pt-2">
-                                    <div
-                                        class="flex items-center justify-between"
-                                    >
-                                        <span class="font-semibold"
-                                            >Total Premium</span
-                                        >
-                                        <span
-                                            class="text-lg font-bold text-blue-600"
-                                            >{{ premiumCalculation.currency }}
-                                            {{
-                                                premiumCalculation.totalPremium
-                                                    | number: '1.2-2'
-                                            }}</span
-                                        >
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-semibold">Total Payable</span>
+                                        <span class="text-lg font-bold text-blue-600">{{ premiumCalculation.currency }} {{ premiumCalculation.totalPayable | number: '1.2-2' }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -693,7 +700,7 @@
                                     <span class="text-gray-600"
                                         >Description:</span
                                     >
-                                    <span class="font-medium">{{
+                                    <span class="font-medium text-right">{{
                                         quotationForm.get('descriptionOfGoods')
                                             ?.value
                                     }}</span>
@@ -702,14 +709,14 @@
                                 <!-- Optional Add-ons -->
                                 <div *ngIf="getSelectedAddOns().length > 0">
                                     <span class="text-gray-600">Add-ons:</span>
-                                    <ul class="mt-1 space-y-1">
+                                    <ul class="mt-1 space-y-1 text-right">
                                         <li
                                             *ngFor="
                                                 let addon of getSelectedAddOns()
                                             "
-                                            class="ml-4 text-sm font-medium"
+                                            class="text-sm font-medium"
                                         >
-                                            • {{ addon }}
+                                            {{ addon }}
                                         </li>
                                     </ul>
                                 </div>
@@ -724,44 +731,39 @@
                         </h3>
                         <div class="space-y-2">
                             <div class="flex justify-between">
-                                <span
-                                    >Base Premium ({{
-                                        (
-                                            premiumCalculation.baseRate * 100
-                                        ).toFixed(3)
-                                    }}%):</span
-                                >
-                                <span
-                                    >{{ premiumCalculation.currency }}
-                                    {{
-                                        premiumCalculation.basePremium
-                                            | number: '1.2-2'
-                                    }}</span
-                                >
+                                <span class="text-gray-600">Base Premium ({{(premiumCalculation.baseRate * 100).toFixed(3)}}%):</span>
+                                <span>{{ premiumCalculation.currency }} {{ premiumCalculation.basePremium | number: '1.2-2' }}</span>
                             </div>
-                            <div
-                                *ngIf="premiumCalculation.addOnPremium > 0"
-                                class="flex justify-between"
-                            >
-                                <span>Optional Add-ons:</span>
-                                <span
-                                    >{{ premiumCalculation.currency }}
-                                    {{
-                                        premiumCalculation.addOnPremium
-                                            | number: '1.2-2'
-                                    }}</span
-                                >
+                            <div *ngIf="premiumCalculation.addOnPremium > 0" class="flex justify-between">
+                                <span class="text-gray-600">Optional Add-ons:</span>
+                                <span>{{ premiumCalculation.currency }} {{ premiumCalculation.addOnPremium | number: '1.2-2' }}</span>
                             </div>
+                            <div class="flex justify-between border-t pt-2 font-medium">
+                                <span>Net Premium:</span>
+                                <span>{{ premiumCalculation.currency }} {{ premiumCalculation.netPremium | number: '1.2-2' }}</span>
+                            </div>
+                    
+                            <!-- Taxes Section -->
+                            <div class="pt-2 text-sm text-gray-600">
+                                <div class="flex justify-between">
+                                    <span>Insurance Premium Levy (0.45%):</span>
+                                    <span>+ {{ premiumCalculation.currency }} {{ premiumCalculation.ipl | number: '1.2-2' }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Training Levy (0.25%):</span>
+                                    <span>+ {{ premiumCalculation.currency }} {{ premiumCalculation.trainingLevy | number: '1.2-2' }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Stamp Duty:</span>
+                                    <span>+ {{ premiumCalculation.currency }} {{ premiumCalculation.stampDuty | number: '1.2-2' }}</span>
+                                </div>
+                            </div>
+                    
+                            <!-- Grand Total -->
                             <div class="border-t pt-2 text-lg font-semibold">
                                 <div class="flex justify-between">
-                                    <span>Total Premium:</span>
-                                    <span class="text-blue-600"
-                                        >{{ premiumCalculation.currency }}
-                                        {{
-                                            premiumCalculation.totalPremium
-                                                | number: '1.2-2'
-                                        }}</span
-                                    >
+                                    <span>Total Payable:</span>
+                                    <span class="text-blue-600">{{ premiumCalculation.currency }} {{ premiumCalculation.totalPayable | number: '1.2-2' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -834,7 +836,7 @@
                             <span class="text-2xl font-bold text-blue-600"
                                 >{{ premiumCalculation.currency }}
                                 {{
-                                    premiumCalculation.totalPremium
+                                    premiumCalculation.totalPayable
                                         | number: '1.2-2'
                                 }}</span
                             >

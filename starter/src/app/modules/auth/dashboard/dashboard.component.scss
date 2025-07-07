@@ -1,21 +1,31 @@
-// Primary brand color - extracted from your image
+// Brand color variables
 $primary-color: #1DAEEB;
 $primary-color-dark: #1B9FD1;
-$primary-color-light: #3FBEF0;
+$sidebar-icon-blue: #4FC3F7;
 
-// Sky-500 color scheme for MPESA modal
-$sky-500: #0ea5e9;
-$sky-400: #38bdf8;
-$sky-600: #0284c7;
-$sky-50: #f0f9ff;
-$sky-100: #e0f2fe;
-$sky-200: #bae6fd;
+// Role indicator colors
+$role-individual: #10b981;
+$role-corporate: #3b82f6;
+$role-intermediary: #8b5cf6;
 
-// Sidebar gradient using your specified color
+// Text and background utility colors
+$text-white-70: rgba(255, 255, 255, 0.7);
+$text-white-80: rgba(255, 255, 255, 0.8);
+$bg-white-10: rgba(255, 255, 255, 0.1);
+$bg-white-20: rgba(255, 255, 255, 0.2);
+$border-white-20: rgba(255, 255, 255, 0.2);
+
+:host {
+  --geminia-primary-color: #{$primary-color};
+  --geminia-primary-dark: #{$primary-color-dark};
+  --sidebar-icon-blue: #{$sidebar-icon-blue};
+}
+
+// Sidebar styles
 .sidebar-gradient {
   background: linear-gradient(135deg, $primary-color 0%, $primary-color-dark 100%);
   position: relative;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -28,357 +38,81 @@ $sky-200: #bae6fd;
   }
 }
 
-// Enhanced sidebar styling with proper contrast
-.w-64.sidebar-gradient {
-  filter: brightness(1.05);
-  
-  .text-white\/70 {
-    color: rgba(255, 255, 255, 0.9) !important;
-  }
-  
-  .text-white\/80 {
-    color: rgba(255, 255, 255, 0.95) !important;
-  }
-  
-  .hover\:bg-white\/10:hover {
-    background-color: rgba(255, 255, 255, 0.12) !important;
-  }
-  
-  .bg-white\/20 {
-    background-color: rgba(255, 255, 255, 0.18) !important;
-  }
-  
-  .active-menu-item {
-    background-color: rgba(255, 255, 255, 0.2) !important;
-    color: white !important;
-    font-weight: 600 !important;
-  }
+.sidebar-icon-blue {
+  color: var(--sidebar-icon-blue) !important;
 }
 
-// User profile section styling
 .user-profile-section {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid $border-white-20;
   backdrop-filter: blur(10px);
 }
 
-// Primary buttons using your brand color
-.sidebar-color-btn {
-  background: linear-gradient(135deg, $primary-color 0%, $primary-color-dark 100%);
-  border: none;
-  box-shadow: 0 4px 14px 0 rgba(29, 174, 235, 0.25);
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: linear-gradient(135deg, $primary-color-dark 0%, #1A8FB8 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px 0 rgba(29, 174, 235, 0.35);
+// Navigation menu item styles
+.nav-menu-item {
+  &.active-menu-item {
+    background-color: $bg-white-20 !important;
+    color: white !important;
+    font-weight: 600 !important;
+
+    .sidebar-icon-blue {
+      color: #E1F5FE !important;
+      filter: drop-shadow(0 0 6px rgba(225, 245, 254, 0.5));
+    }
   }
-  
-  &:active {
-    transform: translateY(0);
+
+  &:hover {
+    .sidebar-icon-blue {
+      color: #81D4FA !important;
+      filter: drop-shadow(0 0 4px rgba(79, 195, 247, 0.3));
+    }
   }
 }
 
-// Outline buttons using your brand color
-.sidebar-color-btn-outline {
-  color: $primary-color;
-  border-color: $primary-color;
-  background: transparent;
-  
-  &:hover {
-    background-color: $primary-color;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(29, 174, 235, 0.25);
-  }
+// Role indicator dots
+.role-indicator {
+  &.individual { background-color: $role-individual; }
+  &.corporate { background-color: $role-corporate; }
+  &.intermediary { background-color: $role-intermediary; }
 }
 
-// Enhanced card styling
+// Card styles
 .dashboard-card {
   background: white;
   border-radius: 16px;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   border: 1px solid rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
-  
+
   &:hover {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     transform: translateY(-2px);
   }
 }
 
-// Form focus states using your brand color
-::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
-  border-color: $primary-color !important;
-  box-shadow: 0 0 0 3px rgba(29, 174, 235, 0.1);
-}
+// Utility classes for color overrides
+.text-white-70 { color: $text-white-70; }
+.text-white-80 { color: $text-white-80; }
+.bg-white-10 { background-color: $bg-white-10; }
+.bg-white-20 { background-color: $bg-white-20; }
+.border-white-20 { border-color: $border-white-20; }
+.text-geminia-blue { color: var(--geminia-primary-color); }
+.hover\:text-geminia-blue:hover { color: var(--geminia-primary-color); }
 
-::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
-  color: $primary-color !important;
-}
+.bg-blue-100 { background-color: rgba(29, 174, 235, 0.1) !important; }
+.text-green-600 { color: #16a34a !important; }
+.bg-green-100 { background-color: #dcfce7 !important; }
 
-// Input focus states
-input:focus,
-textarea:focus {
-  outline: none !important;
-  border-color: $primary-color !important;
-  box-shadow: 0 0 0 3px rgba(29, 174, 235, 0.1) !important;
-}
-
-// Navigation menu styling
-.nav-menu-item {
-  position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 0;
-    background: white;
-    border-radius: 0 2px 2px 0;
-    transition: height 0.2s ease-in-out;
-  }
-  
-  &.active::before,
-  &:hover::before {
-    height: 24px;
-  }
-}
-
-// Status badge styling with your brand color accents
-.status-badge {
-  &.active {
-    background-color: rgba(29, 174, 235, 0.1);
-    color: $primary-color;
-    border: 1px solid rgba(29, 174, 235, 0.2);
-  }
-  
-  &.pending {
-    background-color: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
-    border: 1px solid rgba(245, 158, 11, 0.2);
-  }
-  
-  &.draft {
-    background-color: rgba(107, 114, 128, 0.1);
-    color: #6b7280;
-    border: 1px solid rgba(107, 114, 128, 0.2);
-  }
-}
-
-// Override any default blue colors with your brand color
-.text-blue-600,
-.text-blue-700 {
-  color: $primary-color !important;
-}
-
-.bg-blue-600,
-.bg-blue-100 {
-  background-color: rgba(29, 174, 235, 0.1) !important;
-}
-
-.border-blue-500,
-.border-blue-600 {
-  border-color: $primary-color !important;
-}
-
-// Progress spinner color
-::ng-deep .mat-mdc-progress-spinner {
-  --mdc-circular-progress-active-indicator-color: #{$primary-color};
-}
-
-// Smooth transitions for all interactive elements
-.transition-all {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-// Enhanced button animations
-.sidebar-color-btn,
-.sidebar-color-btn-outline {
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-  }
-  
-  &:hover::before {
-    left: 100%;
-  }
-}
-
-// Ultra Compact Sky-themed form field styling for MPESA modal
-.sky-form-field {
-  ::ng-deep {
-    .mat-mdc-form-field {
-      height: 48px !important;
-    }
-
-    .mat-mdc-form-field-wrapper {
-      padding-bottom: 0 !important;
-    }
-    
-    .mat-mdc-form-field-outline {
-      border-radius: 6px !important;
-      border-width: 2px !important;
-      border-color: $sky-500 !important;
-    }
-    
-    .mat-mdc-form-field-outline-thick {
-      border-color: $sky-500 !important;
-      border-width: 2px !important;
-    }
-    
-    .mdc-notched-outline {
-      .mdc-notched-outline__leading,
-      .mdc-notched-outline__notch,
-      .mdc-notched-outline__trailing {
-        border-color: $sky-500 !important;
-        border-width: 2px !important;
-      }
-    }
-    
-    .mat-mdc-form-field-focus-overlay {
-      background-color: rgba(14, 165, 233, 0.1) !important;
-    }
-    
-    .mat-mdc-floating-label {
-      color: $sky-500 !important;
-    }
-    
-    .mat-mdc-form-field-hint,
-    .mat-mdc-form-field-error {
-      font-size: 11px !important;
-    }
-
-    .mat-mdc-form-field-outline-start,
-    .mat-mdc-form-field-outline-end,
-    .mat-mdc-form-field-outline-gap {
-      border-color: $sky-500 !important;
-    }
-
-    .mat-mdc-form-field-subscript-wrapper {
-      height: auto !important;
-      margin-top: 2px !important;
-    }
-
-    // Sky-500 error text color
-    .mat-mdc-form-field-error {
-      color: $sky-500 !important;
-    }
-  }
-  
-  &.mat-focused {
-    ::ng-deep {
-      .mdc-notched-outline {
-        .mdc-notched-outline__leading,
-        .mdc-notched-outline__notch,
-        .mdc-notched-outline__trailing {
-          border-color: $sky-500 !important;
-          border-width: 2px !important;
-        }
-      }
-      
-      .mat-mdc-form-field-outline {
-        border-color: $sky-500 !important;
-        box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1);
-      }
-    }
-  }
-
-  // Custom compact field styles
-  &.compact-field {
-    ::ng-deep {
-      .mat-mdc-form-field-wrapper {
-        padding-bottom: 0 !important;
-        margin-bottom: 0 !important;
-      }
-
-      .mat-mdc-form-field-subscript-wrapper {
-        margin-top: 1px !important;
-        padding-top: 0 !important;
-      }
-    }
-  }
-}
-
-// Sky error text styling
-.sky-error {
-  color: $sky-500 !important;
-  font-size: 11px !important;
-}
-
-// Enhanced ultra-compact modal styling
-::ng-deep .modal-backdrop {
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  backdrop-filter: blur(4px);
-}
-
-::ng-deep .mpesa-modal-panel {
-  border-radius: 12px !important;
-  overflow: hidden !important;
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25) !important;
-  
-  .mat-mdc-dialog-container {
-    padding: 0 !important;
-    overflow: hidden !important;
-  }
-}
-
-// Sky-themed progress spinner for MPESA modal
-::ng-deep .mat-mdc-progress-spinner .mdc-circular-progress__determinate-circle,
-::ng-deep .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic {
-  stroke: $sky-500 !important;
-}
-
-// Ultra compact progress spinner for modal
-::ng-deep .mat-mdc-progress-spinner.mat-mdc-progress-spinner-indeterminate {
-  width: 24px !important;
-  height: 24px !important;
-}
-
-// Success snackbar styling
-::ng-deep .success-snackbar {
-  background-color: #10b981 !important;
-  color: white !important;
-}
-
-// Responsive design
+// Mobile sidebar responsiveness
 @media (max-width: 1024px) {
   .sidebar-gradient {
     position: fixed;
     z-index: 50;
     transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
-    
+
     &.mobile-open {
       transform: translateX(0);
     }
-  }
-}
-
-// Role indicator colors
-.role-indicator {
-  &.individual {
-    background-color: #10b981;
-  }
-  
-  &.corporate {
-    background-color: #3b82f6;
-  }
-  
-  &.intermediary {
-    background-color: #8b5cf6;
   }
 }

@@ -7,7 +7,11 @@ import { Router } from '@angular/router';
 interface PremiumCalculation {
   basePremium: number;
   addOnPremium: number;
-  totalPremium: number;
+  netPremium: number;
+  ipl: number;
+  trainingLevy: number;
+  stampDuty: number;
+  totalPayable: number;
   baseRate: number;
   currency: string;
 }
@@ -29,7 +33,11 @@ export class MarineCargoQuotationComponent implements OnInit {
   premiumCalculation: PremiumCalculation = {
     basePremium: 0,
     addOnPremium: 0,
-    totalPremium: 0,
+    netPremium: 0,
+    ipl: 0,
+    trainingLevy: 0,
+    stampDuty: 0,
+    totalPayable: 0,
     baseRate: 0,
     currency: 'KES',
   };
@@ -73,6 +81,7 @@ export class MarineCargoQuotationComponent implements OnInit {
       warRisk: [false],
       generalAverage: [false],
       territorialExtension: [false],
+      dataPrivacyConsent: [false, Validators.requiredTrue], // Added for privacy consent
     });
   }
 
@@ -112,35 +121,19 @@ export class MarineCargoQuotationComponent implements OnInit {
     // Adjust rate based on cargo type
     const cargoType = this.quotationForm.get('cargoType')?.value;
     switch (cargoType) {
-      case 'hazardous':
-        baseRate *= 2.5;
-        break;
-      case 'bulk':
-        baseRate *= 1.8;
-        break;
-      case 'containerized':
-        baseRate *= 1.3;
-        break;
-      case 'general':
-        baseRate *= 1.2;
-        break;
+      case 'hazardous': baseRate *= 2.5; break;
+      case 'bulk': baseRate *= 1.8; break;
+      case 'containerized': baseRate *= 1.3; break;
+      case 'general': baseRate *= 1.2; break;
     }
 
     // Adjust rate based on mode of shipment
     const modeOfShipment = this.quotationForm.get('modeOfShipment')?.value;
     switch (modeOfShipment) {
-      case 'air':
-        baseRate *= 0.8; // Lower risk
-        break;
-      case 'sea':
-        baseRate *= 1.0;
-        break;
-      case 'land':
-        baseRate *= 1.1;
-        break;
-      case 'multimodal':
-        baseRate *= 1.3;
-        break;
+      case 'air': baseRate *= 0.8; break; // Lower risk
+      case 'sea': baseRate *= 1.0; break;
+      case 'land': baseRate *= 1.1; break;
+      case 'multimodal': baseRate *= 1.3; break;
     }
 
     const basePremium = sumInsured * baseRate;
@@ -151,16 +144,25 @@ export class MarineCargoQuotationComponent implements OnInit {
     if (this.quotationForm.get('concealedLossCover')?.value) addOnRate += 0.0005;
     if (this.quotationForm.get('storageWarehouse')?.value) addOnRate += 0.0003;
     if (this.quotationForm.get('generalAverage')?.value) addOnRate += 0.0002;
-    if (this.quotationForm.get('territorialExtension')?.value)
-      addOnRate += 0.0004;
+    if (this.quotationForm.get('territorialExtension')?.value) addOnRate += 0.0004;
 
     const addOnPremium = sumInsured * addOnRate;
-    const totalPremium = basePremium + addOnPremium;
+    const netPremium = basePremium + addOnPremium;
+
+    // Calculate Kenyan Insurance Taxes
+    const ipl = netPremium * 0.0045; // 0.45% Insurance Premium Levy
+    const trainingLevy = netPremium * 0.0025; // 0.25% Training Levy
+    const stampDuty = currency === 'KES' ? 40 : 0; // KES 40 Stamp Duty, only for KES currency
+    const totalPayable = netPremium + ipl + trainingLevy + stampDuty;
 
     this.premiumCalculation = {
       basePremium,
       addOnPremium,
-      totalPremium,
+      netPremium,
+      ipl,
+      trainingLevy,
+      stampDuty,
+      totalPayable,
       baseRate,
       currency,
     };
@@ -170,7 +172,11 @@ export class MarineCargoQuotationComponent implements OnInit {
     this.premiumCalculation = {
       basePremium: 0,
       addOnPremium: 0,
-      totalPremium: 0,
+      netPremium: 0,
+      ipl: 0,
+      trainingLevy: 0,
+      stampDuty: 0,
+      totalPayable: 0,
       baseRate: 0,
       currency: this.quotationForm.get('currency')?.value || 'KES',
     };
@@ -189,13 +195,9 @@ export class MarineCargoQuotationComponent implements OnInit {
       this.paymentForm.get('cardNumber')?.setValidators([Validators.required]);
       this.paymentForm.get('expiryDate')?.setValidators([Validators.required]);
       this.paymentForm.get('cvv')?.setValidators([Validators.required]);
-      this.paymentForm
-        .get('cardholderName')
-        ?.setValidators([Validators.required]);
+      this.paymentForm.get('cardholderName')?.setValidators([Validators.required]);
     } else if (method === 'mpesa') {
-      this.paymentForm
-        .get('phoneNumber')
-        ?.setValidators([Validators.required]);
+      this.paymentForm.get('phoneNumber')?.setValidators([Validators.required]);
     }
 
     // Update validity
@@ -230,14 +232,9 @@ export class MarineCargoQuotationComponent implements OnInit {
   processPayment(): void {
     if (this.paymentForm.valid) {
       this.isProcessingPayment = true;
-
-      // Simulate payment processing
       setTimeout(() => {
         this.isProcessingPayment = false;
-        alert(
-          'Payment successful! Your marine cargo insurance policy has been issued.'
-        );
-        // Reset form or redirect to success page
+        alert('Payment successful! Your marine cargo insurance policy has been issued.');
         this.resetForms();
       }, 3000);
     } else {
@@ -251,12 +248,10 @@ export class MarineCargoQuotationComponent implements OnInit {
   }
 
   downloadQuote(): void {
-    // In a real app, this would generate and download a PDF.
     alert('Downloading quote...');
   }
 
   saveQuote(): void {
-    // In a real app, this would save the quote details to the user's account.
     alert('Quote saved to your account!');
   }
 
@@ -271,15 +266,11 @@ export class MarineCargoQuotationComponent implements OnInit {
 
   getSelectedAddOns(): string[] {
     const addOns: string[] = [];
-    if (this.quotationForm.get('concealedLossCover')?.value)
-      addOns.push('Concealed Loss Cover');
-    if (this.quotationForm.get('storageWarehouse')?.value)
-      addOns.push('Storage & Warehouse');
+    if (this.quotationForm.get('concealedLossCover')?.value) addOns.push('Concealed Loss Cover');
+    if (this.quotationForm.get('storageWarehouse')?.value) addOns.push('Storage & Warehouse');
     if (this.quotationForm.get('warRisk')?.value) addOns.push('War Risk');
-    if (this.quotationForm.get('generalAverage')?.value)
-      addOns.push('General Average');
-    if (this.quotationForm.get('territorialExtension')?.value)
-      addOns.push('Territorial Extension');
+    if (this.quotationForm.get('generalAverage')?.value) addOns.push('General Average');
+    if (this.quotationForm.get('territorialExtension')?.value) addOns.push('Territorial Extension');
     return addOns;
   }
 
