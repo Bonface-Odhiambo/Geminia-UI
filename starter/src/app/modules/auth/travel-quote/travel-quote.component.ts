@@ -23,6 +23,7 @@ export interface TravelerDetails {
   phone: string;
   dateOfBirth: string;
   passportNumber: string;
+  placeOfOrigin: string;
   destination: string;
   travelPurpose: string;
   departureDate: string;
@@ -105,10 +106,6 @@ export class TravelQuoteComponent implements OnInit {
 
   selectedPlan: string | null = null;
 
-  // --- ADD-ON OPTIONS ---
-  includeWarTerrorism: boolean = false;
-  includeCovidExtension: boolean = false;
-
   // --- TRAVELER DETAILS ---
   travelerDetails: TravelerDetails = {
     firstName: '',
@@ -117,6 +114,7 @@ export class TravelQuoteComponent implements OnInit {
     phone: '',
     dateOfBirth: '',
     passportNumber: '',
+    placeOfOrigin: '',
     destination: '',
     travelPurpose: '',
     departureDate: '',
@@ -132,8 +130,11 @@ export class TravelQuoteComponent implements OnInit {
   validationErrors: ValidationErrors = {};
 
   // --- SEARCHABLE DROPDOWN PROPERTIES ---
+  originSearch: string = '';
   destinationSearch: string = '';
+  showOriginDropdown: boolean = false;
   showDestinationDropdown: boolean = false;
+  filteredOriginCountries: string[] = [];
   filteredDestinationCountries: string[] = [];
 
   // --- DATA ---
@@ -234,6 +235,7 @@ export class TravelQuoteComponent implements OnInit {
   quote!: QuoteData;
 
   ngOnInit(): void {
+    this.filteredOriginCountries = [...this.countries];
     this.filteredDestinationCountries = [...this.countries];
   }
 
@@ -268,6 +270,22 @@ export class TravelQuoteComponent implements OnInit {
   }
 
   // --- SEARCHABLE DROPDOWN METHODS ---
+  filterOriginCountries(event: any): void {
+    const query = event.target.value.toLowerCase();
+    this.originSearch = event.target.value;
+    this.travelerDetails.placeOfOrigin = event.target.value;
+    this.filteredOriginCountries = this.countries.filter((country) =>
+      country.toLowerCase().includes(query),
+    );
+    this.showOriginDropdown = true;
+  }
+
+  selectOriginCountry(country: string): void {
+    this.travelerDetails.placeOfOrigin = country;
+    this.originSearch = country;
+    this.showOriginDropdown = false;
+  }
+
   filterDestinationCountries(event: any): void {
     const query = event.target.value.toLowerCase();
     this.destinationSearch = event.target.value;
@@ -287,6 +305,9 @@ export class TravelQuoteComponent implements OnInit {
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: any): void {
     const target = event.target as HTMLElement;
+    if (!target.closest('.origin-dropdown-container')) {
+      this.showOriginDropdown = false;
+    }
     if (!target.closest('.destination-dropdown-container')) {
       this.showDestinationDropdown = false;
     }
@@ -421,6 +442,9 @@ export class TravelQuoteComponent implements OnInit {
     }
 
     // Travel Information validation
+    if (!this.travelerDetails.placeOfOrigin?.trim()) {
+      errors.push('Place of origin is required');
+    }
     if (!this.travelerDetails.destination?.trim()) {
       errors.push('Destination country is required');
     }
@@ -519,8 +543,6 @@ export class TravelQuoteComponent implements OnInit {
       quoteId: this.quote?.id || 'N/A',
       planType: this.selectedPlan,
       travelerDetails: this.travelerDetails,
-      includeWarTerrorism: this.includeWarTerrorism,
-      includeCovidExtension: this.includeCovidExtension,
       createdAt: new Date().toISOString(),
     };
 
@@ -563,6 +585,7 @@ export class TravelQuoteComponent implements OnInit {
       this.travelerDetails.phone?.trim() &&
       this.travelerDetails.dateOfBirth &&
       this.travelerDetails.passportNumber?.trim() &&
+      this.travelerDetails.placeOfOrigin?.trim() &&
       this.travelerDetails.destination?.trim() &&
       this.travelerDetails.travelPurpose &&
       this.travelerDetails.departureDate &&

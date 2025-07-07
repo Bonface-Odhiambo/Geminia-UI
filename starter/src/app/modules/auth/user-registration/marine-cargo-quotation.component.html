@@ -1,11 +1,14 @@
 <div class="min-h-screen w-screen bg-gray-50">
+    <!-- Logo placeholder (same as travel quote) -->
+  
+
     <!-- Header -->
     <header class="sticky top-0 z-10 bg-white shadow-sm">
         <div class="mx-auto max-w-7xl px-6">
             <div class="flex items-center justify-between py-3">
                 <div class="flex items-center gap-4">
                     <img
-                        src="https://geminialife.co.ke/wp-content/uploads/2022/06/thumbnail_GEMINIA-FINAL-LOGO-png.png"
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROTKn0j9cVpA67LPdjPeYBR3KnWiwP1gsM3cS27rca-7m8BgvgUylY4uhBnOnVnXFx8Is&usqp=CAU"
                         alt="Geminia Logo"
                         class="h-10 w-auto"
                     />
@@ -115,57 +118,35 @@
                             [formGroup]="quotationForm"
                             (ngSubmit)="onSubmit()"
                         >
-                            <!-- Row 1: Account Type and Trade Type -->
-                            <div
-                                class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"
-                            >
-                                <div>
-                                    <label
-                                        class="mb-2 block text-sm font-medium text-gray-700"
-                                    >
-                                        Account Type
-                                        <span class="text-red-500">*</span>
+                            <!-- Containerized/Non-Containerized Selection -->
+                            <div class="mb-6">
+                                <label class="mb-3 block text-sm font-medium text-gray-700">
+                                    Cargo Container Type
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <div class="flex gap-4">
+                                    <label class="flex items-center">
+                                        <input
+                                            type="radio"
+                                            formControlName="containerType"
+                                            value="containerized"
+                                            class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span class="ml-2 text-sm text-gray-700">Containerized</span>
                                     </label>
-                                    <select
-                                        formControlName="accountType"
-                                        class="appearance-none w-full rounded-md border border-gray-300 bg-white px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        <option value="">
-                                            Select account type
-                                        </option>
-                                        <option value="individual">
-                                            Individual
-                                        </option>
-                                        <option value="corporate">
-                                            Corporate
-                                        </option>
-                                        <option value="sme">SME</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label
-                                        class="mb-2 block text-sm font-medium text-gray-700"
-                                    >
-                                        Trade Type
-                                        <span class="text-red-500">*</span>
+                                    <label class="flex items-center">
+                                        <input
+                                            type="radio"
+                                            formControlName="containerType"
+                                            value="non-containerized"
+                                            class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span class="ml-2 text-sm text-gray-700">Non-Containerized</span>
                                     </label>
-                                    <select
-                                        formControlName="tradeType"
-                                        class="appearance-none w-full rounded-md border border-gray-300 bg-white px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        <option value="">
-                                            Select trade type
-                                        </option>
-                                        <option value="import">Import</option>
-                                        <option value="export">Export</option>
-                                        <option value="domestic">
-                                            Domestic
-                                        </option>
-                                    </select>
                                 </div>
                             </div>
 
-                            <!-- Row 2: Mode of Shipment and Cargo Type -->
+                            <!-- Row 1: Mode of Shipment and Trade Type -->
                             <div
                                 class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"
                             >
@@ -182,13 +163,29 @@
                                     >
                                         <option value="">Select mode</option>
                                         <option value="sea">Sea</option>
-                                        <option value="air">Air</option>
-                                        <option value="land">Land</option>
-                                        <option value="multimodal">
-                                            Multimodal
-                                        </option>
                                     </select>
                                 </div>
+                                <div>
+                                    <label
+                                        class="mb-2 block text-sm font-medium text-gray-700"
+                                    >
+                                        Trade Type
+                                        <span class="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        formControlName="tradeType"
+                                        class="appearance-none w-full rounded-md border border-gray-300 bg-white px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Select trade type</option>
+                                        <option value="import">Import</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Cargo Type and Select Product -->
+                            <div
+                                class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"
+                            >
                                 <div>
                                     <label
                                         class="mb-2 block text-sm font-medium text-gray-700"
@@ -215,6 +212,30 @@
                                         </option>
                                     </select>
                                 </div>
+                                <div>
+                                    <label
+                                        class="mb-2 block text-sm font-medium text-gray-700"
+                                    >
+                                        Select Product
+                                        <span class="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        formControlName="productType"
+                                        class="appearance-none w-full rounded-md border border-gray-300 bg-white px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Select product</option>
+                                        <option value="electronics">Electronics</option>
+                                        <option value="textiles">Textiles & Clothing</option>
+                                        <option value="machinery">Machinery & Equipment</option>
+                                        <option value="food">Food & Beverages</option>
+                                        <option value="pharmaceuticals">Pharmaceuticals</option>
+                                        <option value="automotive">Automotive Parts</option>
+                                        <option value="raw_materials">Raw Materials</option>
+                                        <option value="furniture">Furniture & Home Goods</option>
+                                        <option value="chemicals">Chemical Products</option>
+                                        <option value="general_merchandise">General Merchandise</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <!-- Row 3: Origin, Destination, Shipping Date -->
@@ -228,7 +249,6 @@
                                         Origin
                                         <span class="text-red-500">*</span>
                                     </label>
-                                    <!-- Searchable input example -->
                                     <input
                                         type="text"
                                         formControlName="origin"
@@ -237,13 +257,9 @@
                                         list="origin-list"
                                     />
                                     <datalist id="origin-list">
-                                        <option
-                                            value="Shanghai, China"
-                                        ></option>
+                                        <option value="Shanghai, China"></option>
                                         <option value="Mombasa, Kenya"></option>
-                                        <option
-                                            value="Rotterdam, Netherlands"
-                                        ></option>
+                                        <option value="Rotterdam, Netherlands"></option>
                                         <option value="New York, USA"></option>
                                     </datalist>
                                 </div>
@@ -254,7 +270,6 @@
                                         Destination
                                         <span class="text-red-500">*</span>
                                     </label>
-                                    <!-- Searchable input example -->
                                     <input
                                         type="text"
                                         formControlName="destination"
@@ -264,13 +279,9 @@
                                     />
                                     <datalist id="destination-list">
                                         <option value="Mombasa, Kenya"></option>
-                                        <option
-                                            value="Dar es Salaam, Tanzania"
-                                        ></option>
+                                        <option value="Dar es Salaam, Tanzania"></option>
                                         <option value="Lagos, Nigeria"></option>
-                                        <option
-                                            value="Antwerp, Belgium"
-                                        ></option>
+                                        <option value="Antwerp, Belgium"></option>
                                     </datalist>
                                 </div>
                                 <div>
@@ -281,8 +292,9 @@
                                         <span class="text-red-500">*</span>
                                     </label>
                                     <input
-                                        type="date"
+                                        type="text"
                                         formControlName="shippingDate"
+                                        placeholder="DD/MM/YYYY"
                                         class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                 </div>
@@ -323,10 +335,8 @@
                                         class="appearance-none w-full rounded-md border border-gray-300 bg-white px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
                                         <option value="ICC_A">
-                                            ICC (A) - All Risks
+                                            All Risks Coverage
                                         </option>
-                                        <option value="ICC_B">ICC (B)</option>
-                                        <option value="ICC_C">ICC (C)</option>
                                     </select>
                                 </div>
                                 <div>
@@ -361,46 +371,25 @@
                                 ></textarea>
                             </div>
 
-                            <!-- UCR and IDF Numbers -->
-                            <div
-                                class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"
-                            >
-                                <div>
-                                    <label
-                                        class="mb-2 block text-sm font-medium text-gray-700"
+                            <!-- IDF Number (mandatory for imports) -->
+                            <div class="mb-6">
+                                <label
+                                    class="mb-2 block text-sm font-medium text-gray-700"
+                                >
+                                    IDF Number
+                                    <span class="text-red-500">*</span>
+                                    <span
+                                        class="ml-1 cursor-help text-gray-400"
+                                        title="Import Declaration Form - Required for all imports"
+                                        >ⓘ</span
                                     >
-                                        UCR Number
-                                        <span
-                                            class="ml-1 cursor-help text-gray-400"
-                                            title="Unique Consignment Reference"
-                                            >ⓘ</span
-                                        >
-                                    </label>
-                                    <input
-                                        type="text"
-                                        formControlName="ucrNumber"
-                                        placeholder="CN123456789..."
-                                        class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                </div>
-                                <div>
-                                    <label
-                                        class="mb-2 block text-sm font-medium text-gray-700"
-                                    >
-                                        IDF Number
-                                        <span
-                                            class="ml-1 cursor-help text-gray-400"
-                                            title="Import Declaration Form"
-                                            >ⓘ</span
-                                        >
-                                    </label>
-                                    <input
-                                        type="text"
-                                        formControlName="idfNumber"
-                                        placeholder="IDF987654321..."
-                                        class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                </div>
+                                </label>
+                                <input
+                                    type="text"
+                                    formControlName="idfNumber"
+                                    placeholder="IDF987654321..."
+                                    class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
                             </div>
 
                             <!-- Optional Add-ons -->
@@ -463,11 +452,33 @@
                                             >Territorial Extension</span
                                         >
                                     </label>
+                                    <label class="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            formControlName="dashboardAlerts"
+                                            class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span class="ml-2 text-sm text-gray-700"
+                                            >Dashboard Alerts (Optional)</span
+                                        >
+                                    </label>
                                 </div>
                             </div>
 
-                            <!-- Data Privacy Consent -->
-                            <div class="mb-6">
+                            <!-- Agreements and Consents -->
+                            <div class="mb-6 space-y-4">
+                                <label class="flex items-start">
+                                    <input
+                                        type="checkbox"
+                                        formControlName="termsAndConditions"
+                                        class="h-4 w-4 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <span class="ml-3 text-sm text-gray-700">
+                                        I agree to the 
+                                        <a href="/terms-and-conditions" target="_blank" class="font-medium text-blue-600 hover:underline">Terms and Conditions</a>.
+                                        <span class="text-red-500">*</span>
+                                    </span>
+                                </label>
                                 <label class="flex items-start">
                                     <input
                                         type="checkbox"
@@ -568,7 +579,7 @@
                             <ul class="space-y-2 text-sm text-gray-600">
                                 <li class="flex items-start">
                                     <span class="mr-2 text-green-500">•</span>
-                                    Institute Cargo Clauses (A)
+                                    All Risks Coverage
                                 </li>
                                 <li class="flex items-start">
                                     <span class="mr-2 text-green-500">•</span>
@@ -604,39 +615,33 @@
                             </h3>
                             <div class="space-y-3 text-sm">
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600"
-                                        >Account Type:</span
-                                    >
+                                    <span class="text-gray-600">Container Type:</span>
                                     <span class="font-medium">{{
-                                        quotationForm.get('accountType')?.value
-                                            | titlecase
+                                        quotationForm.get('containerType')?.value | titlecase
                                     }}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600"
-                                        >Trade Type:</span
-                                    >
+                                    <span class="text-gray-600">Trade Type:</span>
                                     <span class="font-medium">{{
-                                        quotationForm.get('tradeType')?.value
-                                            | titlecase
+                                        quotationForm.get('tradeType')?.value | titlecase
                                     }}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600"
-                                        >Mode of Shipment:</span
-                                    >
+                                    <span class="text-gray-600">Mode of Shipment:</span>
                                     <span class="font-medium">{{
-                                        quotationForm.get('modeOfShipment')
-                                            ?.value | titlecase
+                                        quotationForm.get('modeOfShipment')?.value | titlecase
                                     }}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600"
-                                        >Cargo Type:</span
-                                    >
+                                    <span class="text-gray-600">Cargo Type:</span>
                                     <span class="font-medium">{{
-                                        quotationForm.get('cargoType')?.value
-                                            | titlecase
+                                        quotationForm.get('cargoType')?.value | titlecase
+                                    }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Product Type:</span>
+                                    <span class="font-medium">{{
+                                        getProductTypeDisplay(quotationForm.get('productType')?.value)
                                     }}</span>
                                 </div>
                                 <div class="flex justify-between">
@@ -646,20 +651,15 @@
                                     }}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600"
-                                        >Destination:</span
-                                    >
+                                    <span class="text-gray-600">Destination:</span>
                                     <span class="font-medium">{{
                                         quotationForm.get('destination')?.value
                                     }}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600"
-                                        >Shipping Date:</span
-                                    >
+                                    <span class="text-gray-600">Shipping Date:</span>
                                     <span class="font-medium">{{
                                         quotationForm.get('shippingDate')?.value
-                                            | date
                                     }}</span>
                                 </div>
                             </div>
@@ -672,37 +672,27 @@
                             </h3>
                             <div class="space-y-3 text-sm">
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600"
-                                        >Sum Insured:</span
-                                    >
-                                    <span class="font-medium"
-                                        >{{
-                                            quotationForm.get('currency')?.value
-                                        }}
-                                        {{
-                                            quotationForm.get('sumInsured')
-                                                ?.value | number: '1.2-2'
-                                        }}</span
-                                    >
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600"
-                                        >Cover Type:</span
-                                    >
+                                    <span class="text-gray-600">Sum Insured:</span>
                                     <span class="font-medium">{{
-                                        getCoverTypeDisplay(
-                                            quotationForm.get('coverType')
-                                                ?.value
-                                        )
+                                        quotationForm.get('currency')?.value
+                                    }} {{
+                                        quotationForm.get('sumInsured')?.value | number: '1.2-2'
                                     }}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600"
-                                        >Description:</span
-                                    >
+                                    <span class="text-gray-600">Cover Type:</span>
+                                    <span class="font-medium">All Risks Coverage</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Description:</span>
                                     <span class="font-medium text-right">{{
-                                        quotationForm.get('descriptionOfGoods')
-                                            ?.value
+                                        quotationForm.get('descriptionOfGoods')?.value
+                                    }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">IDF Number:</span>
+                                    <span class="font-medium">{{
+                                        quotationForm.get('idfNumber')?.value
                                     }}</span>
                                 </div>
 
@@ -711,9 +701,7 @@
                                     <span class="text-gray-600">Add-ons:</span>
                                     <ul class="mt-1 space-y-1 text-right">
                                         <li
-                                            *ngFor="
-                                                let addon of getSelectedAddOns()
-                                            "
+                                            *ngFor="let addon of getSelectedAddOns()"
                                             class="text-sm font-medium"
                                         >
                                             {{ addon }}
@@ -731,7 +719,7 @@
                         </h3>
                         <div class="space-y-2">
                             <div class="flex justify-between">
-                                <span class="text-gray-600">Base Premium ({{(premiumCalculation.baseRate * 100).toFixed(3)}}%):</span>
+                                <span class="text-gray-600">Base Premium ({{(premiumCalculation.baseRate * 100).toFixed(2)}}%):</span>
                                 <span>{{ premiumCalculation.currency }} {{ premiumCalculation.basePremium | number: '1.2-2' }}</span>
                             </div>
                             <div *ngIf="premiumCalculation.addOnPremium > 0" class="flex justify-between">
@@ -830,16 +818,8 @@
                     <!-- Payment Summary -->
                     <div class="mb-6 rounded-lg bg-blue-50 p-4">
                         <div class="flex items-center justify-between">
-                            <span class="text-lg font-medium"
-                                >Total Amount Due:</span
-                            >
-                            <span class="text-2xl font-bold text-blue-600"
-                                >{{ premiumCalculation.currency }}
-                                {{
-                                    premiumCalculation.totalPayable
-                                        | number: '1.2-2'
-                                }}</span
-                            >
+                            <span class="text-lg font-medium">Total Amount Due:</span>
+                            <span class="text-2xl font-bold text-blue-600">{{ premiumCalculation.currency }} {{ premiumCalculation.totalPayable | number: '1.2-2' }}</span>
                         </div>
                     </div>
 
@@ -862,9 +842,7 @@
                                         value="card"
                                         class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
                                     />
-                                    <span class="ml-2 text-sm text-gray-700"
-                                        >Credit/Debit Card</span
-                                    >
+                                    <span class="ml-2 text-sm text-gray-700">Credit/Debit Card</span>
                                 </label>
                                 <label class="flex items-center">
                                     <input
@@ -873,9 +851,7 @@
                                         value="mpesa"
                                         class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
                                     />
-                                    <span class="ml-2 text-sm text-gray-700"
-                                        >M-Pesa</span
-                                    >
+                                    <span class="ml-2 text-sm text-gray-700">M-Pesa</span>
                                 </label>
                                 <label class="flex items-center">
                                     <input
@@ -884,19 +860,14 @@
                                         value="bank"
                                         class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
                                     />
-                                    <span class="ml-2 text-sm text-gray-700"
-                                        >Bank Transfer</span
-                                    >
+                                    <span class="ml-2 text-sm text-gray-700">Bank Transfer</span>
                                 </label>
                             </div>
                         </div>
 
                         <!-- Card Payment Details -->
                         <div
-                            *ngIf="
-                                paymentForm.get('paymentMethod')?.value ===
-                                'card'
-                            "
+                            *ngIf="paymentForm.get('paymentMethod')?.value === 'card'"
                             class="mb-6 space-y-4"
                         >
                             <div>
@@ -953,10 +924,7 @@
 
                         <!-- M-Pesa Payment Details -->
                         <div
-                            *ngIf="
-                                paymentForm.get('paymentMethod')?.value ===
-                                'mpesa'
-                            "
+                            *ngIf="paymentForm.get('paymentMethod')?.value === 'mpesa'"
                             class="mb-6 space-y-4"
                         >
                             <div>
@@ -975,10 +943,7 @@
 
                         <!-- Bank Transfer Details -->
                         <div
-                            *ngIf="
-                                paymentForm.get('paymentMethod')?.value ===
-                                'bank'
-                            "
+                            *ngIf="paymentForm.get('paymentMethod')?.value === 'bank'"
                             class="mb-6 rounded-lg bg-gray-50 p-4"
                         >
                             <h4 class="mb-2 font-medium text-gray-900">
@@ -986,17 +951,9 @@
                             </h4>
                             <div class="space-y-1 text-sm text-gray-600">
                                 <p><strong>Bank:</strong> ABC Insurance Bank</p>
-                                <p>
-                                    <strong>Account Name:</strong> Marine Cargo
-                                    Insurance
-                                </p>
-                                <p>
-                                    <strong>Account Number:</strong> 1234567890
-                                </p>
-                                <p>
-                                    <strong>Reference:</strong>
-                                    {{ generatePaymentReference() }}
-                                </p>
+                                <p><strong>Account Name:</strong> Marine Cargo Insurance</p>
+                                <p><strong>Account Number:</strong> 1234567890</p>
+                                <p><strong>Reference:</strong> {{ generatePaymentReference() }}</p>
                             </div>
                         </div>
 
@@ -1011,14 +968,10 @@
                             </button>
                             <button
                                 type="submit"
-                                [disabled]="
-                                    paymentForm.invalid || isProcessingPayment
-                                "
+                                [disabled]="paymentForm.invalid || isProcessingPayment"
                                 class="flex-1 rounded-md bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300"
                             >
-                                <span *ngIf="!isProcessingPayment"
-                                    >Complete Payment</span
-                                >
+                                <span *ngIf="!isProcessingPayment">Complete Payment</span>
                                 <span
                                     *ngIf="isProcessingPayment"
                                     class="flex items-center justify-center"
