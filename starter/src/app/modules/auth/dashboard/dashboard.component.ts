@@ -1,6 +1,5 @@
 // =========================================================================================
-// This is the updated code with Pantone 306C color scheme, always-blue buttons, 
-// sidebar menu improvements, and brighter icons.
+// Fixed logo section to prevent color splashing into main dashboard area
 // =========================================================================================
 
 import { CommonModule } from '@angular/common';
@@ -48,7 +47,7 @@ interface NavigationItem { label: string; icon: string; route?: string; action?:
 interface Notification { id: string; title: string; message: string; type: 'info' | 'warning' | 'success' | 'error'; timestamp: Date; read: boolean; actionUrl?: string; }
 interface Activity { id: string; type: | 'quote_created' | 'quote_paid' | 'policy_downloaded' | 'payment_made' | 'policy_renewed' | 'claim_submitted' | 'profile_updated'; title: string; description: string; timestamp: Date; icon: string; iconColor: string; amount?: number; relatedId?: string; }
 
-// --- MPESA PAYMENT MODAL COMPONENT (Styles updated to use Pantone 306C, buttons are always blue) ---
+// --- MPESA PAYMENT MODAL COMPONENT (Unchanged) ---
 @Component({
     selector: 'app-mpesa-payment-modal',
     standalone: true,
@@ -75,7 +74,7 @@ interface Activity { id: string; type: | 'quote_created' | 'quote_paid' | 'polic
                             <form [formGroup]="paymentForm" class="payment-form">
                                 <mat-form-field appearance="outline"><mat-label>M-PESA Phone Number</mat-label><input matInput placeholder="+254712345678" formControlName="phoneNumber" [disabled]="isProcessing" type="tel"/><mat-icon matSuffix>smartphone</mat-icon></mat-form-field>
                             </form>
-                            <button mat-raised-button (click)="initiateMpesaPayment()" [disabled]="paymentForm.invalid || isProcessing" class="pay-button mpesa-button"><span *ngIf="!isProcessing">Pay KES {{ data.amount | number: '1.0-0' }}</span><span *ngIf="isProcessing">Processing...</span></button>
+                            <button mat-raised-button (click)="initiateMpesaPayment()" [disabled]="paymentForm.invalid || isProcessing" class="pay-button pantone-2758c-button"><span *ngIf="!isProcessing">Pay KES {{ data.amount | number: '1.0-0' }}</span><span *ngIf="isProcessing">Processing...</span></button>
                         </ng-container>
                         <div *ngIf="stkPushFailed" class="stk-failure-section">
                             <div class="failure-icon-wrapper"><mat-icon>error_outline</mat-icon></div>
@@ -90,7 +89,7 @@ interface Activity { id: string; type: | 'quote_created' | 'quote_paid' | 'polic
                             <mat-form-field appearance="outline"><mat-label>Card Number</mat-label><input matInput placeholder="0000 0000 0000 0000" formControlName="cardNumber" maxlength="16" /><mat-icon matSuffix>credit_card</mat-icon></mat-form-field>
                             <div class="form-row"><mat-form-field appearance="outline"><mat-label>Expiry (MM/YY)</mat-label><input matInput placeholder="MM/YY" formControlName="expiryDate"/></mat-form-field><mat-form-field appearance="outline"><mat-label>CVC</mat-label><input matInput placeholder="123" formControlName="cvc" maxlength="4"/></mat-form-field></div>
                         </form>
-                        <button mat-raised-button (click)="processCardPayment()" [disabled]="cardForm.invalid || isProcessing" class="pay-button card-button"><span *ngIf="!isProcessing">Pay KES {{ data.amount | number: '1.0-0' }}</span><span *ngIf="isProcessing">Processing...</span></button>
+                        <button mat-raised-button (click)="processCardPayment()" [disabled]="cardForm.invalid || isProcessing" class="pay-button pantone-2758c-button"><span *ngIf="!isProcessing">Pay KES {{ data.amount | number: '1.0-0' }}</span><span *ngIf="isProcessing">Processing...</span></button>
                     </div>
                     <div class="processing-overlay" *ngIf="isProcessing"><mat-progress-spinner diameter="50" mode="indeterminate"></mat-progress-spinner><p>{{ selectedPaymentMethod === 'mpesa' ? 'Sending prompt to your phone...' : 'Securing your transaction...' }}</p></div>
                 </ng-container>
@@ -100,7 +99,7 @@ interface Activity { id: string; type: | 'quote_created' | 'quote_paid' | 'polic
             </div>
         </div>
     `,
-    styles: [`:host{--primary-color:#04b2e1;--primary-dark:#0396bf;--success-color:#22c55e;--error-color:#f43f5e;--text-primary:#1f2937;--text-secondary:#6b7280;--background:#fff;--surface:#f8fafc;--border:#e2e8f0}.mpesa-modal-container{max-width:420px;border-radius:16px;box-shadow:0 10px 25px -5px rgba(0,0,0,.1);overflow:hidden}.modal-header{background:var(--primary-color);padding:24px;color:#fff}.header-content{display:flex;justify-content:space-between}.modal-title{font-size:20px;font-weight:700}.modal-subtitle{font-size:14px;opacity:.9}.close-button{color:#fff}.modal-body{padding:24px;position:relative}.payment-tabs{display:flex;gap:8px;background-color:var(--surface);border-radius:12px;padding:6px;margin-bottom:24px}.tab-button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border:none;background-color:transparent;border-radius:8px;cursor:pointer;font-weight:600;color:var(--text-secondary);transition:all .2s ease-in-out}.tab-button.active{background-color:var(--background);color:var(--primary-color);box-shadow:0 1px 3px rgba(0,0,0,.05)}.tab-icon{height:20px}.payment-form{display:flex;flex-direction:column;gap:16px}.form-row{display:flex;gap:16px}.pay-button{width:100%;height:48px;border-radius:12px;font-size:16px;font-weight:700;margin-top:16px;color:#fff}.mpesa-button,.card-button{background-color:var(--primary-color)!important;color:#fff!important;box-shadow:0 2px 8px rgba(4,178,225,.10)}.mpesa-button:hover,.card-button:hover{background-color:var(--primary-dark)!important}.stk-failure-section{text-align:center;padding:16px 0}.failure-icon-wrapper{color:var(--error-color)}.failure-icon-wrapper .mat-icon{font-size:48px;width:48px;height:48px}.failure-title{font-size:18px;font-weight:700;margin:16px 0 8px}.failure-message{color:var(--text-secondary);font-size:14px;margin-bottom:24px}.paybill-details{background:var(--surface);border:1px dashed var(--border);border-radius:12px;padding:16px;margin-bottom:24px}.detail-item{display:flex;justify-content:space-between;padding:8px 0}.detail-item+.detail-item{border-top:1px solid var(--border)}.processing-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.85);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:10}.success-container{display:flex;flex-direction:column;align-items:center;padding:16px 0}.success-icon-wrapper{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;background-color:color-mix(in srgb,var(--success-color) 15%,transparent);margin-bottom:20px}.success-icon{font-size:48px;color:var(--success-color)}.success-title{font-size:24px;font-weight:700;margin:0 0 8px}.reference-details{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:24px}.reference-value.mpesa-code{font-family:'Courier New',Courier,monospace;background-color:var(--border);padding:4px 8px;border-radius:6px}.done-button{width:100%;height:48px;border-radius:12px;background:var(--success-color);color:#fff;font-weight:600;font-size:16px}`],
+    styles: [`:host{--pantone-306c:#04b2e1;--pantone-306c-dark:#0396bf;--pantone-2758c:#21275c;--pantone-2758c-dark:#1a1f4a;--success-color:#22c55e;--error-color:#f43f5e;--text-primary:#1f2937;--text-secondary:#6b7280;--background:#fff;--surface:#f8fafc;--border:#e2e8f0}.mpesa-modal-container{max-width:420px;border-radius:16px;box-shadow:0 10px 25px -5px rgba(0,0,0,.1);overflow:hidden}.modal-header{background:var(--pantone-306c);padding:24px;color:#fff}.header-content{display:flex;justify-content:space-between}.modal-title{font-size:20px;font-weight:700}.modal-subtitle{font-size:14px;opacity:.9}.close-button{color:#fff}.modal-body{padding:24px;position:relative}.payment-tabs{display:flex;gap:8px;background-color:var(--surface);border-radius:12px;padding:6px;margin-bottom:24px}.tab-button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border:none;background-color:transparent;border-radius:8px;cursor:pointer;font-weight:600;color:var(--text-secondary);transition:all .2s ease-in-out}.tab-button.active{background-color:var(--background);color:var(--pantone-306c);box-shadow:0 1px 3px rgba(0,0,0,.05)}.tab-icon{height:20px}.payment-form{display:flex;flex-direction:column;gap:16px}.form-row{display:flex;gap:16px}.pay-button{width:100%;height:48px;border-radius:12px;font-size:16px;font-weight:700;margin-top:16px;color:#fff}.pantone-2758c-button{background-color:var(--pantone-2758c)!important;color:#fff!important;box-shadow:0 2px 8px rgba(33,39,92,.16)!important}.pantone-2758c-button:hover{background-color:var(--pantone-2758c-dark)!important}.stk-failure-section{text-align:center;padding:16px 0}.failure-icon-wrapper{color:var(--error-color)}.failure-icon-wrapper .mat-icon{font-size:48px;width:48px;height:48px}.failure-title{font-size:18px;font-weight:700;margin:16px 0 8px}.failure-message{color:var(--text-secondary);font-size:14px;margin-bottom:24px}.paybill-details{background:var(--surface);border:1px dashed var(--border);border-radius:12px;padding:16px;margin-bottom:24px}.detail-item{display:flex;justify-content:space-between;padding:8px 0}.detail-item+.detail-item{border-top:1px solid var(--border)}.processing-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.85);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:10}.success-container{display:flex;flex-direction:column;align-items:center;padding:16px 0}.success-icon-wrapper{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;background-color:color-mix(in srgb,var(--success-color) 15%,transparent);margin-bottom:20px}.success-icon{font-size:48px;color:var(--success-color)}.success-title{font-size:24px;font-weight:700;margin:0 0 8px}.reference-details{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:24px}.reference-value.mpesa-code{font-family:'Courier New',Courier,monospace;background-color:var(--border);padding:4px 8px;border-radius:6px}.done-button{width:100%;height:48px;border-radius:12px;background:var(--success-color);color:#fff;font-weight:600;font-size:16px}`],
 })
 export class MpesaPaymentModalComponent implements OnInit {
     paymentForm: FormGroup; cardForm: FormGroup; isProcessing = false; paymentSuccessful = false; mpesaReceiptNumber: string | null = null; selectedPaymentMethod: 'mpesa' | 'card' = 'mpesa'; stkPushFailed = false;
@@ -112,7 +111,7 @@ export class MpesaPaymentModalComponent implements OnInit {
     processCardPayment(): void { if (this.cardForm.invalid) return; this.isProcessing = true; setTimeout(() => { this.isProcessing = false; this.mpesaReceiptNumber = 'CARD_TXN_' + Math.random().toString(36).substring(2, 10).toUpperCase(); this.paymentSuccessful = true; }, 2500); }
 }
 
-// --- DASHBOARD COMPONENT (Pantone 306C color, always blue buttons, sidebar menu improved, brighter icons) ---
+// --- DASHBOARD COMPONENT (Fixed logo section) ---
 
 @Component({
     selector: 'app-dashboard',
@@ -120,31 +119,32 @@ export class MpesaPaymentModalComponent implements OnInit {
     imports: [ CommonModule, RouterModule, MatIconModule, MatButtonModule, MatMenuModule, MatDividerModule, MatChipsModule, MatCardModule, MatDialogModule, MatBadgeModule, MatSnackBarModule, ],
     template: `
         <div class="flex min-h-screen w-screen bg-gray-50">
-            <!-- Sidebar -->
-            <div class="sidebar-gradient flex w-64 flex-col text-white" [class.mobile-open]="isMobileSidebarOpen">
-                <div class="border-white-20 border-b p-6">
-                  <div class="flex items-center space-x-3">
-                    <div class="flex h-20 w-20 items-center justify-center">
+            <!-- Sidebar with fixed logo section -->
+            <div class="sidebar-consistent-306c flex w-64 flex-col text-white" [class.mobile-open]="isMobileSidebarOpen">
+                <div class="logo-section-fixed border-b border-white-10 p-6">
+                  <div class="logo-container">
+                    <div class="logo-wrapper">
                       <img 
                         src="https://geminia.co.ke/wp-content/uploads/2023/08/Blue-logo.jpg" 
                         alt="Geminia Insurance Logo" 
-                        class="h-full w-full object-contain"
+                        class="logo-image"
                         (error)="onLogoError($event)"
                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                       />
-                      <!-- Fallback logo -->
-                      <div class="h-full w-full bg-white bg-opacity-20 rounded-lg flex items-center justify-center text-white font-bold text-lg" style="display: none;">
-                        G
+                      <!-- Fixed fallback logo -->
+                      <div class="fallback-logo" style="display: none;">
+                        <span class="fallback-logo-text">G</span>
+                        <div class="logo-shine"></div>
                       </div>
                     </div>
-                    <div>
-                      <h1 class="text-lg font-bold">GEMINIA</h1>
-                      <p class="text-white-80 text-xs">INSURANCE</p>
-                      <p class="text-white-70 text-xs">{{ getRoleDisplayName() }}</p>
+                    <div class="brand-text">
+                      <h1 class="brand-title">GEMINIA</h1>
+                      <p class="brand-subtitle">INSURANCE</p>
+                      <p class="brand-role">{{ getRoleDisplayName() }}</p>
                     </div>
                   </div>
                 </div>
-                <div class="border-white-20 user-profile-section border-b p-6">
+                <div class="user-profile-section border-b border-white-10 p-6">
                   <div class="flex items-center space-x-3">
                     <div class="relative">
                       <div class="bg-white-20 flex h-12 w-12 items-center justify-center rounded-full">
@@ -162,21 +162,21 @@ export class MpesaPaymentModalComponent implements OnInit {
                   <div class="space-y-2">
                     <ng-container *ngFor="let item of navigationItems">
                       <a *ngIf="!item.children && item.route" [routerLink]="item.route" routerLinkActive="active-menu-item" class="nav-menu-item text-white-80 hover:bg-white-10 flex items-center space-x-3 rounded-lg px-4 py-3 transition-all hover:text-white">
-                        <mat-icon class="sidebar-nav-icon bright-icon">{{ item.icon }}</mat-icon><span>{{ item.label }}</span>
+                        <mat-icon class="sidebar-nav-icon pantone-2758c-icon">{{ item.icon }}</mat-icon><span>{{ item.label }}</span>
                       </a>
                       <div *ngIf="item.children" class="space-y-1">
                         <button (click)="toggleNavItem(item)" class="nav-menu-item text-white-80 hover:bg-white-10 flex w-full items-center justify-between rounded-lg px-4 py-3 transition-all hover:text-white">
                           <div class="flex items-center space-x-3">
-                            <mat-icon class="sidebar-nav-icon bright-icon">{{ item.icon }}</mat-icon>
+                            <mat-icon class="sidebar-nav-icon pantone-2758c-icon">{{ item.icon }}</mat-icon>
                             <span>{{ item.label }}</span>
                             <span *ngIf="item.badge && item.badge > 0" class="rounded-full bg-red-500 px-2 py-1 text-xs text-white">{{ item.badge }}</span>
                           </div>
-                          <mat-icon class="sidebar-nav-icon bright-icon" [class.rotate-180]="item.isExpanded" class="transition-transform">expand_more</mat-icon>
+                          <mat-icon class="sidebar-nav-icon pantone-2758c-icon" [class.rotate-180]="item.isExpanded" class="transition-transform">expand_more</mat-icon>
                         </button>
                         <div *ngIf="item.isExpanded" class="ml-6 space-y-1">
                           <ng-container *ngFor="let child of item.children">
                             <a *ngIf="child.route" [routerLink]="child.route" class="text-white-70 hover:bg-white-10 block w-full rounded-lg px-4 py-2 text-left text-sm transition-colors hover:text-white">
-                              <div class="flex items-center space-x-2"><mat-icon class="sidebar-nav-icon bright-icon !text-sm">{{ child.icon }}</mat-icon><span>{{ child.label }}</span></div>
+                              <div class="flex items-center space-x-2"><mat-icon class="sidebar-nav-icon pantone-2758c-icon !text-sm">{{ child.icon }}</mat-icon><span>{{ child.label }}</span></div>
                             </a>
                           </ng-container>
                         </div>
@@ -224,7 +224,7 @@ export class MpesaPaymentModalComponent implements OnInit {
                               <span *ngIf="getUnreadNotificationCount() > 0" class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">{{ getUnreadNotificationCount() }}</span>
                             </button>
                             <button mat-icon-button [matMenuTriggerFor]="userMenu" class="relative">
-                              <div class="sidebar-gradient flex h-10 w-10 items-center justify-center rounded-full">
+                              <div class="sidebar-consistent-306c flex h-10 w-10 items-center justify-center rounded-full">
                                 <span class="text-sm font-semibold text-white">{{ getInitials(user.name) }}</span>
                               </div>
                             </button>
@@ -252,13 +252,13 @@ export class MpesaPaymentModalComponent implements OnInit {
                                         <p class="mb-4 text-sm text-gray-600">{{ quote.description }}</p>
                                         <div class="mb-4 flex items-center justify-between"><div class="text-2xl font-bold text-gray-900">KES {{ quote.amount | number: '1.0-0' }}</div><div class="text-sm text-gray-500">Expires: {{ quote.expiryDate | date: 'shortDate' }}</div></div>
                                         
-                                        <!-- Always blue buttons, secondary style is light blue, primary is solid blue -->
+                                        <!-- Updated buttons with Pantone 2758C for "Pay Now" -->
                                         <div class="flex space-x-2">
-                                            <button mat-raised-button (click)="editQuoteByType(quote.id, quote.type)" class="sidebar-color-btn-secondary flex-1 rounded-xl px-4 py-2 text-sm font-medium transition-all">
+                                            <button mat-raised-button (click)="editQuoteByType(quote.id, quote.type)" class="pantone-306c-btn-secondary flex-1 rounded-xl px-4 py-2 text-sm font-medium transition-all">
                                                 <mat-icon class="mr-2 bright-icon">edit</mat-icon>
                                                 Edit
                                             </button>
-                                            <button mat-raised-button (click)="initiateMpesaPayment(quote.id)" class="sidebar-color-btn flex-1 rounded-xl px-4 py-2 text-sm font-medium text-white transition-all">
+                                            <button mat-raised-button (click)="initiateMpesaPayment(quote.id)" class="pantone-2758c-pay-button flex-1 rounded-xl px-4 py-2 text-sm font-medium text-white transition-all">
                                                 <mat-icon class="mr-2 bright-icon">payment</mat-icon>
                                                 Pay Now
                                             </button>
@@ -288,7 +288,7 @@ export class MpesaPaymentModalComponent implements OnInit {
                                         <div class="policy-details-collapsible" [class.expanded]="expandedPolicyId === policy.id">
                                             <div class="bg-white p-6"><p>Policy #{{ policy.policyNumber }}</p><p>Premium: KES {{ policy.premium | number: '1.2-2' }}</p></div>
                                             <div class="flex items-center justify-end rounded-b-lg border-t bg-gray-50 p-4">
-                                                <button mat-raised-button (click)="downloadCertificate(policy.id)" class="sidebar-color-btn rounded-lg px-4 py-2 text-sm font-medium text-white">
+                                                <button mat-raised-button (click)="downloadCertificate(policy.id)" class="pantone-306c-btn rounded-lg px-4 py-2 text-sm font-medium text-white">
                                                     <mat-icon class="mr-2 bright-icon">download</mat-icon>
                                                     Download Certificate
                                                 </button>
@@ -301,7 +301,7 @@ export class MpesaPaymentModalComponent implements OnInit {
 
                         <!-- Right Column -->
                         <div class="space-y-6">
-                            <div class="rounded-2xl bg-white p-6 shadow-sm"><h2 class="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h2><div class="space-y-4"><button mat-raised-button (click)="router.navigate(['/sign-up/marine-quote'])" class="sidebar-color-btn w-full rounded-xl p-4 text-white hover:shadow-md transition-all">New Marine Quote</button><button mat-raised-button (click)="router.navigate(['/sign-up/travel-quote'])" class="sidebar-color-btn w-full rounded-xl p-4 text-white hover:shadow-md transition-all">New Travel Quote</button></div></div>
+                            <div class="rounded-2xl bg-white p-6 shadow-sm"><h2 class="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h2><div class="space-y-4"><button mat-raised-button (click)="router.navigate(['/sign-up/marine-quote'])" class="pantone-306c-btn w-full rounded-xl p-4 text-white hover:shadow-md transition-all">New Marine Quote</button><button mat-raised-button (click)="router.navigate(['/sign-up/travel-quote'])" class="pantone-306c-btn w-full rounded-xl p-4 text-white hover:shadow-md transition-all">New Travel Quote</button></div></div>
                             <div class="rounded-2xl bg-white p-6 shadow-sm"><h2 class="text-lg font-semibold text-gray-900 mb-6">Recent Activity</h2><div class="max-h-80 space-y-4 overflow-y-auto"><div *ngFor="let activity of recentActivities" class="flex cursor-pointer items-start space-x-3 rounded-lg p-3 hover:bg-gray-50 transition-colors" (click)="handleActivityClick(activity)"><div class="flex h-8 w-8 items-center justify-center rounded-full flex-shrink-0" [style.background-color]="activity.iconColor + '20'"><mat-icon [style.color]="activity.iconColor" class="!text-base bright-icon">{{ activity.icon }}</mat-icon></div><div class="flex-1 min-w-0"><p class="text-sm font-medium text-gray-900 truncate">{{ activity.title }}</p><p class="text-xs text-gray-500 truncate">{{ activity.description }}</p><div *ngIf="activity.amount" class="text-xs text-gray-500 mt-1"><span class="font-semibold text-gray-700">KES {{ activity.amount | number:'1.0-0' }}</span></div><p class="text-xs text-gray-400 mt-1">{{ activity.timestamp | date: 'shortTime' }}</p></div></div></div></div>
                         </div>
                     </div>
@@ -316,43 +316,234 @@ export class MpesaPaymentModalComponent implements OnInit {
     styles: [
         `
             :host {
-                --geminia-primary-color: #04b2e1;
-                --geminia-primary-dark: #0396bf;
+                --pantone-306c: #04b2e1;
+                --pantone-306c-dark: #0396bf;
+                --pantone-2758c: #21275c;
+                --pantone-2758c-dark: #1a1f4a;
             }
-            .sidebar-gradient {
+
+            /* Consistent Pantone 306C Sidebar */
+            .sidebar-consistent-306c {
+                background: var(--pantone-306c);
+                box-shadow: 2px 0 8px rgba(4, 178, 225, 0.1);
+                /* Ensure sidebar stays within bounds */
+                max-width: 256px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            /* Fixed Logo Section - No splashing */
+            .logo-section-fixed {
+                /* Remove any overflow or effects that could spill over */
+                background: rgba(255,255,255,0.08);
+                /* Simple border instead of rounded corners that could extend */
+                border-bottom: 1px solid rgba(255,255,255,0.15);
+                /* Ensure content stays within bounds */
+                max-width: 100%;
+                overflow: hidden;
+                /* Remove any margin that could cause spillover */
+                margin: 0;
+            }
+
+            .logo-container {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                /* Ensure container doesn't exceed sidebar width */
+                max-width: 100%;
+            }
+
+            .logo-wrapper {
+                position: relative;
+                width: 56px;
+                height: 56px;
+                /* Simplified background - no complex effects */
+                background: rgba(255,255,255,0.12);
+                border-radius: 12px;
+                padding: 6px;
+                /* Simple shadow that won't extend beyond sidebar */
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                border: 1px solid rgba(255,255,255,0.1);
+                overflow: hidden;
+                /* Ensure wrapper doesn't grow beyond expected size */
+                flex-shrink: 0;
+            }
+
+            .logo-image {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                border-radius: 6px;
+                transition: transform 0.3s ease;
+            }
+
+            .logo-wrapper:hover .logo-image {
+                transform: scale(1.02);
+            }
+
+            .fallback-logo {
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #fff 0%, #f0f9ff 100%);
+                border-radius: 6px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .fallback-logo-text {
+                font-size: 20px;
+                font-weight: 900;
+                color: var(--pantone-306c);
+                text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                z-index: 2;
+            }
+
+            .logo-shine {
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
                 background: linear-gradient(
-                    135deg,
-                    var(--geminia-primary-color) 0%,
-                    var(--geminia-primary-dark) 100%
+                    45deg,
+                    transparent,
+                    rgba(255,255,255,0.2),
+                    transparent
                 );
+                animation: shine 4s ease-in-out infinite;
             }
-            /* Primary solid blue button */
-            .sidebar-color-btn {
-                background-color: var(--geminia-primary-color)!important;
-                color: white!important;
-                box-shadow: 0 2px 6px rgba(4,178,225,.16)!important;
+
+            @keyframes shine {
+                0% { transform: translateX(-100%) translateY(-100%); }
+                50% { transform: translateX(0%) translateY(0%); }
+                100% { transform: translateX(100%) translateY(100%); }
             }
-            .sidebar-color-btn:hover,
-            .sidebar-color-btn:active,
-            .sidebar-color-btn:focus {
-                background-color: var(--geminia-primary-dark)!important;
+
+            .brand-text {
+                flex: 1;
+                /* Ensure text doesn't overflow */
+                min-width: 0;
             }
-            /* Always blue secondary button (light blue bg, blue text) */
-            .sidebar-color-btn-secondary {
-                background-color: rgba(4,178,225,0.13)!important;
-                color: var(--geminia-primary-color)!important;
+
+            .brand-title {
+                font-size: 20px;
+                font-weight: 900;
+                color: #fff;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+                letter-spacing: 0.3px;
+                margin-bottom: 2px;
+                /* Prevent text overflow */
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .brand-subtitle {
+                font-size: 10px;
+                color: rgba(255,255,255,0.85);
+                font-weight: 600;
+                letter-spacing: 0.8px;
+                margin-bottom: 4px;
+            }
+
+            .brand-role {
+                font-size: 9px;
+                color: rgba(255,255,255,0.75);
+                font-weight: 500;
+                background: rgba(255,255,255,0.1);
+                padding: 2px 6px;
+                border-radius: 8px;
+                display: inline-block;
+                /* Ensure badge doesn't overflow */
+                max-width: 100%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .user-profile-section {
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                margin-bottom: 16px;
+                /* Ensure section doesn't overflow */
+                max-width: 100%;
+                overflow: hidden;
+            }
+
+            /* Pantone 2758C Sidebar Icons */
+            .pantone-2758c-icon {
+                color: var(--pantone-2758c) !important;
+                filter: brightness(1.2) drop-shadow(0 0 2px rgba(33,39,92,0.3));
+                transition: all 0.3s ease;
+            }
+
+            .pantone-2758c-icon:hover {
+                color: var(--pantone-2758c-dark) !important;
+                filter: brightness(1.4) drop-shadow(0 0 4px rgba(33,39,92,0.5));
+            }
+
+            /* Pantone 2758C Pay Now Button */
+            .pantone-2758c-pay-button {
+                background: linear-gradient(135deg, var(--pantone-2758c) 0%, var(--pantone-2758c-dark) 100%) !important;
+                color: white !important;
+                box-shadow: 
+                    0 4px 12px rgba(33,39,92,0.25),
+                    0 2px 4px rgba(33,39,92,0.1) !important;
+                border: 1px solid rgba(255,255,255,0.1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .pantone-2758c-pay-button::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                transition: left 0.6s ease;
+            }
+
+            .pantone-2758c-pay-button:hover::before {
+                left: 100%;
+            }
+
+            .pantone-2758c-pay-button:hover {
+                background: linear-gradient(135deg, var(--pantone-2758c-dark) 0%, var(--pantone-2758c) 100%) !important;
+                box-shadow: 
+                    0 6px 20px rgba(33,39,92,0.35),
+                    0 4px 8px rgba(33,39,92,0.2) !important;
+                transform: translateY(-2px);
+            }
+
+            /* Pantone 306C Buttons (consistent blue) */
+            .pantone-306c-btn {
+                background-color: var(--pantone-306c) !important;
+                color: white !important;
+                box-shadow: 0 2px 6px rgba(4,178,225,.16) !important;
+            }
+            .pantone-306c-btn:hover {
+                background-color: var(--pantone-306c-dark) !important;
+            }
+
+            .pantone-306c-btn-secondary {
+                background-color: rgba(4,178,225,0.13) !important;
+                color: var(--pantone-306c) !important;
                 box-shadow: none !important;
             }
-            .sidebar-color-btn-secondary:hover,
-            .sidebar-color-btn-secondary:active,
-            .sidebar-color-btn-secondary:focus {
-                background-color: rgba(4,178,225,0.23)!important;
-                color: var(--geminia-primary-dark)!important;
+            .pantone-306c-btn-secondary:hover {
+                background-color: rgba(4,178,225,0.23) !important;
+                color: var(--pantone-306c-dark) !important;
             }
+
             .dashboard-card:hover {
                 transform: translateY(-2px);
                 box-shadow: 0 4px 12px rgba(4,178,225,0.07);
             }
+
             .policy-details-collapsible {
                 max-height: 0;
                 overflow: hidden;
@@ -362,12 +553,65 @@ export class MpesaPaymentModalComponent implements OnInit {
                 max-height: 1500px;
                 transition: max-height 0.5s ease-in;
             }
-            .text-geminia-blue { color: var(--geminia-primary-color)!important; }
-            .bright-icon { filter: brightness(1.2) drop-shadow(0 0 2px #04b2e133); color: #04b2e1 !important; }
+
+            .bright-icon { 
+                filter: brightness(1.2) drop-shadow(0 0 2px #04b2e133); 
+                color: #04b2e1 !important; 
+            }
+
             .max-h-80::-webkit-scrollbar { width: 4px; }
             .max-h-80::-webkit-scrollbar-track { background: #f1f5f9; }
             .max-h-80::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
-            ::ng-deep .mpesa-modal-panel .mat-mdc-dialog-container .mdc-dialog__surface { border-radius: 16px !important; padding: 0 !important; }
+
+            /* Active menu item styling */
+            .active-menu-item {
+                background: rgba(255,255,255,0.15) !important;
+                color: white !important;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+
+            .active-menu-item .pantone-2758c-icon {
+                color: white !important;
+                filter: brightness(1.4) drop-shadow(0 0 4px rgba(255,255,255,0.3));
+            }
+
+            /* Navigation hover effects */
+            .nav-menu-item:hover {
+                background: rgba(255,255,255,0.1) !important;
+            }
+
+            /* Consistent text colors */
+            .text-white-80 { color: rgba(255,255,255,0.8); }
+            .text-white-70 { color: rgba(255,255,255,0.7); }
+            .bg-white-20 { background-color: rgba(255,255,255,0.2); }
+            .bg-white-10 { background-color: rgba(255,255,255,0.1); }
+            .border-white-10 { border-color: rgba(255,255,255,0.1); }
+
+            /* Mobile sidebar */
+            .sidebar-consistent-306c.mobile-open {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 50;
+                box-shadow: 4px 0 16px rgba(0,0,0,0.1);
+            }
+
+            @media (max-width: 1024px) {
+                .sidebar-consistent-306c {
+                    transform: translateX(-100%);
+                    transition: transform 0.3s ease;
+                }
+                
+                .sidebar-consistent-306c.mobile-open {
+                    transform: translateX(0);
+                }
+            }
+
+            ::ng-deep .mpesa-modal-panel .mat-mdc-dialog-container .mdc-dialog__surface { 
+                border-radius: 16px !important; 
+                padding: 0 !important; 
+            }
         `,
     ],
 })

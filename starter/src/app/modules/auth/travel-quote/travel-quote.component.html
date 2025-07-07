@@ -291,7 +291,6 @@
   </div>
 </div>
 
-<!-- Rest of your existing code for Steps 2, 3, and Loading Overlay remains the same -->
 <!-- Step 2: Traveler Details -->
 <div
   *ngIf="state.currentStep === QuoteStep.TRAVELER_DETAILS"
@@ -599,6 +598,49 @@
               <option value="friend">Friend</option>
               <option value="other">Other</option>
             </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Terms and Conditions Agreement -->
+      <div class="rounded-lg bg-white p-6 shadow-md">
+        <h3 class="mb-6 text-xl font-semibold text-gray-800">Terms and Conditions</h3>
+        <div class="space-y-4">
+          <div class="flex items-start">
+            <input
+              type="radio"
+              id="agreePrivacy"
+              [(ngModel)]="agreements.dataPrivacy"
+              name="agreePrivacy"
+              [value]="true"
+              required
+              class="mt-1 h-4 w-4 text-[#04b2e1] focus:ring-[#04b2e1] border-gray-300 rounded"
+            />
+            <label for="agreePrivacy" class="ml-3 text-sm text-gray-700 cursor-pointer">
+              I agree to the 
+              <a href="#" class="text-[#04b2e1] hover:text-[#0299cc] font-medium underline">
+                Data Privacy Policy
+              </a>
+              <span class="text-red-500 ml-1">*</span>
+            </label>
+          </div>
+          <div class="flex items-start">
+            <input
+              type="radio"
+              id="agreeTerms"
+              [(ngModel)]="agreements.termsAndConditions"
+              name="agreeTerms"
+              [value]="true"
+              required
+              class="mt-1 h-4 w-4 text-[#04b2e1] focus:ring-[#04b2e1] border-gray-300 rounded"
+            />
+            <label for="agreeTerms" class="ml-3 text-sm text-gray-700 cursor-pointer">
+              I agree to the 
+              <a href="#" class="text-[#04b2e1] hover:text-[#0299cc] font-medium underline">
+                Terms and Conditions
+              </a>
+              <span class="text-red-500 ml-1">*</span>
+            </label>
           </div>
         </div>
       </div>

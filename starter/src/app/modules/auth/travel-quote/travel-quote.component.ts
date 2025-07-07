@@ -35,6 +35,11 @@ export interface TravelerDetails {
   };
 }
 
+export interface Agreements {
+  dataPrivacy: boolean;
+  termsAndConditions: boolean;
+}
+
 export interface Traveler {
   name: string;
   dob: string;
@@ -52,6 +57,17 @@ export interface EmergencyContact {
   relationship: string;
 }
 
+// New interface for premium summary
+export interface PremiumSummary {
+  sumInsured: number;
+  basePremium: number;
+  premiumLevy: number;
+  phcf: number;
+  stampDuty: number;
+  netPremium: number;
+  premiumRate: number;
+}
+
 export interface QuoteData {
   id: string;
   planType: PlanType;
@@ -66,6 +82,7 @@ export interface QuoteData {
   };
   totalTravelers: number;
   premium: number;
+  premiumSummary: PremiumSummary;
   travelerDetails: Traveler[];
   emergencyContact: EmergencyContact;
   createdAt: Date;
@@ -79,6 +96,7 @@ export interface ProductCard {
   startingPrice: number;
   popular?: boolean;
   color: string;
+  sumInsured: number; // Add sum insured to product cards
 }
 
 export interface ValidationErrors {
@@ -96,6 +114,13 @@ export class TravelQuoteComponent implements OnInit {
   // --- ENUMS FOR TEMPLATE ---
   readonly PlanType = PlanType;
   readonly QuoteStep = QuoteStep;
+
+  // --- TAX RATES CONSTANTS ---
+  private readonly TAX_RATES = {
+    PREMIUM_LEVY: 0.0025, // 0.25%
+    PHCF: 0.0025, // 0.25%
+    STAMP_DUTY: 40 // KSh 40 flat rate
+  };
 
   // --- STATE MANAGEMENT ---
   state = {
@@ -126,6 +151,12 @@ export class TravelQuoteComponent implements OnInit {
     }
   };
 
+  // --- AGREEMENTS ---
+  agreements: Agreements = {
+    dataPrivacy: false,
+    termsAndConditions: false
+  };
+
   // --- VALIDATION ---
   validationErrors: ValidationErrors = {};
 
@@ -150,6 +181,7 @@ export class TravelQuoteComponent implements OnInit {
         'Personal Liability up to $100,000',
       ],
       startingPrice: 18.00,
+      sumInsured: 50000,
       color: 'blue',
     },
     {
@@ -166,6 +198,7 @@ export class TravelQuoteComponent implements OnInit {
         'Rental Car Coverage',
       ],
       startingPrice: 25.00,
+      sumInsured: 100000,
       popular: true,
       color: 'purple',
     },
@@ -187,6 +220,7 @@ export class TravelQuoteComponent implements OnInit {
         'Concierge Services',
       ],
       startingPrice: 35.00,
+      sumInsured: 250000,
       color: 'amber',
     },
   ];
@@ -260,6 +294,15 @@ export class TravelQuoteComponent implements OnInit {
       travelers: { between18and65: 1, under18: 0, over65: 0 },
       totalTravelers: 1,
       premium: 0,
+      premiumSummary: {
+        sumInsured: 0,
+        basePremium: 0,
+        premiumLevy: 0,
+        phcf: 0,
+        stampDuty: 0,
+        netPremium: 0,
+        premiumRate: 0
+      },
       travelerDetails: [],
       emergencyContact: { name: '', email: '', phone: '', relationship: '' },
       createdAt: now,
@@ -364,6 +407,33 @@ export class TravelQuoteComponent implements OnInit {
       over65 * rates.senior;
 
     this.quote.premium = Math.round(basePremium * 100) / 100;
+    
+    // Calculate premium summary with taxes
+    this.calculatePremiumSummary(basePremium);
+  }
+
+  private calculatePremiumSummary(basePremium: number): void {
+    if (!this.quote) return;
+
+    const selectedProduct = this.productCards.find(card => card.name === this.quote.planType);
+    const sumInsured = selectedProduct ? selectedProduct.sumInsured : 0;
+
+    // Calculate taxes
+    const premiumLevy = Math.round(basePremium * this.TAX_RATES.PREMIUM_LEVY * 100) / 100;
+    const phcf = Math.round(basePremium * this.TAX_RATES.PHCF * 100) / 100;
+    const stampDuty = this.TAX_RATES.STAMP_DUTY;
+    const netPremium = Math.round((basePremium + premiumLevy + phcf + stampDuty) * 100) / 100;
+    const premiumRate = sumInsured > 0 ? Math.round((netPremium / sumInsured) * 10000 * 100) / 100 : 0; // Rate per 10,000 coverage
+
+    this.quote.premiumSummary = {
+      sumInsured,
+      basePremium: Math.round(basePremium * 100) / 100,
+      premiumLevy,
+      phcf,
+      stampDuty,
+      netPremium,
+      premiumRate
+    };
   }
 
   getPriceForAge(ageGroup: 'adult' | 'child' | 'senior'): number {
@@ -385,6 +455,23 @@ export class TravelQuoteComponent implements OnInit {
       child: Math.round(baseRates.child * multiplier * 100) / 100,
       senior: Math.round(baseRates.senior * multiplier * 100) / 100,
     };
+  }
+
+  // --- FORMATTING METHODS ---
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('en-KE', {
+      style: 'currency',
+      currency: 'KES',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount);
+  }
+
+  formatNumber(amount: number): string {
+    return new Intl.NumberFormat('en-KE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount);
   }
 
   // --- VALIDATION ---
@@ -474,6 +561,14 @@ export class TravelQuoteComponent implements OnInit {
       errors.push('Emergency contact relationship is required');
     }
 
+    // Agreements validation
+    if (!this.agreements.dataPrivacy) {
+      errors.push('You must agree to the Data Privacy Policy');
+    }
+    if (!this.agreements.termsAndConditions) {
+      errors.push('You must agree to the Terms and Conditions');
+    }
+
     if (errors.length > 0) {
       this.validationErrors['details'] = errors;
       this.state.hasErrors = true;
@@ -543,6 +638,8 @@ export class TravelQuoteComponent implements OnInit {
       quoteId: this.quote?.id || 'N/A',
       planType: this.selectedPlan,
       travelerDetails: this.travelerDetails,
+      premiumSummary: this.quote?.premiumSummary,
+      agreements: this.agreements,
       createdAt: new Date().toISOString(),
     };
 
@@ -557,7 +654,16 @@ export class TravelQuoteComponent implements OnInit {
   }
 
   proceedToPayment(): void {
+    if (!this.isFormValid()) {
+      console.log('Form is not valid');
+      return;
+    }
+
     console.log('Processing payment for traveler:', this.travelerDetails);
+    console.log('Premium summary:', this.quote.premiumSummary);
+    console.log('Agreements:', this.agreements);
+    
+    // Redirect to sign-in page
     window.location.href = '/sign-in';
   }
 
@@ -575,7 +681,7 @@ export class TravelQuoteComponent implements OnInit {
     return `${this.selectedPlan} for traveler`;
   }
 
-  // Method called from HTML template - updated for proper validation
+  // Method called from HTML template - updated for proper validation including agreements
   isFormValid(): boolean {
     // Check if all required fields are filled
     return !!(
@@ -593,6 +699,8 @@ export class TravelQuoteComponent implements OnInit {
       this.travelerDetails.emergencyContact.name?.trim() &&
       this.travelerDetails.emergencyContact.phone?.trim() &&
       this.travelerDetails.emergencyContact.relationship &&
+      this.agreements.dataPrivacy &&
+      this.agreements.termsAndConditions &&
       this.isValidEmail(this.travelerDetails.email) &&
       new Date(this.travelerDetails.departureDate) < new Date(this.travelerDetails.returnDate)
     );

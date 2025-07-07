@@ -118,17 +118,17 @@
                             [formGroup]="quotationForm"
                             (ngSubmit)="onSubmit()"
                         >
-                            <!-- Containerized/Non-Containerized Selection -->
+                            <!-- Cargo Type Selection -->
                             <div class="mb-6">
                                 <label class="mb-3 block text-sm font-medium text-gray-700">
-                                    Cargo Container Type
+                                    Cargo Type
                                     <span class="text-red-500">*</span>
                                 </label>
                                 <div class="flex gap-4">
                                     <label class="flex items-center">
                                         <input
                                             type="radio"
-                                            formControlName="containerType"
+                                            formControlName="cargoType"
                                             value="containerized"
                                             class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
                                         />
@@ -137,7 +137,7 @@
                                     <label class="flex items-center">
                                         <input
                                             type="radio"
-                                            formControlName="containerType"
+                                            formControlName="cargoType"
                                             value="non-containerized"
                                             class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
                                         />
@@ -163,6 +163,7 @@
                                     >
                                         <option value="">Select mode</option>
                                         <option value="sea">Sea</option>
+                                        <option value="land">Land</option>
                                     </select>
                                 </div>
                                 <div>
@@ -178,11 +179,12 @@
                                     >
                                         <option value="">Select trade type</option>
                                         <option value="import">Import</option>
+                                        <option value="domestic">Domestic</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <!-- Row 2: Cargo Type and Select Product -->
+                            <!-- Row 2: Marine Product (Static) and Select Category -->
                             <div
                                 class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"
                             >
@@ -190,40 +192,28 @@
                                     <label
                                         class="mb-2 block text-sm font-medium text-gray-700"
                                     >
-                                        Cargo Type
-                                        <span class="text-red-500">*</span>
+                                        Marine Product
                                     </label>
-                                    <select
-                                        formControlName="cargoType"
-                                        class="appearance-none w-full rounded-md border border-gray-300 bg-white px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        <option value="">
-                                            Select cargo type
-                                        </option>
-                                        <option value="general">
-                                            General Cargo
-                                        </option>
-                                        <option value="containerized">
-                                            Containerized
-                                        </option>
-                                        <option value="bulk">Bulk</option>
-                                        <option value="hazardous">
-                                            Hazardous
-                                        </option>
-                                    </select>
+                                    <!-- Static display instead of dropdown -->
+                                    <div class="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-gray-700 font-medium">
+                                        {{ marineProductDisplayName }}
+                                    </div>
+                                    <!-- Hidden input to maintain form structure -->
+                                    <input type="hidden" formControlName="productType" [value]="marineProductType" />
                                 </div>
                                 <div>
                                     <label
                                         class="mb-2 block text-sm font-medium text-gray-700"
                                     >
-                                        Select Product
+                                        Select Category
                                         <span class="text-red-500">*</span>
                                     </label>
                                     <select
-                                        formControlName="productType"
+                                        formControlName="productCategory"
                                         class="appearance-none w-full rounded-md border border-gray-300 bg-white px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
-                                        <option value="">Select product</option>
+                                        <option value="">Select category</option>
+                                        <option value="canned_foods">Canned Foods</option>
                                         <option value="electronics">Electronics</option>
                                         <option value="textiles">Textiles & Clothing</option>
                                         <option value="machinery">Machinery & Equipment</option>
@@ -508,7 +498,7 @@
                     </div>
                 </div>
 
-                <!-- Premium Summary Sidebar -->
+                <!-- Enhanced Premium Summary Sidebar -->
                 <div class="lg:col-span-1">
                     <div class="sticky top-6 rounded-lg bg-white p-6 shadow-sm">
                         <h3 class="mb-2 text-lg font-semibold text-gray-900">
@@ -532,47 +522,83 @@
                             class="mb-6 space-y-4"
                         >
                             <div class="rounded-lg bg-blue-50 p-4">
-                                <!-- Base and Add-ons -->
-                                <div class="mb-2 flex items-center justify-between text-sm text-gray-600">
-                                    <span>Base Premium</span>
-                                    <span class="font-medium">{{ premiumCalculation.currency }} {{ premiumCalculation.basePremium | number: '1.2-2' }}</span>
-                                </div>
-                                <div *ngIf="premiumCalculation.addOnPremium > 0" class="mb-2 flex items-center justify-between text-sm text-gray-600">
-                                    <span>Add-ons</span>
-                                    <span class="font-medium">{{ premiumCalculation.currency }} {{ premiumCalculation.addOnPremium | number: '1.2-2' }}</span>
-                                </div>
-                        
-                                <!-- Sub-total (Net Premium) -->
-                                <div class="mb-2 flex items-center justify-between border-t pt-2 text-sm">
-                                    <span class="font-semibold text-gray-700">Net Premium</span>
-                                    <span class="font-semibold text-gray-800">{{ premiumCalculation.currency }} {{ premiumCalculation.netPremium | number: '1.2-2' }}</span>
-                                </div>
-                        
-                                <!-- Taxes -->
-                                <div class="mb-1 flex items-center justify-between text-xs text-gray-500">
-                                    <span>Policy Holder's Fund (0.45%)</span>
-                                    <span>+ {{ premiumCalculation.currency }} {{ premiumCalculation.ipl | number: '1.2-2' }}</span>
-                                </div>
-                                <div class="mb-1 flex items-center justify-between text-xs text-gray-500">
-                                    <span>Training Levy (0.25%)</span>
-                                    <span>+ {{ premiumCalculation.currency }} {{ premiumCalculation.trainingLevy | number: '1.2-2' }}</span>
-                                </div>
-                                <div class="mb-2 flex items-center justify-between text-xs text-gray-500">
-                                    <span>Stamp Duty</span>
-                                    <span>+ {{ premiumCalculation.currency }} {{ premiumCalculation.stampDuty | number: '1.2-2' }}</span>
-                                </div>
-                        
-                                <!-- Grand Total -->
-                                <div class="border-t pt-2">
-                                    <div class="flex items-center justify-between">
-                                        <span class="font-semibold">Total Payable</span>
-                                        <span class="text-lg font-bold text-blue-600">{{ premiumCalculation.currency }} {{ premiumCalculation.totalPayable | number: '1.2-2' }}</span>
+                                <!-- Premium Summary with 7 Required Components -->
+                                <div class="space-y-3">
+                                    <!-- 1. Sum Insured -->
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="font-semibold text-gray-700">1. Sum Insured</span>
+                                        <span class="font-bold text-blue-600">{{ premiumCalculation.currency }} {{ quotationForm.get('sumInsured')?.value | number: '1.2-2' }}</span>
+                                    </div>
+
+                                    <!-- 2. Premium -->
+                                    <div class="flex items-center justify-between text-sm text-gray-600">
+                                        <span>2. Premium</span>
+                                        <span class="font-medium">{{ premiumCalculation.currency }} {{ premiumCalculation.basePremium | number: '1.2-2' }}</span>
+                                    </div>
+
+                                    <!-- Add-ons (if any) -->
+                                    <div *ngIf="premiumCalculation.addOnPremium > 0" class="flex items-center justify-between text-sm text-gray-600">
+                                        <span>Add-ons</span>
+                                        <span class="font-medium">{{ premiumCalculation.currency }} {{ premiumCalculation.addOnPremium | number: '1.2-2' }}</span>
+                                    </div>
+
+                                    <!-- 3. Premium Levy -->
+                                    <div class="flex items-center justify-between text-sm text-gray-600">
+                                        <span>3. Premium Levy (0.45%)</span>
+                                        <span class="font-medium">{{ premiumCalculation.currency }} {{ premiumCalculation.premiumLevy | number: '1.2-2' }}</span>
+                                    </div>
+
+                                    <!-- 4. PHCF -->
+                                    <div class="flex items-center justify-between text-sm text-gray-600">
+                                        <span>4. PHCF (0.25%)</span>
+                                        <span class="font-medium">{{ premiumCalculation.currency }} {{ premiumCalculation.phcf | number: '1.2-2' }}</span>
+                                    </div>
+
+                                    <!-- 5. Stamp Duty -->
+                                    <div class="flex items-center justify-between text-sm text-gray-600">
+                                        <span>5. Stamp Duty</span>
+                                        <span class="font-medium">{{ premiumCalculation.currency }} {{ premiumCalculation.stampDuty | number: '1.2-2' }}</span>
+                                    </div>
+
+                                    <!-- 6. Net Premium -->
+                                    <div class="flex items-center justify-between border-t pt-2 text-sm">
+                                        <span class="font-semibold text-gray-700">6. Net Premium</span>
+                                        <span class="font-semibold text-gray-800">{{ premiumCalculation.currency }} {{ premiumCalculation.netPremium | number: '1.2-2' }}</span>
+                                    </div>
+
+                                    <!-- 7. Premium Rate -->
+                                    <div class="flex items-center justify-between text-sm text-gray-600">
+                                        <span>7. Premium Rate</span>
+                                        <span class="font-medium">{{ (premiumCalculation.baseRate * 100).toFixed(3) }}%</span>
+                                    </div>
+
+                                    <!-- Total Payable -->
+                                    <div class="border-t pt-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-semibold text-lg">Total Payable</span>
+                                            <span class="text-xl font-bold text-blue-600">{{ premiumCalculation.currency }} {{ premiumCalculation.totalPayable | number: '1.2-2' }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Marine Product Information -->
                         <div class="space-y-3">
+                            <h4 class="font-medium text-gray-900">
+                                Marine Product:
+                            </h4>
+                            <div class="rounded-lg bg-green-50 p-3">
+                                <p class="text-sm font-medium text-green-700">
+                                    {{ marineProductDisplayName }}
+                                </p>
+                                <p class="text-xs text-green-600 mt-1">
+                                    Rate: {{ getMarineProductRate() }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 mt-4">
                             <h4 class="font-medium text-gray-900">
                                 Coverage Includes:
                             </h4>
@@ -615,9 +641,9 @@
                             </h3>
                             <div class="space-y-3 text-sm">
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Container Type:</span>
+                                    <span class="text-gray-600">Cargo Type:</span>
                                     <span class="font-medium">{{
-                                        quotationForm.get('containerType')?.value | titlecase
+                                        getCargoTypeDisplay(quotationForm.get('cargoType')?.value)
                                     }}</span>
                                 </div>
                                 <div class="flex justify-between">
@@ -633,15 +659,13 @@
                                     }}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Cargo Type:</span>
-                                    <span class="font-medium">{{
-                                        quotationForm.get('cargoType')?.value | titlecase
-                                    }}</span>
+                                    <span class="text-gray-600">Product:</span>
+                                    <span class="font-medium">{{ marineProductDisplayName }}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Product Type:</span>
+                                    <span class="text-gray-600">Category:</span>
                                     <span class="font-medium">{{
-                                        getProductTypeDisplay(quotationForm.get('productType')?.value)
+                                        getCategoryDisplay(quotationForm.get('productCategory')?.value)
                                     }}</span>
                                 </div>
                                 <div class="flex justify-between">
@@ -712,42 +736,61 @@
                         </div>
                     </div>
 
-                    <!-- Premium Breakdown -->
+                    <!-- Enhanced Premium Breakdown -->
                     <div class="mb-8 rounded-lg bg-gray-50 p-6">
                         <h3 class="mb-4 text-lg font-medium text-gray-900">
                             Premium Breakdown
                         </h3>
-                        <div class="space-y-2">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Base Premium ({{(premiumCalculation.baseRate * 100).toFixed(2)}}%):</span>
+                        <div class="space-y-3">
+                            <!-- 1. Sum Insured -->
+                            <div class="flex justify-between text-sm">
+                                <span class="font-semibold text-gray-700">1. Sum Insured:</span>
+                                <span class="font-bold text-blue-600">{{ premiumCalculation.currency }} {{ quotationForm.get('sumInsured')?.value | number: '1.2-2' }}</span>
+                            </div>
+
+                            <!-- 2. Premium -->
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">2. Premium ({{(premiumCalculation.baseRate * 100).toFixed(3)}}%):</span>
                                 <span>{{ premiumCalculation.currency }} {{ premiumCalculation.basePremium | number: '1.2-2' }}</span>
                             </div>
-                            <div *ngIf="premiumCalculation.addOnPremium > 0" class="flex justify-between">
+
+                            <!-- Add-ons -->
+                            <div *ngIf="premiumCalculation.addOnPremium > 0" class="flex justify-between text-sm">
                                 <span class="text-gray-600">Optional Add-ons:</span>
                                 <span>{{ premiumCalculation.currency }} {{ premiumCalculation.addOnPremium | number: '1.2-2' }}</span>
                             </div>
+
+                            <!-- 3. Premium Levy -->
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">3. Premium Levy (0.45%):</span>
+                                <span>{{ premiumCalculation.currency }} {{ premiumCalculation.premiumLevy | number: '1.2-2' }}</span>
+                            </div>
+
+                            <!-- 4. PHCF -->
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">4. PHCF (0.25%):</span>
+                                <span>{{ premiumCalculation.currency }} {{ premiumCalculation.phcf | number: '1.2-2' }}</span>
+                            </div>
+
+                            <!-- 5. Stamp Duty -->
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">5. Stamp Duty:</span>
+                                <span>{{ premiumCalculation.currency }} {{ premiumCalculation.stampDuty | number: '1.2-2' }}</span>
+                            </div>
+
+                            <!-- 6. Net Premium -->
                             <div class="flex justify-between border-t pt-2 font-medium">
-                                <span>Net Premium:</span>
+                                <span>6. Net Premium:</span>
                                 <span>{{ premiumCalculation.currency }} {{ premiumCalculation.netPremium | number: '1.2-2' }}</span>
                             </div>
-                    
-                            <!-- Taxes Section -->
-                            <div class="pt-2 text-sm text-gray-600">
-                                <div class="flex justify-between">
-                                    <span>Insurance Premium Levy (0.45%):</span>
-                                    <span>+ {{ premiumCalculation.currency }} {{ premiumCalculation.ipl | number: '1.2-2' }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Training Levy (0.25%):</span>
-                                    <span>+ {{ premiumCalculation.currency }} {{ premiumCalculation.trainingLevy | number: '1.2-2' }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Stamp Duty:</span>
-                                    <span>+ {{ premiumCalculation.currency }} {{ premiumCalculation.stampDuty | number: '1.2-2' }}</span>
-                                </div>
+
+                            <!-- 7. Premium Rate -->
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">7. Premium Rate:</span>
+                                <span>{{ (premiumCalculation.baseRate * 100).toFixed(3) }}%</span>
                             </div>
-                    
-                            <!-- Grand Total -->
+
+                            <!-- Total Payable -->
                             <div class="border-t pt-2 text-lg font-semibold">
                                 <div class="flex justify-between">
                                     <span>Total Payable:</span>
@@ -808,199 +851,272 @@
                 </div>
             </div>
 
-            <!-- Step 3: Payment -->
-            <div *ngIf="currentStep === 3" class="mx-auto max-w-2xl">
-                <div class="rounded-lg bg-white p-6 shadow-sm">
-                    <h2 class="mb-6 text-2xl font-semibold text-gray-900">
-                        Payment
-                    </h2>
+            <!-- Step 3: Payment with Enhanced Premium Summary -->
+            <div *ngIf="currentStep === 3" class="mx-auto max-w-4xl">
+                <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                    <!-- Payment Form -->
+                    <div class="rounded-lg bg-white p-6 shadow-sm">
+                        <h2 class="mb-6 text-2xl font-semibold text-gray-900">
+                            Payment
+                        </h2>
 
-                    <!-- Payment Summary -->
-                    <div class="mb-6 rounded-lg bg-blue-50 p-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-lg font-medium">Total Amount Due:</span>
-                            <span class="text-2xl font-bold text-blue-600">{{ premiumCalculation.currency }} {{ premiumCalculation.totalPayable | number: '1.2-2' }}</span>
-                        </div>
+                        <!-- Payment Form -->
+                        <form
+                            [formGroup]="paymentForm"
+                            (ngSubmit)="processPayment()"
+                        >
+                            <!-- Payment Method -->
+                            <div class="mb-6">
+                                <label
+                                    class="mb-3 block text-sm font-medium text-gray-700"
+                                    >Payment Method</label
+                                >
+                                <div class="space-y-3">
+                                    <label class="flex items-center">
+                                        <input
+                                            type="radio"
+                                            formControlName="paymentMethod"
+                                            value="card"
+                                            class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span class="ml-2 text-sm text-gray-700">Credit/Debit Card</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input
+                                            type="radio"
+                                            formControlName="paymentMethod"
+                                            value="mpesa"
+                                            class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span class="ml-2 text-sm text-gray-700">M-Pesa</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input
+                                            type="radio"
+                                            formControlName="paymentMethod"
+                                            value="bank"
+                                            class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span class="ml-2 text-sm text-gray-700">Bank Transfer</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Card Payment Details -->
+                            <div
+                                *ngIf="paymentForm.get('paymentMethod')?.value === 'card'"
+                                class="mb-6 space-y-4"
+                            >
+                                <div>
+                                    <label
+                                        class="mb-2 block text-sm font-medium text-gray-700"
+                                        >Card Number</label
+                                    >
+                                    <input
+                                        type="text"
+                                        formControlName="cardNumber"
+                                        placeholder="1234 5678 9012 3456"
+                                        class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label
+                                            class="mb-2 block text-sm font-medium text-gray-700"
+                                            >Expiry Date</label
+                                        >
+                                        <input
+                                            type="text"
+                                            formControlName="expiryDate"
+                                            placeholder="MM/YY"
+                                            class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="mb-2 block text-sm font-medium text-gray-700"
+                                            >CVV</label
+                                        >
+                                        <input
+                                            type="text"
+                                            formControlName="cvv"
+                                            placeholder="123"
+                                            class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label
+                                        class="mb-2 block text-sm font-medium text-gray-700"
+                                        >Cardholder Name</label
+                                    >
+                                    <input
+                                        type="text"
+                                        formControlName="cardholderName"
+                                        placeholder="John Doe"
+                                        class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <!-- M-Pesa Payment Details -->
+                            <div
+                                *ngIf="paymentForm.get('paymentMethod')?.value === 'mpesa'"
+                                class="mb-6 space-y-4"
+                            >
+                                <div>
+                                    <label
+                                        class="mb-2 block text-sm font-medium text-gray-700"
+                                        >Phone Number</label
+                                    >
+                                    <input
+                                        type="tel"
+                                        formControlName="phoneNumber"
+                                        placeholder="254712345678"
+                                        class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <!-- Bank Transfer Details -->
+                            <div
+                                *ngIf="paymentForm.get('paymentMethod')?.value === 'bank'"
+                                class="mb-6 rounded-lg bg-gray-50 p-4"
+                            >
+                                <h4 class="mb-2 font-medium text-gray-900">
+                                    Bank Transfer Details
+                                </h4>
+                                <div class="space-y-1 text-sm text-gray-600">
+                                    <p><strong>Bank:</strong> ABC Insurance Bank</p>
+                                    <p><strong>Account Name:</strong> Marine Cargo Insurance</p>
+                                    <p><strong>Account Number:</strong> 1234567890</p>
+                                    <p><strong>Reference:</strong> {{ generatePaymentReference() }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex space-x-4">
+                                <button
+                                    type="button"
+                                    (click)="goToStep(2)"
+                                    class="rounded-md border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    Back to Review
+                                </button>
+                                <button
+                                    type="submit"
+                                    [disabled]="paymentForm.invalid || isProcessingPayment"
+                                    class="flex-1 rounded-md bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300"
+                                >
+                                    <span *ngIf="!isProcessingPayment">Complete Payment</span>
+                                    <span
+                                        *ngIf="isProcessingPayment"
+                                        class="flex items-center justify-center"
+                                    >
+                                        <svg
+                                            class="-ml-1 mr-3 h-5 w-5 animate-spin text-white"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle
+                                                class="opacity-25"
+                                                cx="12"
+                                                cy="12"
+                                                r="10"
+                                                stroke="currentColor"
+                                                stroke-width="4"
+                                            ></circle>
+                                            <path
+                                                class="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                        </svg>
+                                        Processing...
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
                     </div>
 
-                    <!-- Payment Form -->
-                    <form
-                        [formGroup]="paymentForm"
-                        (ngSubmit)="processPayment()"
-                    >
-                        <!-- Payment Method -->
-                        <div class="mb-6">
-                            <label
-                                class="mb-3 block text-sm font-medium text-gray-700"
-                                >Payment Method</label
-                            >
-                            <div class="space-y-3">
-                                <label class="flex items-center">
-                                    <input
-                                        type="radio"
-                                        formControlName="paymentMethod"
-                                        value="card"
-                                        class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
-                                    />
-                                    <span class="ml-2 text-sm text-gray-700">Credit/Debit Card</span>
-                                </label>
-                                <label class="flex items-center">
-                                    <input
-                                        type="radio"
-                                        formControlName="paymentMethod"
-                                        value="mpesa"
-                                        class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
-                                    />
-                                    <span class="ml-2 text-sm text-gray-700">M-Pesa</span>
-                                </label>
-                                <label class="flex items-center">
-                                    <input
-                                        type="radio"
-                                        formControlName="paymentMethod"
-                                        value="bank"
-                                        class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
-                                    />
-                                    <span class="ml-2 text-sm text-gray-700">Bank Transfer</span>
-                                </label>
+                    <!-- Enhanced Payment Summary -->
+                    <div class="rounded-lg bg-white p-6 shadow-sm">
+                        <h3 class="mb-4 text-lg font-semibold text-gray-900">
+                            Payment Summary
+                        </h3>
+                        
+                        <!-- Premium Summary Note -->
+                        <div class="mb-6 rounded-lg bg-blue-50 p-4">
+                            <p class="text-center text-blue-600 font-medium text-sm">
+                                All amounts calculated according to Kenyan insurance regulations
+                            </p>
+                        </div>
+
+                        <!-- Premium Breakdown -->
+                        <div class="space-y-0 border border-gray-200 rounded-lg overflow-hidden">
+                            <!-- 1. Sum Insured -->
+                            <div class="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200">
+                                <span class="font-semibold text-gray-800">1. Sum Insured</span>
+                                <span class="font-bold text-blue-600">{{ premiumCalculation.currency }} {{ quotationForm.get('sumInsured')?.value | number: '1.2-2' }}</span>
+                            </div>
+                            
+                            <!-- 2. Premium -->
+                            <div class="flex justify-between items-center p-4 border-b border-gray-200">
+                                <span class="font-medium text-gray-700">2. Premium</span>
+                                <span class="font-semibold text-gray-800">{{ premiumCalculation.currency }} {{ premiumCalculation.basePremium | number: '1.2-2' }}</span>
+                            </div>
+                            
+                            <!-- 3. Premium Levy -->
+                            <div class="flex justify-between items-center p-4 border-b border-gray-200">
+                                <span class="font-medium text-gray-700">3. Premium Levy (0.45%)</span>
+                                <span class="font-semibold text-gray-800">{{ premiumCalculation.currency }} {{ premiumCalculation.premiumLevy | number: '1.2-2' }}</span>
+                            </div>
+                            
+                            <!-- 4. PHCF -->
+                            <div class="flex justify-between items-center p-4 border-b border-gray-200">
+                                <span class="font-medium text-gray-700">4. PHCF (0.25%)</span>
+                                <span class="font-semibold text-gray-800">{{ premiumCalculation.currency }} {{ premiumCalculation.phcf | number: '1.2-2' }}</span>
+                            </div>
+                            
+                            <!-- 5. Stamp Duty -->
+                            <div class="flex justify-between items-center p-4 border-b border-gray-200">
+                                <span class="font-medium text-gray-700">5. Stamp Duty</span>
+                                <span class="font-semibold text-gray-800">{{ premiumCalculation.currency }} {{ premiumCalculation.stampDuty | number: '1.2-2' }}</span>
+                            </div>
+                            
+                            <!-- 6. Net Premium -->
+                            <div class="flex justify-between items-center p-4 bg-blue-50 border-b border-gray-200">
+                                <span class="font-bold text-blue-600">6. Net Premium</span>
+                                <span class="font-bold text-blue-600 text-lg">{{ premiumCalculation.currency }} {{ premiumCalculation.netPremium | number: '1.2-2' }}</span>
+                            </div>
+                            
+                            <!-- 7. Premium Rate -->
+                            <div class="flex justify-between items-center p-4">
+                                <span class="font-medium text-gray-700">7. Premium Rate</span>
+                                <span class="font-semibold text-gray-800">{{ (premiumCalculation.baseRate * 100).toFixed(3) }}%</span>
                             </div>
                         </div>
 
-                        <!-- Card Payment Details -->
-                        <div
-                            *ngIf="paymentForm.get('paymentMethod')?.value === 'card'"
-                            class="mb-6 space-y-4"
-                        >
-                            <div>
-                                <label
-                                    class="mb-2 block text-sm font-medium text-gray-700"
-                                    >Card Number</label
-                                >
-                                <input
-                                    type="text"
-                                    formControlName="cardNumber"
-                                    placeholder="1234 5678 9012 3456"
-                                    class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label
-                                        class="mb-2 block text-sm font-medium text-gray-700"
-                                        >Expiry Date</label
-                                    >
-                                    <input
-                                        type="text"
-                                        formControlName="expiryDate"
-                                        placeholder="MM/YY"
-                                        class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                </div>
-                                <div>
-                                    <label
-                                        class="mb-2 block text-sm font-medium text-gray-700"
-                                        >CVV</label
-                                    >
-                                    <input
-                                        type="text"
-                                        formControlName="cvv"
-                                        placeholder="123"
-                                        class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                </div>
-                            </div>
-                            <div>
-                                <label
-                                    class="mb-2 block text-sm font-medium text-gray-700"
-                                    >Cardholder Name</label
-                                >
-                                <input
-                                    type="text"
-                                    formControlName="cardholderName"
-                                    placeholder="John Doe"
-                                    class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
+                        <!-- Total Amount Due -->
+                        <div class="mt-6 p-4 bg-green-50 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-semibold text-green-700">Total Amount Due</span>
+                                <span class="text-2xl font-bold text-green-600">{{ premiumCalculation.currency }} {{ premiumCalculation.totalPayable | number: '1.2-2' }}</span>
                             </div>
                         </div>
 
-                        <!-- M-Pesa Payment Details -->
-                        <div
-                            *ngIf="paymentForm.get('paymentMethod')?.value === 'mpesa'"
-                            class="mb-6 space-y-4"
-                        >
-                            <div>
-                                <label
-                                    class="mb-2 block text-sm font-medium text-gray-700"
-                                    >Phone Number</label
-                                >
-                                <input
-                                    type="tel"
-                                    formControlName="phoneNumber"
-                                    placeholder="254712345678"
-                                    class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                        </div>
-
-                        <!-- Bank Transfer Details -->
-                        <div
-                            *ngIf="paymentForm.get('paymentMethod')?.value === 'bank'"
-                            class="mb-6 rounded-lg bg-gray-50 p-4"
-                        >
-                            <h4 class="mb-2 font-medium text-gray-900">
-                                Bank Transfer Details
-                            </h4>
+                        <!-- Policy Information -->
+                        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                            <h4 class="font-semibold text-gray-800 mb-2">Policy Information</h4>
                             <div class="space-y-1 text-sm text-gray-600">
-                                <p><strong>Bank:</strong> ABC Insurance Bank</p>
-                                <p><strong>Account Name:</strong> Marine Cargo Insurance</p>
-                                <p><strong>Account Number:</strong> 1234567890</p>
-                                <p><strong>Reference:</strong> {{ generatePaymentReference() }}</p>
+                                <p><strong>Policy Type:</strong> {{ marineProductDisplayName }}</p>
+                                <p><strong>Coverage:</strong> All Risks</p>
+                                <p><strong>Quote Reference:</strong> {{ generatePaymentReference() }}</p>
+                                <p><strong>Valid Until:</strong> {{ getQuoteValidityDate() }}</p>
                             </div>
                         </div>
-
-                        <!-- Action Buttons -->
-                        <div class="flex space-x-4">
-                            <button
-                                type="button"
-                                (click)="goToStep(2)"
-                                class="rounded-md border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                Back to Review
-                            </button>
-                            <button
-                                type="submit"
-                                [disabled]="paymentForm.invalid || isProcessingPayment"
-                                class="flex-1 rounded-md bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300"
-                            >
-                                <span *ngIf="!isProcessingPayment">Complete Payment</span>
-                                <span
-                                    *ngIf="isProcessingPayment"
-                                    class="flex items-center justify-center"
-                                >
-                                    <svg
-                                        class="-ml-1 mr-3 h-5 w-5 animate-spin text-white"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <circle
-                                            class="opacity-25"
-                                            cx="12"
-                                            cy="12"
-                                            r="10"
-                                            stroke="currentColor"
-                                            stroke-width="4"
-                                        ></circle>
-                                        <path
-                                            class="opacity-75"
-                                            fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                        ></path>
-                                    </svg>
-                                    Processing...
-                                </span>
-                            </button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
