@@ -1,4 +1,3 @@
-/* Define brand colors for use as CSS variables */
 :root {
   --geminia-blue: #04b2e1; /* Pantone 306C */
   --geminia-navy: #21275c; /* Pantone 2758C */
@@ -6,146 +5,53 @@
 
 /* Custom text color utilities */
 .text-geminia-blue {
-  color: var(--geminia-blue); /* Pantone 306C */
+  color: var(--geminia-blue);
 }
 
 .text-geminia-navy {
-  color: var(--geminia-navy); /* Pantone 2758C */
+  color: var(--geminia-navy);
 }
 
-/* Reusable Primary Button Styles */
-.primary-btn-navy, .primary-btn-blue {
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.75rem; /* 12px */
-  font-weight: 600;
-  color: white;
-  transition-property: background-color, transform, box-shadow;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-
-  &:hover {
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    transform: translateY(-2px);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-.primary-btn-navy {
-  background-color: var(--geminia-navy);
-  &:hover:not(:disabled) {
-    background-color: #1a204a; // A slightly lighter navy for hover
-  }
-}
-
-.primary-btn-blue {
-  background-color: var(--geminia-blue);
-  &:hover:not(:disabled) {
-    background-color: #03a1cd; // A slightly darker blue for hover
-  }
-}
-
-/* Custom button style for plan selection in modal */
-.btn-select-plan-custom {
-  background-color: #04b2e1; /* Inactive color: Pantone 306C */
-  
-  &:hover:not(:disabled) {
-    background-color: #21275c; /* Active color: Pantone 2758C */
-  }
-}
-
-/* Custom style for the benefit description tooltip */
-.benefit-tooltip-custom {
-  background-color: #04b2e1; /* Pantone 306C */
-}
-
-/* Product card styling with hover effects */
-.product-card {
+/* Product selection card styling with brand color borders */
+.product-selection-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
 }
 
-.product-card > div {
-  border: 1px solid #e5e7eb; /* Default light grey border */
-  box-shadow: none;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-
-  &:hover {
-    border-color: var(--geminia-blue); /* Hover border color - Pantone 306C #04b2e1 */
-    box-shadow: 0 4px 14px 0 rgba(4, 178, 225, 0.15); /* Subtle blue shadow on hover */
-  }
+.product-selection-card > div {
+  border: 2px solid var(--geminia-blue); /* Light blue border by default */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-.product-card:hover {
-  transform: translateY(-2px);
+.product-selection-card:hover > div {
+  border-color: var(--geminia-navy); /* Deep blue border on hover */
+  box-shadow: 0 10px 25px -5px rgba(33, 39, 92, 0.15), 0 4px 6px -2px rgba(33, 39, 92, 0.1);
 }
 
-/* Step Indicator styling */
-.step-indicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 9999px;
-  background-color: #e5e7eb; /* gray-200 */
-  color: #6b7280; /* gray-500 */
-  font-weight: 600;
-  transition: all 0.3s ease-in-out;
-
-  &.active {
-    background-color: var(--geminia-navy);
-    color: white;
-  }
+.product-selection-card:hover {
+  transform: translateY(-4px); /* Slight lift on hover */
 }
 
-/* Form inputs with on-brand focus style to match screenshot */
-.form-label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151; /* gray-700 */
-  margin-bottom: 0.5rem;
+/*
+  Custom Button Styling:
+  - Base color is geminia-blue (#04b2e1)
+  - Hover color is geminia-navy (#21275c)
+  - This class now styles all primary action buttons for consistency.
+*/
+.btn-select-plan-custom {
+  background-color: var(--geminia-blue);
+  transition: background-color 0.3s ease-in-out;
 }
 
-.form-input {
-  width: 100%;
-  border-radius: 0.5rem;
-  border: 1px solid #d1d5db; /* gray-300 */
-  padding: 0.75rem 1rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-color: #fff;
-
-  &:focus {
-    outline: none;
-    border-color: var(--geminia-blue);
-    box-shadow: 0 0 0 3px rgba(4, 178, 225, 0.3); /* Light blue glow */
-  }
+.btn-select-plan-custom:hover {
+  background-color: var(--geminia-navy);
 }
 
-/* Style for select dropdown arrow */
-select.form-input {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 0.5rem center;
-  background-repeat: no-repeat;
-  background-size: 1.5em 1.5em;
-  padding-right: 2.5rem;
-}
-
-/* Plan card hover effect */
-.plan-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  }
+/* Enhanced popular badge styling */
+.product-selection-card:hover .text-geminia-blue {
+  color: var(--geminia-navy);
+  background-color: rgba(33, 39, 92, 0.1);
 }
 
 /* Modal animation */
@@ -162,4 +68,52 @@ select.form-input {
 
 .animate-fade-in-up {
   animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Form inputs with on-brand focus style */
+.form-input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #fff;
+
+  &:focus {
+    outline: none;
+    border-color: var(--geminia-blue);
+    box-shadow: 0 0 0 3px rgba(4, 178, 225, 0.3);
+  }
+}
+
+/* Styling for select dropdown placeholder text */
+select.form-input:required:invalid {
+  color: #6b7280; /* text-gray-500 */
+}
+
+option {
+  color: #111827; /* text-gray-900 */
+}
+
+
+/* Step Indicator styling */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background-color: #e5e7eb;
+  color: #6b7280;
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
+
+  &.active {
+    background-color: var(--geminia-navy);
+    color: white;
+  }
 }

@@ -105,11 +105,11 @@
             >
                 <div
                     *ngFor="let product of travelProducts"
-                    class="product-card group cursor-pointer"
+                    class="product-selection-card group cursor-pointer"
                     (click)="selectProduct(product)"
                 >
                     <div
-                        class="flex h-full flex-col rounded-lg border bg-white p-6 transition-all duration-300"
+                        class="flex h-full flex-col rounded-lg bg-white p-6 transition-all duration-300"
                     >
                         <div class="mb-4 flex h-6 items-start justify-end">
                             <div
@@ -184,49 +184,56 @@
                     </p>
                 </div>
             </div>
+
+            <!-- Plan Cards Grid -->
             <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                 <div
                     *ngFor="let plan of state.selectedProduct.plans"
-                    class="plan-card transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all duration-300 hover:-translate-y-2"
+                    class="plan-card group transform cursor-pointer overflow-hidden rounded-2xl shadow-xl transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
                     [class.ring-4]="plan.popular"
-                    [class.ring-geminia-blue]="plan.popular"
+                    [class.ring-blue-400]="plan.popular"
+                    style="background-color: #04b2e1"
                 >
-                    <div class="relative flex h-full flex-col">
-                        <div
-                            class="p-8 text-white"
-                            [style.background-color]="plan.color"
-                        >
-                            <div class="mb-4 flex items-center justify-between">
-                                <h3 class="text-2xl font-bold">
-                                    {{ plan.name }}
-                                </h3>
-                                <div
-                                    *ngIf="plan.popular"
-                                    class="text-geminia-navy rounded-full bg-white px-3 py-1 text-sm font-semibold"
-                                >
-                                    Popular
-                                </div>
+                    <div class="relative flex h-full min-h-[400px] flex-col">
+                        <!-- Popular Badge -->
+                        <div class="flex h-16 items-start justify-end p-6">
+                            <div
+                                *ngIf="plan.popular"
+                                class="rounded-full bg-white px-3 py-1 text-xs font-bold uppercase tracking-wider transition-transform duration-300 group-hover:scale-105"
+                                style="color: #21275c"
+                            >
+                                Most Popular
                             </div>
-                            <p class="mb-4 flex-grow text-blue-100">
+                        </div>
+
+                        <!-- Plan Content -->
+                        <div class="flex-grow px-6 pb-4">
+                            <h3 class="mb-4 text-2xl font-bold text-white">
+                                {{ plan.name }}
+                            </h3>
+                            <p class="mb-6 text-white/90">
                                 {{ plan.description }}
                             </p>
-                            <div class="mb-2 text-3xl font-bold">
-                                {{ formatCurrency(plan.price) }}
+
+                            <!-- Pricing -->
+                            <div class="mb-6">
+                                <div
+                                    class="text-3xl font-bold text-white transition-transform duration-300 group-hover:scale-105"
+                                >
+                                    {{ formatCurrency(plan.price) }}
+                                </div>
+                                <p class="text-sm text-white/80">
+                                    {{ plan.duration }}
+                                </p>
                             </div>
-                            <p class="text-sm text-blue-100">
-                                {{ plan.duration }}
-                            </p>
                         </div>
-                        <div class="mt-auto p-6">
+
+                        <!-- Action Button -->
+                        <div class="p-6 pt-0">
                             <button
                                 (click)="openBenefitsModal(plan, $event)"
-                                class="w-full rounded-xl px-6 py-3 font-semibold text-white transition-opacity hover:opacity-90"
-                                [ngStyle]="{
-                                    'background-color':
-                                        plan.color === '#04b2e1'
-                                            ? '#21275c'
-                                            : '#04b2e1',
-                                }"
+                                class="w-full rounded-xl px-6 py-3 font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                                style="background-color: #21275c"
                             >
                                 View Benefits
                             </button>
@@ -280,9 +287,7 @@
                             Selected: {{ state.selectedPlan?.name }}
                         </h3>
                         <p class="text-gray-600">
-                            {{
-                                formatCurrency(state.selectedPlan?.price || 0)
-                            }}
+                            {{ formatCurrency(state.selectedPlan?.price || 0) }}
                             - {{ state.selectedPlan?.duration }}
                         </p>
                     </div>
@@ -467,6 +472,7 @@
                                     class="form-input"
                                     required
                                     [min]="minDepartureDate"
+                                    [max]="maxDepartureDate"
                                     (input)="updateMinReturnDate()"
                                 />
                             </div>
@@ -607,7 +613,7 @@
     <!-- Step 4: Review & Payment -->
     <div
         *ngIf="state.currentStep === QuoteStep.REVIEW_PAYMENT"
-        class="w-full bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12"
+        class="w-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12"
     >
         <div class="mx-auto max-w-4xl">
             <div class="mb-12">
@@ -793,7 +799,7 @@
         <div class="my-4 flex-grow space-y-1 overflow-y-auto pr-2">
             <div
                 *ngFor="let benefit of planForModal.benefits | keyvalue"
-                class="flex cursor-pointer items-center justify-between border-b py-3 text-base last:border-b-0"
+                class="flex cursor-pointer items-center justify-between border-b py-3 text-base transition-all duration-200 last:border-b-0 hover:rounded-lg hover:bg-blue-50 hover:px-2"
                 (mouseenter)="onBenefitHover(benefit.key, $event)"
                 (mouseleave)="onBenefitLeave()"
             >
@@ -808,7 +814,10 @@
         <div class="mt-auto flex justify-end border-t pt-6">
             <button
                 (click)="selectPlanAndContinue(planForModal)"
-                class="btn-select-plan-custom w-full transform rounded-xl px-8 py-3 font-semibold text-white shadow-lg transition-all hover:-translate-y-px hover:shadow-xl sm:w-auto"
+                class="w-full transform rounded-xl px-8 py-3 font-semibold text-white shadow-lg transition-all hover:-translate-y-px hover:shadow-xl sm:w-auto"
+                style="background-color: #04b2e1"
+                onmouseover="this.style.backgroundColor='#21275c'"
+                onmouseout="this.style.backgroundColor='#04b2e1'"
             >
                 Select This Plan & Continue
             </button>
@@ -819,9 +828,10 @@
 <!-- Benefit Tooltip -->
 <div
     *ngIf="hoveredBenefit"
-    class="benefit-tooltip-custom pointer-events-none fixed z-[9999] max-w-xs rounded-lg p-3 text-sm text-white shadow-lg"
+    class="pointer-events-none fixed z-[9999] max-w-xs rounded-lg p-3 text-sm text-white shadow-lg"
     [style.top.px]="tooltipY"
     [style.left.px]="tooltipX"
+    style="background-color: #04b2e1"
 >
     <h4 class="mb-1 font-bold">{{ hoveredBenefit }}</h4>
     <p>{{ getBenefitDescription(hoveredBenefit) }}</p>

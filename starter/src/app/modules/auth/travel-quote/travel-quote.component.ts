@@ -25,7 +25,7 @@ export interface TravelProduct {
   type: TravelProductType;
   title: string;
   description: string;
-  icon: string; // Kept for potential future use, but hidden in UI
+  icon: string;
   features: string[];
   startingPrice: number;
   currency: string;
@@ -108,6 +108,7 @@ export class TravelQuoteComponent implements OnInit {
   
   // --- DATE VALIDATION ---
   minDepartureDate: string;
+  maxDepartureDate: string;
   minReturnDate: string;
 
   // --- VALIDATION ---
@@ -122,7 +123,7 @@ export class TravelQuoteComponent implements OnInit {
   travelProducts: TravelProduct[] = [
     {
       type: TravelProductType.TRAVEL_PROTECT,
-      title: 'Travel Protect Plans',
+      title: 'Travel Protect',
       description: 'Comprehensive international travel insurance with medical coverage, emergency assistance, and trip protection. Premiums vary based on the duration of your trip.',
       icon: 'globe',
       features: [],
@@ -162,7 +163,7 @@ export class TravelQuoteComponent implements OnInit {
     },
     {
       type: TravelProductType.STUDENT,
-      title: 'Student Travel Plans',
+      title: 'Student Travel',
       description: 'Specially designed long-term travel insurance for students studying abroad. Premiums are available for 6, 9, and 12-month periods.',
       icon: 'student',
       features: [],
@@ -181,7 +182,7 @@ export class TravelQuoteComponent implements OnInit {
     },
     {
       type: TravelProductType.PILGRIMAGE,
-      title: 'Pilgrimage Travel Plans',
+      title: 'Pilgrimage Travel',
       description: 'Specialized coverage for religious pilgrimage journeys. Applicable for all religions, except those holy places located in Europe (Schengen cover is mandatory).',
       icon: 'pilgrimage',
       features: [],
@@ -204,11 +205,11 @@ export class TravelQuoteComponent implements OnInit {
     },
     {
       type: TravelProductType.CORPORATE,
-      title: 'Corporate Travel Plans',
+      title: 'Corporate Travel',
       description: 'Premium business travel insurance for corporate executives and employees.',
       icon: 'corporate',
       features: [],
-      startingPrice: 179511.37, // Lowest annual premium
+      startingPrice: 179511.37,
       currency: 'KES',
       plans: [
         { id: 'corp_200', name: '200 Days/Year', description: 'Annual premium for corporate travel.', price: 179511.37, currency: 'KES', duration: 'Annual Premium', color: '#04b2e1', benefits: { 'Excess Day Rate': 'KES 960.57' } },
@@ -223,7 +224,7 @@ export class TravelQuoteComponent implements OnInit {
     },
     {
       type: TravelProductType.DOMESTIC,
-      title: 'Domestic Travel Plans',
+      title: 'Domestic Travel',
       description: 'Protection for travel within Kenya, covering medical emergencies and trip disruptions. Daily premium varies by trip duration.',
       icon: 'domestic',
       features: [],
@@ -236,12 +237,12 @@ export class TravelQuoteComponent implements OnInit {
         { id: 'domestic_22_32', name: '22 - 32 Days', description: 'Standard domestic coverage for longer trips.', price: 163.97, currency: 'KES', duration: 'Total Premium Per Day', color: '#21275c', benefits: { 'Medical Expenses': '$5,000', 'Medical Transportation/Repatriation': '$3,000', 'Emergency Dental Expenses': '$350', 'Transport of Deceased': '$3,000', 'Personal Accident (Transport)': '$7,000', 'Baggage Loss/Damage': '$300', 'Trip Cancellation': '$500 (Excess $50)', 'Hijack Coverage': '$30 per day max $3,000' } },
         { id: 'domestic_33_49', name: '33 - 49 Days', description: 'Standard domestic coverage for extended stays.', price: 151.53, currency: 'KES', duration: 'Total Premium Per Day', color: '#04b2e1', benefits: { 'Medical Expenses': '$5,000', 'Medical Transportation/Repatriation': '$3,000', 'Emergency Dental Expenses': '$350', 'Transport of Deceased': '$3,000', 'Personal Accident (Transport)': '$7,000', 'Baggage Loss/Damage': '$300', 'Trip Cancellation': '$500 (Excess $50)', 'Hijack Coverage': '$30 per day max $3,000' } },
         { id: 'domestic_50_62', name: '50 - 62 Days', description: 'Standard domestic coverage for long stays.', price: 139.09, currency: 'KES', duration: 'Total Premium Per Day', color: '#21275c', benefits: { 'Medical Expenses': '$5,000', 'Medical Transportation/Repatriation': '$3,000', 'Emergency Dental Expenses': '$350', 'Transport of Deceased': '$3,000', 'Personal Accident (Transport)': '$7,000', 'Baggage Loss/Damage': '$300', 'Trip Cancellation': '$500 (Excess $50)', 'Hijack Coverage': '$30 per day max $3,000' } },
-        { id: 'domestic_63_92', name: '63 - 92 Days', description: 'Standard domestic coverage for very long stays.', price: 126.66, currency: 'KES', duration: 'Total Premium Per Day', color: '#04b2e1', benefits: { 'Medical Expenses': '$5,000', 'Medical Transportation/Repatriation': '$3,000', 'Emergency Dental Expenses': '$350', 'Transport of Deceased': '$3,000', 'Personal Accident (Transport)': '$7,000', 'Baggage Loss/Damage': '$300', 'Trip Cancellation': '$500 (Excess $50)', 'Hijack Coverage': '$30 per day max $3,00a00' } }
+        { id: 'domestic_63_92', name: '63 - 92 Days', description: 'Standard domestic coverage for very long stays.', price: 126.66, currency: 'KES', duration: 'Total Premium Per Day', color: '#04b2e1', benefits: { 'Medical Expenses': '$5,000', 'Medical Transportation/Repatriation': '$3,000', 'Emergency Dental Expenses': '$350', 'Transport of Deceased': '$3,000', 'Personal Accident (Transport)': '$7,000', 'Baggage Loss/Damage': '$300', 'Trip Cancellation': '$500 (Excess $50)', 'Hijack Coverage': '$30 per day max $3,0_00' } }
       ]
     },
     {
       type: TravelProductType.INBOUND,
-      title: 'Inbound Visitor Plans',
+      title: 'Inbound Visitor',
       description: 'Comprehensive coverage for international visitors traveling to Kenya. Premiums vary based on the duration of stay.',
       icon: 'inbound',
       features: [],
@@ -314,8 +315,11 @@ export class TravelQuoteComponent implements OnInit {
 
   constructor(private router: Router) {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
     this.minDepartureDate = today.toISOString().split('T')[0];
+    this.maxDepartureDate = tomorrow.toISOString().split('T')[0];
     this.minReturnDate = this.minDepartureDate;
   }
 
@@ -337,7 +341,7 @@ export class TravelQuoteComponent implements OnInit {
       }
     } else {
        const today = new Date();
-       today.setHours(0, 0, 0, 0);
+       today.setDate(today.getDate() + 1);
        this.minReturnDate = today.toISOString().split('T')[0];
     }
   }
@@ -525,3 +529,7 @@ export class TravelQuoteComponent implements OnInit {
     window.location.href = '/';
   }
 }
+
+
+
+

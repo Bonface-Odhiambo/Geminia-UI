@@ -41,11 +41,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('shake', [
+      transition('void => *', []), // Prevent animation on initial load
       transition('* => *', [
         style({ transform: 'translateX(0)' }),
-        animate('300ms ease-in-out', style({ transform: 'translateX(-10px)' })),
-        animate('300ms ease-in-out', style({ transform: 'translateX(10px)' })),
-        animate('300ms ease-in-out', style({ transform: 'translateX(0)' })),
+        animate('100ms ease-out', style({ transform: 'translateX(-10px)' })),
+        animate('100ms ease-in', style({ transform: 'translateX(10px)' })),
+        animate('100ms ease-out', style({ transform: 'translateX(-5px)' })),
+        animate('100ms ease-in', style({ transform: 'translateX(5px)' })),
+        animate('100ms ease-out', style({ transform: 'translateX(0)' })),
       ]),
     ]),
   ],
@@ -62,7 +65,6 @@ export class AuthSignInComponent implements OnInit {
   };
 
   signInForm!: FormGroup;
-  useOTP: boolean = false;
   showPassword: boolean = false;
   showAlert: boolean = false;
   alert: { type: 'success' | 'error'; message: string } = {
@@ -74,45 +76,18 @@ export class AuthSignInComponent implements OnInit {
     this.signInForm = this._formBuilder.group({
       username: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
-      otpCode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
     });
-
-    this.toggleOTP(false);
   }
 
   /**
-   * Check if the form is valid based on the current mode (OTP or Email/Password)
+   * Check if the form is valid
    */
   isFormValid(): boolean {
-    if (this.useOTP) {
-      // For OTP mode, only check if OTP code is valid
-      const otpControl = this.signInForm.get('otpCode');
-      return otpControl ? otpControl.valid && otpControl.value?.trim() : false;
-    } else {
-      // For email/password mode, check both fields
-      const usernameControl = this.signInForm.get('username');
-      const passwordControl = this.signInForm.get('password');
-      return (
-        usernameControl?.valid &&
-        passwordControl?.valid &&
-        usernameControl.value?.trim() &&
-        passwordControl.value?.trim()
-      );
-    }
-  }
-
-  toggleOTP(state: boolean): void {
-    this.useOTP = state;
-    if (this.useOTP) {
-      this.signInForm.get('username')?.disable();
-      this.signInForm.get('password')?.disable();
-      this.signInForm.get('otpCode')?.enable();
-    } else {
-      this.signInForm.get('username')?.enable();
-      this.signInForm.get('password')?.enable();
-      this.signInForm.get('otpCode')?.disable();
-    }
-    this.showAlert = false;
+    const usernameControl = this.signInForm.get('username');
+    const passwordControl = this.signInForm.get('password');
+    return (
+      (usernameControl?.valid && passwordControl?.valid) ?? false
+    );
   }
 
   togglePasswordVisibility(): void {
@@ -120,8 +95,15 @@ export class AuthSignInComponent implements OnInit {
   }
 
   signIn(): void {
+    // If the form is invalid, trigger the alert and do nothing else
     if (this.signInForm.invalid) {
-      this.signInForm.markAllAsTouched();
+      this.alert = {
+        type: 'error',
+        message: 'Please fill in both email and password.',
+      };
+      this.showAlert = true;
+      // Trigger shake animation
+      this._cd.markForCheck();
       return;
     }
 
@@ -130,18 +112,12 @@ export class AuthSignInComponent implements OnInit {
 
     // Simulate authentication delay
     setTimeout(() => {
-      if (this.useOTP) {
-        // Handle OTP authentication (you can add OTP logic here if needed)
-        this.handleOTPAuthentication();
-      } else {
-        // Handle email/password authentication
-        this.handleCredentialAuthentication();
-      }
-    }, 2000);
+      this.handleCredentialAuthentication();
+    }, 1500);
   }
 
   private handleCredentialAuthentication(): void {
-    const formValue = this.signInForm.value;
+    const formValue = this.signInForm.getRawValue(); // Use getRawValue to get values from disabled form
     const enteredUsername = formValue.username?.toLowerCase().trim();
     const enteredPassword = formValue.password;
 
@@ -153,7 +129,7 @@ export class AuthSignInComponent implements OnInit {
       // Successful authentication
       this.alert = {
         type: 'success',
-        message: 'Sign in successful! Redirecting to dashboard...',
+        message: 'Sign in successful! Redirecting...',
       };
       this.showAlert = true;
       this._cd.markForCheck();
@@ -170,50 +146,17 @@ export class AuthSignInComponent implements OnInit {
       };
       this.showAlert = true;
       this.signInForm.enable();
-      this.toggleOTP(this.useOTP);
       this._cd.markForCheck();
     }
-  }
-
-  private handleOTPAuthentication(): void {
-    const otpCode = this.signInForm.value.otpCode;
-    
-    // For demo purposes, accept '123456' as valid OTP
-    if (otpCode === '123456') {
-      this.alert = {
-        type: 'success',
-        message: 'OTP verified! Redirecting to dashboard...',
-      };
-      this.showAlert = true;
-      this._cd.markForCheck();
-
-      setTimeout(() => {
-        this._router.navigate(['/sign-up/dashboard']);
-      }, 1500);
-    } else {
-      this.alert = {
-        type: 'error',
-        message: 'Invalid OTP code. Please try again.',
-      };
-      this.showAlert = true;
-      this.signInForm.enable();
-      this.toggleOTP(this.useOTP);
-      this._cd.markForCheck();
-    }
-  }
-
-  resendOTP(): void {
-    console.log('Resending OTP...');
-    // Add OTP resend logic here if needed
   }
 
   getMarineQuote(): void {
     console.log('Navigating to marine quick quote page...');
-    // Example navigation: this._router.navigate(['/sign-up/marine-quote']);
+    // this._router.navigate(['/sign-up/marine-quote']);
   }
 
   getTravelQuote(): void {
     console.log('Navigating to travel quick quote page...');
-    // Example navigation: this._router.navigate(['/sign-up/travel-quote']);
+    // this._router.navigate(['/sign-up/travel-quote']);
   }
 }

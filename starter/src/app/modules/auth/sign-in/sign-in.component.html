@@ -1,58 +1,37 @@
 <!-- Main container adjusted to center the form -->
 <div
-  class="flex min-h-screen min-w-0 flex-auto flex-col items-center justify-center p-4 sm:p-6"
+  class="flex min-h-screen min-w-0 flex-auto flex-col items-center justify-center bg-gray-50 p-4 sm:p-6"
 >
   <!-- Form container with consistent card styling -->
-  <div class="w-full max-w-sm rounded-2xl bg-card p-8 shadow sm:p-12">
+  <div class="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg sm:p-12">
     <div class="w-full">
       <!-- Logo and Title -->
-      <div class="text-center">
-        <div class="mb-4 inline-flex items-center">
-          <mat-icon class="mr-2 text-sky-500">anchor</mat-icon>
-          <span class="text-xl font-bold text-gray-800"
-            >Geminia Marine Portal</span
-          >
-        </div>
-        <div class="mb-2 text-lg font-semibold text-gray-700">
-          Secure Portal Access
-        </div>
-        <div class="mb-8 text-sm text-gray-500">
-          Sign in to your marine insurance portal
+      <div class="mb-10 flex items-center justify-center space-x-4">
+        <img
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROTKn0j9cVpA67LPdjPeYBR3KnWiwP1gsM3cS27rca-7m8BgvgUylY4uhBnOnVnXFx8Is&usqp=CAUF"
+          alt="Geminia Insurance Logo"
+          class="h-12 w-12"
+        />
+        <div class="flex flex-col">
+          <span class="text-2xl font-bold text-gray-800">Geminia</span>
+          <span class="text-2xl font-bold text-gray-800">Insurance</span>
         </div>
       </div>
 
-      <!-- Email/OTP Toggle -->
-      <div class="mb-6 flex rounded-lg bg-gray-100 p-1">
-        <button
-          type="button"
-          class="flex-1 rounded-md py-2 px-4 text-sm font-medium transition-colors"
-          [class.bg-white]="!useOTP"
-          [class.text-sky-500]="!useOTP"
-          [class.shadow-sm]="!useOTP"
-          [class.text-gray-600]="useOTP"
-          (click)="toggleOTP(false)"
-        >
-          <mat-icon class="mr-2 text-sm">email</mat-icon>
-          Email
-        </button>
-        <button
-          type="button"
-          class="flex-1 rounded-md py-2 px-4 text-sm font-medium transition-colors"
-          [class.bg-white]="useOTP"
-          [class.text-sky-500]="useOTP"
-          [class.shadow-sm]="useOTP"
-          [class.text-gray-600]="!useOTP"
-          (click)="toggleOTP(true)"
-        >
-          <mat-icon class="mr-2 text-sm">security</mat-icon>
-          OTP
-        </button>
+      <!-- Header Text -->
+      <div class="text-center">
+        <div class="mb-2 text-xl font-semibold text-gray-800">
+          Secure Portal Access
+        </div>
+        <div class="mb-8 text-sm text-gray-500">
+          Sign in to Geminia Insurance Platform
+        </div>
       </div>
 
       <!-- Alert -->
       @if (showAlert) {
       <div
-        class="mb-6 rounded-md border p-4"
+        class="mb-6 rounded-md border p-4 text-sm"
         [ngClass]="{
           'border-red-400 bg-red-50 text-red-700': alert.type === 'error',
           'border-green-400 bg-green-50 text-green-700':
@@ -66,15 +45,14 @@
 
       <!-- Sign in form -->
       <form [formGroup]="signInForm" #signInNgForm="ngForm" (ngSubmit)="signIn()">
-        <!-- Email Address (shown when not using OTP) -->
-        @if (!useOTP) {
+        <!-- Email Address -->
         <div class="mb-4">
           <label class="mb-2 block text-sm font-medium text-gray-700">
             Email Address
           </label>
           <input
             type="email"
-            class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+            class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
             [formControlName]="'username'"
           />
         </div>
@@ -86,44 +64,30 @@
           <div class="relative">
             <input
               [type]="showPassword ? 'text' : 'password'"
-              class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+              class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
               [formControlName]="'password'"
             />
             <button
               type="button"
-              class="absolute right-2 top-2 p-1 text-gray-400 hover:text-gray-600"
+              class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
               (click)="togglePasswordVisibility()"
             >
-              <mat-icon class="text-sm">{{
+              <mat-icon class="text-base">{{
                 showPassword ? 'visibility_off' : 'visibility'
               }}</mat-icon>
             </button>
           </div>
         </div>
-        } @if (useOTP) {
-        <!-- OTP Field (shown when using OTP) -->
-        <div class="mb-6">
-          <label class="mb-2 block text-sm font-medium text-gray-700">
-            OTP Code
-          </label>
-          <input
-            type="text"
-            class="w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm placeholder-gray-400 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
-            [formControlName]="'otpCode'"
-            maxlength="6"
-          />
-        </div>
-        }
 
-        <!-- Sign In Button with Dynamic Color -->
+        <!-- Sign In Button -->
         <button
           type="submit"
-          class="w-full rounded-md py-2 px-4 font-medium text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          class="w-full rounded-md py-2.5 px-4 font-semibold text-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           [ngClass]="{
-            'bg-sky-500 hover:bg-sky-600 focus:ring-sky-500': isFormValid(),
-            'bg-gray-400 hover:bg-gray-400 focus:ring-gray-400': !isFormValid()
+            'bg-gray-200 hover:bg-gray-300 focus:ring-gray-400': isFormValid(),
+            'bg-gray-200': !isFormValid()
           }"
-          [disabled]="signInForm.disabled || signInForm.invalid"
+          [disabled]="signInForm.disabled"
         >
           @if (!signInForm.disabled) {
           <span>Sign In</span>
@@ -140,17 +104,17 @@
         </button>
 
         <!-- Links -->
-        <div class="mt-6 flex items-center justify-between">
+        <div class="mt-6 flex items-center justify-between text-sm">
           <a
-            class="text-sm font-medium text-sky-500 hover:text-sky-600 hover:underline"
+            class="font-medium text-sky-500 hover:underline"
             [routerLink]="['/forgot-password']"
           >
             Forgot password?
           </a>
           <div>
-            <span class="text-sm text-gray-600">No account?</span>
+            <span class="text-gray-600">No account?</span>
             <a
-              class="ml-1 text-sm font-medium text-sky-500 hover:text-sky-600 hover:underline"
+              class="ml-1 font-medium text-sky-500 hover:underline"
               [routerLink]="['/sign-up/user-registration']"
             >
               Register here
@@ -159,31 +123,35 @@
         </div>
       </form>
 
-      <!-- Quick Access Section -->
-      <div class="mt-8 border-t pt-8 text-center">
-        <div class="mb-4 text-sm text-gray-600">
+      <!-- Divider -->
+      <div class="my-8 flex items-center">
+        <div class="flex-grow border-t border-gray-200"></div>
+        <span class="mx-4 flex-shrink text-xs text-gray-400">
           Or get a quick quote (no login required)
-        </div>
-        <div class="flex flex-col space-y-3">
-          <!-- Marine Quote Button -->
-          <a
-            href="/sign-up/marine-quote"
-            class="flex w-full items-center justify-center rounded-md border-2 border-sky-500 py-2 px-4 font-medium text-sky-500 transition-colors hover:bg-sky-50 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
-            (click)="getMarineQuote()"
-          >
-            <mat-icon class="mr-2 text-sm">directions_boat</mat-icon>
-            Get Marine Quote
-          </a>
-          <!-- Travel Quote Button -->
-          <a
-            href="/sign-up/travel-quote"
-            class="flex w-full items-center justify-center rounded-md border-2 border-sky-500 py-2 px-4 font-medium text-sky-500 transition-colors hover:bg-sky-50 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
-            (click)="getTravelQuote()"
-          >
-            <mat-icon class="mr-2 text-sm">flight_takeoff</mat-icon>
-            Get Travel Quote
-          </a>
-        </div>
+        </span>
+        <div class="flex-grow border-t border-gray-200"></div>
+      </div>
+
+      <!-- Quick Access Section -->
+      <div class="flex flex-col space-y-3">
+        <!-- Marine Quote Button -->
+        <a
+          href="/sign-up/marine-quote"
+          class="flex w-full items-center justify-center rounded-md border border-sky-500 py-2 px-4 font-semibold text-sky-500 transition-colors hover:bg-sky-50 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+          (click)="getMarineQuote()"
+        >
+          <mat-icon class="mr-2 text-base">directions_boat</mat-icon>
+          Get Marine Quote
+        </a>
+        <!-- Travel Quote Button -->
+        <a
+          href="/sign-up/travel-quote"
+          class="flex w-full items-center justify-center rounded-md border border-sky-500 py-2 px-4 font-semibold text-sky-500 transition-colors hover:bg-sky-50 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+          (click)="getTravelQuote()"
+        >
+          <mat-icon class="mr-2 text-base">flight_takeoff</mat-icon>
+          Get Travel Quote
+        </a>
       </div>
     </div>
   </div>
