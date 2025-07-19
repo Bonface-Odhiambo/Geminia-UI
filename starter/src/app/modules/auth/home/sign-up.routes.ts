@@ -24,10 +24,11 @@ export default [
         component: TravelQuoteComponent,
     },
     {
-        path:'marine-guard-pro',
-        component:MarineGuardProComponent
-    },{
+        path: 'marine-guard-pro',
+        component: MarineGuardProComponent,
+    },
+    {
         path: 'user-registration',
-        component:UserRegistrationComponent
-    }
+        component: UserRegistrationComponent,
+    },
 ] as Routes;
