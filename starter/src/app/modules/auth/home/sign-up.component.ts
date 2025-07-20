@@ -1,113 +1,157 @@
-import { Component, OnInit, ViewEncapsulation } from "@angular/core";
+import { CommonModule } from '@angular/common';
 import {
-  FormsModule,
+  Component,
+  OnInit,
+  ChangeDetectorRef,
+  ViewEncapsulation,
+  inject,
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
   ReactiveFormsModule,
-  UntypedFormBuilder,
-} from "@angular/forms";
-import { MatButtonModule } from "@angular/material/button";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { MatDialog, MatDialogModule } from "@angular/material/dialog";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatIconModule } from "@angular/material/icon";
-import { MatInputModule } from "@angular/material/input";
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { Router, RouterLink } from "@angular/router";
-import { fuseAnimations } from "@fuse/animations";
-import { FuseAlertComponent, FuseAlertType } from "@fuse/components/alert";
-import { AuthService } from "app/core/auth/auth.service";
-import { QuoteModalComponent } from "../shared";
+  Validators,
+} from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {
+  animate,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
+import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
+import { QuoteModalComponent } from '../shared';
 
 @Component({
-  selector: "auth-sign-up",
-  templateUrl: "./sign-up.component.html",
-  styleUrls: ["./sign-up.component.css"],
-  encapsulation: ViewEncapsulation.None,
-  animations: fuseAnimations,
+  selector: 'auth-sign-up',
   standalone: true,
   imports: [
-    RouterLink,
-    FuseAlertComponent,
-    FormsModule,
+    CommonModule,
+    RouterModule,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
+    FuseAlertComponent,
     MatIconModule,
-    MatCheckboxModule,
     MatProgressSpinnerModule,
     MatDialogModule,
   ],
+  templateUrl: './sign-up.component.html',
+  styleUrls: ['./sign-up.component.css'],
+  encapsulation: ViewEncapsulation.None,
+  animations: [
+    trigger('shake', [
+      transition('* => *', [
+        style({ transform: 'translateX(0)' }),
+        animate('100ms ease-out', style({ transform: 'translateX(-10px)' })),
+        animate('100ms ease-in', style({ transform: 'translateX(10px)' })),
+        animate('100ms ease-out', style({ transform: 'translateX(-5px)' })),
+        animate('100ms ease-in', style({ transform: 'translateX(5px)' })),
+        animate('100ms ease-out', style({ transform: 'translateX(0)' })),
+      ]),
+    ]),
+  ],
 })
 export class AuthSignUpComponent implements OnInit {
-  alert: { type: FuseAlertType; message: string } = {
-    type: "success",
-    message: "",
-  };
-  showAlert: boolean = false;
+  private _formBuilder = inject(FormBuilder);
+  private _router = inject(Router);
+  private _dialog = inject(MatDialog);
+  private _cd = inject(ChangeDetectorRef);
 
-  constructor(
-    private _authService: AuthService,
-    private _formBuilder: UntypedFormBuilder,
-    private _router: Router,
-    private _dialog: MatDialog,
-  ) {}
+  private readonly VALID_CREDENTIALS = {
+    username: 'principalresearcher138@gmail.com',
+    password: '1234567',
+  };
+
+  signInForm!: FormGroup;
+  showPassword = false;
+  showAlert = false;
+  alert: { type: FuseAlertType; message: string } = {
+    type: 'error',
+    message: '',
+  };
 
   ngOnInit(): void {
-    // Component initialization if needed
+    this.signInForm = this._formBuilder.group({
+      username: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+    });
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  signIn(): void {
+    if (this.signInForm.invalid) {
+      this.triggerAlert('error', 'Please fill in all required fields.');
+      return;
+    }
+
+    this.signInForm.disable();
+    this.showAlert = false;
+
+    setTimeout(() => {
+      this.handleCredentialAuthentication();
+    }, 1500);
   }
 
   /**
-   * Navigate to registration page
-   * Note: This method is not used in the current template but is kept for potential future use.
-   */
-  navigateToRegistration(): void {
-    this._router.navigateByUrl("/sign-up/user-registration");
-  }
-
-  /**
-   * Navigate to marine quote
+   * Opens the quote modal for Marine Insurance.
    */
   navigateToMarineQuote(): void {
-    this.openQuoteModal("marine");
+    this.openQuoteModal('marine');
   }
 
   /**
-   * Navigate to motor quote
+   * Opens the quote modal for Travel Insurance.
    */
-  navigateToMotorQuote(): void {
-    this.openQuoteModal("motor");
+  navigateToTravelQuote(): void {
+    this.openQuoteModal('travel');
   }
 
   /**
-   * Open quote modal
+   * Opens the quote modal dialog with the specified insurance type.
    */
-  private openQuoteModal(insuranceType: "marine" | "motor"): void {
+  private openQuoteModal(insuranceType: 'marine' | 'travel'): void {
     const dialogRef = this._dialog.open(QuoteModalComponent, {
-      width: "500px",
-      maxWidth: "90vw",
+      width: '500px',
+      maxWidth: '90vw',
       data: { insuranceType },
-      disableClose: false,
-      autoFocus: true,
-      panelClass: "quote-modal-panel",
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result?.success) {
-        console.log(
-          "Quote request submitted successfully:",
-          result.data,
+        this.triggerAlert(
+          'success',
+          `Your ${insuranceType} insurance quote request was submitted. We will contact you shortly.`
         );
-
-        this.alert = {
-          type: "success",
-          message: `Your ${insuranceType} insurance quote request has been submitted successfully. Our team will contact you shortly.`,
-        };
-        this.showAlert = true;
-
-        setTimeout(() => {
-          this.showAlert = false;
-        }, 5000);
       }
     });
+  }
+
+  private handleCredentialAuthentication(): void {
+    const { username, password } = this.signInForm.getRawValue();
+
+    if (
+      username.toLowerCase().trim() === this.VALID_CREDENTIALS.username &&
+      password === this.VALID_CREDENTIALS.password
+    ) {
+      this.triggerAlert('success', 'Sign in successful! Redirecting...');
+      setTimeout(() => this._router.navigate(['/dashboard']), 1500);
+    } else {
+      this.triggerAlert('error', 'Invalid credentials. Please try again.');
+      this.signInForm.enable();
+    }
+  }
+
+  private triggerAlert(type: FuseAlertType, message: string): void {
+    this.alert = { type, message };
+    this.showAlert = true;
+    this._cd.markForCheck();
+    setTimeout(() => {
+      this.showAlert = false;
+    }, 5000);
   }
 }

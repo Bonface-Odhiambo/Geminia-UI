@@ -1,18 +1,4 @@
 <div class="relative flex h-screen w-screen flex-col">
-  <!-- Login Button -->
-  <div class="absolute right-0 top-0 z-20 p-4 sm:p-8">
-    <a
-      href="/sign-in"
-      class="flex items-center font-medium text-gray-800 transition-colors duration-200 hover:text-gray-600 hover:underline"
-    >
-      <mat-icon
-        class="mr-1.5 icon-size-5"
-        [svgIcon]="'heroicons_solid:arrow-right-on-rectangle'"
-      ></mat-icon>
-      <span>Login</span>
-    </a>
-  </div>
-
   <!-- Alert -->
   <div class="w-full p-4 sm:p-8" *ngIf="showAlert">
     <fuse-alert
@@ -29,10 +15,10 @@
   <div
     class="flex min-w-0 flex-auto flex-col items-center sm:flex-row sm:justify-center md:items-start md:justify-start"
   >
-    <!-- Geminia Marine Portal (Left) -->
+    <!-- Geminia Get Quote Portal (Left) -->
     <div
       class="relative hidden min-h-screen w-1/2 flex-auto items-center justify-center overflow-hidden p-16 md:flex lg:px-28 dark:border-r"
-      style="background-color: #04b2e1;"
+      style="background-color: #04b2e1"
     >
       <!-- Background -->
       <div class="absolute inset-0 overflow-hidden">
@@ -47,58 +33,73 @@
 
       <!-- Content -->
       <div class="relative z-10 w-full max-w-2xl">
-        <!-- Geminia Logo for Marine Side -->
         <div class="mb-8 flex justify-center">
           <img
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROTKn0j9cVpA67LPdjPeYBR3KnWiwP1gsM3cS27rca-7m8BgvgUylY4uhBnOnVnXFx8Is&usqp=CAU"
             alt="Geminia Insurance Logo"
-            class="h-16 w-auto object-contain rounded-lg"
-            style="mix-blend-mode: multiply; background: transparent;"
+            class="h-16 w-auto rounded-lg object-contain"
+            style="mix-blend-mode: multiply; background: transparent"
           />
         </div>
-
-        <div class="mb-2 text-6xl font-bold leading-tight text-white">
+        <div
+          class="mb-2 text-center text-6xl font-bold leading-tight text-white"
+        >
           <div
             class="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent"
           >
-            Geminia Marine
+            Geminia Insurance
           </div>
-          <div class="text-white/95">Portal</div>
         </div>
-
-        <div class="mt-6 max-w-lg text-lg leading-relaxed text-white/90">
-          Get marine insurance in just a few clicks! Our simple process makes
-          protecting your assets easier than ever. ⚓
+        <div
+          class="mt-6 max-w-lg text-center text-lg leading-relaxed text-white/90"
+        >
+          Get a quick quote for marine or travel insurance—no login required.
         </div>
 
         <!-- Insurance Cards -->
-        <div class="mt-10">
+        <div class="mt-10 space-y-6">
           <!-- Marine Insurance Card -->
           <div
             class="group rounded-2xl border border-white/20 bg-white/10 p-6 backdrop-blur-sm transition-all duration-300 hover:bg-white/15"
           >
             <div class="flex items-center justify-between">
-              <div class="flex items-center gap-4">
-                <div>
-                  <h3 class="text-lg font-semibold text-white">
-                    Marine Insurance
-                  </h3>
-                  <p class="text-sm text-white/70">
-                    Protect your vessels & cargo
-                  </p>
-                </div>
+              <div>
+                <h3 class="text-lg font-semibold text-white">
+                  Marine Insurance
+                </h3>
+                <p class="text-sm text-white/70">
+                  Protect your vessels & cargo
+                </p>
               </div>
               <a
                 href="/sign-up/marine-quote"
-                mat-flat-button
                 class="rounded-xl bg-black px-6 py-2 font-medium text-white shadow-lg transition-all duration-200 hover:bg-gray-800"
-                (click)="navigateToMarineQuote()"
+                
               >
                 <span>Get Quote</span>
-                <mat-icon
-                  class="ml-2 icon-size-5"
-                  [svgIcon]="'heroicons_solid:arrow-right'"
-                ></mat-icon>
+              </a>
+            </div>
+          </div>
+
+          <!-- Travel Insurance Card -->
+          <div
+            class="group rounded-2xl border border-white/20 bg-white/10 p-6 backdrop-blur-sm transition-all duration-300 hover:bg-white/15"
+          >
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-lg font-semibold text-white">
+                  Travel Insurance
+                </h3>
+                <p class="text-sm text-white/70">
+                  Comprehensive travel coverage
+                </p>
+              </div>
+              <a
+                href="/sign-up/travel-quote"
+                class="rounded-xl bg-black px-6 py-2 font-medium text-white shadow-lg transition-all duration-200 hover:bg-gray-800"
+                
+              >
+                <span>Get Quote</span>
               </a>
             </div>
           </div>
@@ -106,66 +107,93 @@
       </div>
     </div>
 
-    <!-- Geminia Travel Portal (Right) -->
+    <!-- Login/Register Form (Right) -->
     <div
-      class="relative flex h-full w-1/2 flex-auto items-center justify-center overflow-hidden bg-gray-50 p-16 lg:px-28"
+      class="relative flex h-full min-h-screen w-1/2 flex-auto items-center justify-center overflow-hidden bg-gray-50 p-6 sm:p-12"
     >
-      <!-- Content -->
-      <div class="relative z-10 w-full max-w-2xl">
-        <!-- Geminia Logo for Travel Side -->
-        <div class="mb-8 flex justify-center">
-          <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROTKn0j9cVpA67LPdjPeYBR3KnWiwP1gsM3cS27rca-7m8BgvgUylY4uhBnOnVnXFx8Is&usqp=CAU"
-            alt="Geminia Logo"
-            class="h-16 w-auto object-contain rounded-lg"
-            style="mix-blend-mode: multiply; background: transparent;"
-          />
-        </div>
-
-        <div class="mb-2 text-6xl font-bold leading-tight text-gray-900">
-          <div
-            class="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent"
-          >
-            Geminia Travel
+      <div class="w-full max-w-sm">
+        <div class="mb-10 text-center">
+          <div class="text-2xl font-bold text-gray-800">
+            Secure Portal Access
           </div>
-          <div class="text-gray-900/95">Portal</div>
+          <div class="mt-1 text-sm text-gray-500">
+            Sign in to the Geminia Insurance Platform
+          </div>
         </div>
 
-        <div class="mt-6 max-w-lg text-lg leading-relaxed text-gray-900/90">
-          Get your travel insurance in simple clicks. Adventure awaits, and
-          we've got you covered.
-        </div>
-
-        <!-- Insurance Cards -->
-        <div class="mt-10">
-          <!-- Travel Insurance Card -->
-          <div
-            class="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm backdrop-blur-sm transition-all duration-300 hover:bg-white/60 hover:shadow-md"
-          >
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-4">
-                <div>
-                  <h3 class="text-lg font-semibold text-gray-800">
-                    Travel Insurance
-                  </h3>
-                  <p class="text-sm text-gray-600">
-                    Comprehensive Travel coverage
-                  </p>
-                </div>
-              </div>
-              <a
-                href="/sign-up/travel-quote"
-                mat-flat-button
-                class="rounded-xl bg-black px-6 py-2 font-medium text-white shadow-lg transition-all duration-200 hover:bg-gray-800"
-                (click)="navigateToMotorQuote()"
+        <form [formGroup]="signInForm" (ngSubmit)="signIn()">
+          <div class="mb-4">
+            <label class="mb-2 block text-sm font-medium text-gray-700"
+              >Email Address</label
+            >
+            <input
+              type="email"
+              class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+              [formControlName]="'username'"
+              placeholder="e.g., user@geminia.com"
+            />
+          </div>
+          <div class="mb-6">
+            <label class="mb-2 block text-sm font-medium text-gray-700"
+              >Password</label
+            >
+            <div class="relative">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+                [formControlName]="'password'"
+              />
+              <button
+                type="button"
+                class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                (click)="togglePasswordVisibility()"
               >
-                <span>Get Quote</span>
-                <mat-icon
-                  class="ml-2 icon-size-5"
-                  [svgIcon]="'heroicons_solid:arrow-right'"
-                ></mat-icon>
-              </a>
+                <mat-icon class="text-base">{{
+                  showPassword ? 'visibility_off' : 'visibility'
+                }}</mat-icon>
+              </button>
             </div>
+          </div>
+          <button
+            type="submit"
+            class="w-full rounded-md py-2.5 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
+            [ngClass]="{
+              'bg-sky-500 text-white hover:bg-sky-600 focus:ring-sky-500':
+                signInForm.valid,
+              'bg-gray-200 text-gray-500 cursor-not-allowed':
+                signInForm.invalid || signInForm.disabled
+            }"
+            [disabled]="signInForm.invalid || signInForm.disabled"
+          >
+            <div *ngIf="!signInForm.disabled; else signingIn">Sign In</div>
+            <ng-template #signingIn>
+              <div class="flex items-center justify-center">
+                <mat-progress-spinner
+                  [diameter]="20"
+                  mode="indeterminate"
+                  class="mr-2"
+                ></mat-progress-spinner>
+                <span>Signing in...</span>
+              </div>
+            </ng-template>
+          </button>
+        </form>
+
+        <div class="mt-6 flex items-center justify-between text-sm">
+          <a
+            class="font-medium text-sky-500 hover:underline"
+            routerLink="/forgot-password"
+          >
+            Forgot password?
+          </a>
+          <div>
+            <span class="text-gray-600">No account?</span>
+            <a
+              class="ml-1 font-medium text-sky-500 hover:underline"
+              routerLink="/sign-up/user-registration"
+            >
+              Register here
+            </a>
           </div>
         </div>
       </div>
