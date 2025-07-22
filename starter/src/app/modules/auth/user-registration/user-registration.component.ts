@@ -1,21 +1,20 @@
-import { CommonModule, KeyValuePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
-// Custom validator for word count, placed outside the class
+// Custom validator for word count
 export function maxWords(max: number) {
   return (control: AbstractControl): { [key: string]: any } | null => {
     if (!control.value) return null;
-    // Split by whitespace to count words
     const words = control.value.trim().split(/\s+/).length;
     return words > max ? { 'maxWords': { maxWords: max, actualWords: words } } : null;
   };
 }
 
+// --- Interfaces for Data Structures ---
 interface PremiumCalculation {
     basePremium: number;
-    netPremium: number;
     phcf: number;
     trainingLevy: number;
     stampDuty: number;
@@ -23,10 +22,16 @@ interface PremiumCalculation {
     currency: string;
 }
 
+interface MarineProduct {
+    code: string;
+    name: string;
+    rate: number;
+}
+
 @Component({
     selector: 'app-marine-cargo-quotation',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, KeyValuePipe, RouterLink],
+    imports: [CommonModule, ReactiveFormsModule, RouterLink],
     templateUrl: './marine-cargo-quotation.component.html',
     styleUrls: ['./marine-cargo-quotation.component.scss'],
 })
@@ -44,19 +49,26 @@ export class MarineCargoQuotationComponent implements OnInit {
     showHighRiskModal: boolean = false;
     showPaymentModal: boolean = false;
     toastMessage: string = '';
+    toastType: 'success' | 'info' = 'success'; // To control toast color
     isProcessingPayment: boolean = false;
-    
-    // --- Simulated Authentication ---
-    // In a real app, this would be determined by an AuthService.
-    // Set to `true` to test the logged-in payment modal, `false` to test the redirect.
-    isLoggedIn: boolean = true; 
+    isLoggedIn: boolean = true; // Simulated authentication
     
     premiumCalculation: PremiumCalculation = this.resetPremiumCalculation();
 
     // --- Component Data ---
+    readonly marineProducts: MarineProduct[] = [
+        { code: 'ICC_A', name: 'Institute Cargo Clauses (A) - All Risks', rate: 0.0025 },
+        { code: 'ICC_B', name: 'Institute Cargo Clauses (B) - Named Perils', rate: 0.0020 },
+        { code: 'ICC_C', name: 'Institute Cargo Clauses (C) - Limited Perils', rate: 0.0018 },
+    ];
+    readonly marineCargoTypes: string[] = [
+        'Pharmaceuticals & Medicines', 'Electronics & High-Tech Goods', 'Canned & Processed Foods', 'Apparel & Textiles', 
+        'Automotive Parts & Vehicles', 'Industrial Machinery', 'Raw Materials (e.g., Ores, Logs)', 'Chemicals (Non-Hazardous)',
+        'Furniture & Home Goods', 'Toys & Sporting Goods', 'Printed Materials & Books', 'Cosmetics & Personal Care', 'Frozen Goods'
+    ];
     readonly blacklistedCountries: string[] = ['Belarus', 'Russia', 'Crimea', 'Ukraine', 'Israel', 'Yemen', 'Palestine', 'Sudan', 'DRC Congo', 'Somalia'];
     readonly countryList: string[] = ['Shanghai, China', 'Singapore, Singapore', 'Dubai, UAE', ...this.blacklistedCountries];
-    readonly allCountries: string[] = ['Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Australia', 'Austria', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belgium', 'Brazil', 'Canada', 'Chile', 'China', 'Colombia', 'Denmark', 'Egypt', 'Finland', 'France', 'Germany', 'Ghana', 'Greece', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Italy', 'Japan', 'Kuwait', 'Luxembourg', 'Malaysia', 'Mexico', 'Netherlands', 'New Zealand', 'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Saudi Arabia', 'Singapore', 'South Africa', 'South Korea', 'Spain', 'Sweden', 'Switzerland', 'Tanzania', 'Thailand', 'Turkey', 'Uganda', 'United Arab Emirates', 'United Kingdom', 'United States', 'Vietnam', 'Zambia', 'Zimbabwe'];
+    readonly allCountries: string[] = ['Afghanistan', 'Albania', 'Algeria', 'Angola', 'Argentina', 'Australia', 'Brazil', 'Canada', 'China', 'Egypt', 'France', 'Germany', 'India', 'Indonesia', 'Iran', 'Japan', 'Mexico', 'Nigeria', 'Pakistan', 'Saudi Arabia', 'South Africa', 'Turkey', 'United Kingdom', 'United States'];
     private readonly TAX_RATES = { PHCF: 0.0045, TRAINING_LEVY: 0.002, STAMP_DUTY: 40 };
 
     constructor(private fb: FormBuilder, private router: Router) {
@@ -74,27 +86,70 @@ export class MarineCargoQuotationComponent implements OnInit {
 
     private createQuotationForm(): FormGroup {
         return this.fb.group({
-             cargoType: ['', Validators.required], 
-             tradeType: ['', Validators.required], 
-             modeOfShipment: ['', Validators.required], 
-             origin: ['', Validators.required], 
-             destination: [{ value: '', disabled: true }], 
-             coverStartDate: ['', [Validators.required, this.noPastDatesValidator]], 
-             sumInsured: ['', [Validators.required, Validators.min(1)]], 
-             descriptionOfGoods: ['', Validators.required], 
-             idfNumber: ['', Validators.required], 
+             cargoType: ['', Validators.required],
+             tradeType: ['', Validators.required],
+             modeOfShipment: ['', Validators.required],
+             marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required],
+             marineCargoType: ['', Validators.required],
+             origin: ['', Validators.required],
+             destination: [{ value: '', disabled: true }],
+             coverStartDate: ['', [Validators.required, this.noPastDatesValidator]],
+             sumInsured: ['', [Validators.required, Validators.min(1)]],
+             descriptionOfGoods: ['', Validators.required],
+             idfNumber: ['', Validators.required],
              ucrNumber: ['', Validators.required],
         });
     }
 
     private createClientDetailsForm(): FormGroup {
-        return this.fb.group({ 
-            firstName: ['', Validators.required], 
-            lastName: ['', Validators.required], 
-            email: ['', [Validators.required, Validators.email]], 
-            phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,12}$')]], 
+        return this.fb.group({
+            idNumber: ['', Validators.required],
             kraPin: ['', Validators.required],
-            termsAndConditions: [false, Validators.requiredTrue], 
+            firstName: ['', Validators.required],
+            lastName: ['', Validators.required],
+            email: ['', [Validators.required, Validators.email]],
+            phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,12}$')]],
+            termsAndConditions: [false, Validators.requiredTrue],
+            dataPrivacyConsent: [false, Validators.requiredTrue],
+        });
+    }
+
+    private createExportRequestForm(): FormGroup {
+        return this.fb.group({
+            kraPin: ['', Validators.required],
+            firstName: ['', Validators.required],
+            lastName: ['', Validators.required],
+            email: ['', [Validators.required, Validators.email]],
+            phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,12}$')]],
+            marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required],
+            marineCargoType: ['', Validators.required],
+            idfNumber: ['', Validators.required],
+            ucrNumber: ['', Validators.required],
+            originCountry: [{ value: 'Kenya', disabled: true }],
+            destinationCountry: ['', Validators.required],
+            shipmentDate: ['', [Validators.required, this.noPastDatesValidator]],
+            goodsDescription: ['', [Validators.required, maxWords(100)]],
+            termsAndConditions: [false, Validators.requiredTrue],
+            dataPrivacyConsent: [false, Validators.requiredTrue],
+        });
+    }
+    
+    private createHighRiskRequestForm(): FormGroup {
+        return this.fb.group({
+            kraPin: ['', Validators.required],
+            firstName: ['', Validators.required],
+            lastName: ['', Validators.required],
+            email: ['', [Validators.required, Validators.email]],
+            phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,12}$')]],
+            marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required],
+            marineCargoType: ['', Validators.required],
+            idfNumber: ['', Validators.required],
+            ucrNumber: ['', Validators.required],
+            originCountry: [{ value: '', disabled: true }],
+            destinationCountry: [{ value: 'Kenya', disabled: true }],
+            shipmentDate: ['', [Validators.required, this.noPastDatesValidator]],
+            goodsDescription: ['', [Validators.required, maxWords(100)]],
+            termsAndConditions: [false, Validators.requiredTrue],
             dataPrivacyConsent: [false, Validators.requiredTrue],
         });
     }
@@ -106,42 +161,13 @@ export class MarineCargoQuotationComponent implements OnInit {
             cardNumber: [''], expiryDate: [''], cvv: ['']
         });
     }
-    
-    private createExportRequestForm(): FormGroup {
-        return this.fb.group({
-            userFullName: ['', Validators.required], email: ['', [Validators.required, Validators.email]], 
-            phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,12}$')]], 
-            kraPin: ['', Validators.required], idfNumber: ['', Validators.required], 
-            ucrNumber: ['', Validators.required], originCountry: [{ value: 'Kenya', disabled: true }], 
-            destinationCountry: ['', Validators.required], 
-            shipmentDate: ['', [Validators.required, this.noPastDatesValidator]], 
-            goodsDescription: ['', [Validators.required, maxWords(100)]],
-        });
-    }
 
-    private createHighRiskRequestForm(): FormGroup {
-        return this.fb.group({
-            userFullName: ['', Validators.required], email: ['', [Validators.required, Validators.email]],
-            phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,12}$')]],
-            kraPin: ['', Validators.required], idfNumber: ['', Validators.required], 
-            ucrNumber: ['', Validators.required], originCountry: [{ value: '', disabled: true }], 
-            destinationCountry: [{ value: 'Kenya', disabled: true }], 
-            shipmentDate: ['', [Validators.required, this.noPastDatesValidator]], 
-            goodsDescription: ['', [Validators.required, maxWords(100)]],
-        });
-    }
-    
     private setDefaultDate(): void {
         this.quotationForm.patchValue({ coverStartDate: this.getToday() });
     }
 
     private setupFormSubscriptions(): void {
-        this.quotationForm.valueChanges.subscribe(values => {
-            const isStandardImport = values.tradeType === 'import' && !this.blacklistedCountries.includes(values.origin);
-            if (this.quotationForm.valid && isStandardImport) { this.calculatePremium(); } 
-            else { this.premiumCalculation = this.resetPremiumCalculation(); }
-        });
-
+        // No subscription needed for premium calculation here anymore
         this.quotationForm.get('tradeType')?.valueChanges.subscribe(type => { if (type === 'export') this.showExportModal = true; });
         this.quotationForm.get('origin')?.valueChanges.subscribe(country => { if (this.blacklistedCountries.includes(country)) { this.highRiskRequestForm.patchValue({ originCountry: country }); this.showHighRiskModal = true; } });
         this.quotationForm.get('modeOfShipment')?.valueChanges.subscribe(mode => { this.quotationForm.patchValue({ destination: mode === 'sea' ? 'Mombasa, Kenya' : (mode === 'air' ? 'Nairobi, JKIA' : '') }); });
@@ -152,7 +178,7 @@ export class MarineCargoQuotationComponent implements OnInit {
             if (method === 'mpesa') {
                 phoneControl?.setValidators([Validators.required, Validators.pattern('^2547[0-9]{8}$')]);
                 cardControls.forEach(c => c?.clearValidators());
-            } else { // 'card'
+            } else {
                 phoneControl?.clearValidators();
                 cardControls.forEach(c => c?.setValidators([Validators.required]));
             }
@@ -163,36 +189,61 @@ export class MarineCargoQuotationComponent implements OnInit {
 
     private calculatePremium(): void {
         const sumInsured = this.quotationForm.get('sumInsured')?.value || 0;
-        const basePremium = sumInsured * 0.0025; // ICC(A) All Risks rate
+        const productValue = this.quotationForm.get('marineProduct')?.value;
+        const selectedProduct = this.marineProducts.find(p => p.name === productValue || p.code === productValue);
+        const rate = selectedProduct ? selectedProduct.rate : 0;
+
+        const basePremium = sumInsured * rate;
         const { PHCF, TRAINING_LEVY, STAMP_DUTY } = this.TAX_RATES;
         const phcf = basePremium * PHCF;
         const trainingLevy = basePremium * TRAINING_LEVY;
         const totalPayable = basePremium + phcf + trainingLevy + STAMP_DUTY;
-        this.premiumCalculation = { basePremium, netPremium: basePremium, phcf, trainingLevy, stampDuty: STAMP_DUTY, totalPayable, currency: 'Kshs' };
+
+        this.premiumCalculation = { basePremium, phcf, trainingLevy, stampDuty: STAMP_DUTY, totalPayable, currency: 'Kshs' };
     }
 
     private resetPremiumCalculation(): PremiumCalculation {
-        return { basePremium: 0, netPremium: 0, phcf: 0, trainingLevy: 0, stampDuty: 0, totalPayable: 0, currency: 'Kshs' };
+        return { basePremium: 0, phcf: 0, trainingLevy: 0, stampDuty: 0, totalPayable: 0, currency: 'Kshs' };
+    }
+
+    // --- Modal Handlers & Submissions ---
+    onExportRequestSubmit(): void { if (this.exportRequestForm.valid) { this.closeExportModal(); this.showToast("Thank you for submitting the export details. Our underwriter will contact you shortly.", 'info'); } }
+    closeExportModal(): void { this.showExportModal = false; this.quotationForm.get('tradeType')?.reset(''); this.exportRequestForm.reset({ originCountry: 'Kenya', marineProduct: 'Institute Cargo Clauses (A) - All Risks', marineCargoType: '' }); }
+
+    onHighRiskRequestSubmit(): void { if (this.highRiskRequestForm.valid) { this.closeHighRiskModal(); this.showToast("Your request for a high-risk shipment has been submitted for review.", 'info'); } }
+    closeHighRiskModal(): void { this.showHighRiskModal = false; this.quotationForm.get('origin')?.reset(''); this.highRiskRequestForm.reset({ destinationCountry: 'Kenya', marineProduct: 'Institute Cargo Clauses (A) - All Risks', marineCargoType: '' }); }
+    
+    closePaymentModal(): void { this.showPaymentModal = false; this.isProcessingPayment = false; this.paymentForm.reset({ paymentMethod: 'mpesa' }); }
+    
+    private showToast(message: string, type: 'success' | 'info' = 'success'): void { 
+        this.toastMessage = message; 
+        this.toastType = type;
+        setTimeout(() => {
+            this.toastMessage = '';
+            this.toastType = 'success'; // Reset to default
+        }, 5000); 
+    }
+
+    // --- Main Form Actions ---
+    onSubmit(): void { 
+        if (this.quotationForm.valid) { 
+            const tradeType = this.quotationForm.get('tradeType')?.value; 
+            const origin = this.quotationForm.get('origin')?.value; 
+            if (tradeType === 'import' && !this.blacklistedCountries.includes(origin)) { 
+                this.calculatePremium(); // Calculate premium before moving to step 2
+                this.goToStep(2); 
+            } 
+        } else { 
+            this.quotationForm.markAllAsTouched(); 
+        } 
     }
     
-    // --- Modal Handlers ---
-    onExportRequestSubmit(): void { if (this.exportRequestForm.valid) { this.closeExportModal(); this.showToast("Thank you for submitting the export details. Our Insurance underwriter will contact you shortly."); } }
-    closeExportModal(): void { this.showExportModal = false; this.quotationForm.get('tradeType')?.reset(''); this.exportRequestForm.reset({ originCountry: { value: 'Kenya', disabled: true } }); }
-    onHighRiskRequestSubmit(): void { if (this.highRiskRequestForm.valid) { this.closeHighRiskModal(); this.showToast("Your request for a high-risk shipment has been submitted for review."); } }
-    closeHighRiskModal(): void { this.showHighRiskModal = false; this.quotationForm.get('origin')?.reset(''); this.highRiskRequestForm.reset({ originCountry: { value: '', disabled: true }, destinationCountry: { value: 'Kenya', disabled: true }}); }
-    closePaymentModal(): void { this.showPaymentModal = false; this.isProcessingPayment = false; this.paymentForm.reset({ paymentMethod: 'mpesa' }); }
+    downloadQuote(): void { if (this.clientDetailsForm.valid) { console.log('Client details submitted:', this.clientDetailsForm.value); this.showToast('Quote download initiated and details submitted.'); setTimeout(() => this.closeForm(), 2000); } }
 
-    private showToast(message: string): void { this.toastMessage = message; setTimeout(() => this.toastMessage = '', 5000); }
-    
-    // --- Main Actions ---
-    onSubmit(): void { if (this.quotationForm.valid) { const tradeType = this.quotationForm.get('tradeType')?.value; const origin = this.quotationForm.get('origin')?.value; if (tradeType === 'import' && !this.blacklistedCountries.includes(origin)) { this.goToStep(2); } } else { this.quotationForm.markAllAsTouched(); } }
-    downloadQuote(): void { if (this.clientDetailsForm.valid) { console.log('Client details submitted:', this.clientDetailsForm.value); alert('Quote download initiated and details submitted to the system.'); this.closeForm(); } }
-    
-    // --- Payment Journey ---
     handlePayment(): void {
         if (!this.clientDetailsForm.valid) { this.clientDetailsForm.markAllAsTouched(); return; }
         console.log('Client details submitted:', this.clientDetailsForm.value);
-        if (this.isLoggedIn) { this.showPaymentModal = true; } 
+        if (this.isLoggedIn) { this.showPaymentModal = true; }
         else { this.router.navigate(['/sign-in']); }
     }
 
@@ -208,6 +259,7 @@ export class MarineCargoQuotationComponent implements OnInit {
         }
     }
 
+    // --- Utility & Navigation ---
     closeForm(): void { this.router.navigate(['/']); }
     getToday(): string { return new Date().toISOString().split('T')[0]; }
     noPastDatesValidator(control: AbstractControl): { [key: string]: boolean } | null { if (!control.value) return null; return control.value < new Date().toISOString().split('T')[0] ? { pastDate: true } : null; }

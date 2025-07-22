@@ -15,7 +15,7 @@
   }
 }
 
-/* Custom styling for the searchable country dropdown input field */
+/* Custom styling for searchable input fields with accent color (used in modals) */
 .input-accent-bg {
   background-color: #04b2e1 !important;
   color: white !important;
@@ -40,7 +40,7 @@
   }
 }
 
-/* Custom select arrow styling */
+/* Default select arrow styling for standard (non-accented) dropdowns */
 select {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -53,7 +53,7 @@ select {
 }
 
 /* Form validation error styles */
-.ng-invalid.ng-touched {
+.ng-invalid.ng-touched:not(form) {
   border-color: #f87171 !important; /* red-400 */
 }
 
@@ -71,6 +71,11 @@ input, select, textarea {
 fieldset:disabled {
     opacity: 0.6;
     pointer-events: none;
+}
+
+/* Custom style for the blue info toast */
+.toast-info {
+  background-color: #21275c; /* Pantone 2758C */
 }
 
 /* Animations for modals, steps, and toast */
