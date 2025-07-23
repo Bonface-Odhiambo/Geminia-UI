@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -14,24 +14,17 @@ export function maxWords(max: number) {
 
 // --- Interfaces for Data Structures ---
 interface PremiumCalculation {
-    basePremium: number;
-    phcf: number;
-    trainingLevy: number;
-    stampDuty: number;
-    totalPayable: number;
-    currency: string;
+    basePremium: number; phcf: number; trainingLevy: number;
+    stampDuty: number; commission: number; totalPayable: number; currency: string;
 }
-
-interface MarineProduct {
-    code: string;
-    name: string;
-    rate: number;
-}
+interface MarineProduct { code: string; name: string; rate: number; }
+interface User { type: 'individual' | 'intermediary'; name: string; }
+interface ImporterDetails { name: string; kraPin: string; }
 
 @Component({
     selector: 'app-marine-cargo-quotation',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterLink],
+    imports: [CommonModule, ReactiveFormsModule, RouterLink, CurrencyPipe, DecimalPipe],
     templateUrl: './marine-cargo-quotation.component.html',
     styleUrls: ['./marine-cargo-quotation.component.scss'],
 })
@@ -49,27 +42,51 @@ export class MarineCargoQuotationComponent implements OnInit {
     showHighRiskModal: boolean = false;
     showPaymentModal: boolean = false;
     toastMessage: string = '';
-    toastType: 'success' | 'info' = 'success'; // To control toast color
+    toastType: 'success' | 'info' | 'error' = 'success';
     isProcessingPayment: boolean = false;
-    isLoggedIn: boolean = true; // Simulated authentication
+    paymentTransactionId: string = '';
+    
+    // --- User and Importer Data ---
+    currentUser: User = { type: 'individual', name: 'Individual User' };
+    importerDetails: ImporterDetails = { name: '', kraPin: '' };
     
     premiumCalculation: PremiumCalculation = this.resetPremiumCalculation();
 
     // --- Component Data ---
     readonly marineProducts: MarineProduct[] = [
-        { code: 'ICC_A', name: 'Institute Cargo Clauses (A) - All Risks', rate: 0.0025 },
-        { code: 'ICC_B', name: 'Institute Cargo Clauses (B) - Named Perils', rate: 0.0020 },
-        { code: 'ICC_C', name: 'Institute Cargo Clauses (C) - Limited Perils', rate: 0.0018 },
+        { code: 'ICC_A', name: 'Institute Cargo Clauses (A) - All Risks', rate: 0.005 },
+        { code: 'ICC_B', name: 'Institute Cargo Clauses (B) - Named Perils', rate: 0.0035 },
+        { code: 'ICC_C', name: 'Institute Cargo Clauses (C) - Limited Perils', rate: 0.0025 },
     ];
-    readonly marineCargoTypes: string[] = [
-        'Pharmaceuticals & Medicines', 'Electronics & High-Tech Goods', 'Canned & Processed Foods', 'Apparel & Textiles', 
-        'Automotive Parts & Vehicles', 'Industrial Machinery', 'Raw Materials (e.g., Ores, Logs)', 'Chemicals (Non-Hazardous)',
-        'Furniture & Home Goods', 'Toys & Sporting Goods', 'Printed Materials & Books', 'Cosmetics & Personal Care', 'Frozen Goods'
+    readonly marineCargoTypes: string[] = ['Pharmaceuticals', 'Electronics', 'Apparel', 'Vehicles', 'Machinery', 'General Goods'];
+    readonly blacklistedCountries: string[] = ['Russia', 'Ukraine', 'North Korea', 'Syria', 'Iran', 'Yemen', 'Sudan', 'Somalia'];
+    readonly allCountriesList: string[] = [
+        'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan',
+        'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi',
+        'Cabo Verde', 'Cambodia', 'Cameroon', 'Canada', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo, Democratic Republic of the', 'Congo, Republic of the', 'Costa Rica', 'Cote d\'Ivoire', 'Croatia', 'Cuba', 'Cyprus', 'Czechia',
+        'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic',
+        'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Eswatini', 'Ethiopia',
+        'Fiji', 'Finland', 'France',
+        'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana',
+        'Haiti', 'Honduras', 'Hungary',
+        'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy',
+        'Jamaica', 'Japan', 'Jordan',
+        'Kazakhstan', 'Kenya', 'Kiribati', 'Kosovo', 'Kuwait', 'Kyrgyzstan',
+        'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg',
+        'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar',
+        'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'North Korea', 'North Macedonia', 'Norway',
+        'Oman',
+        'Pakistan', 'Palau', 'Palestine State', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal',
+        'Qatar',
+        'Romania', 'Russia', 'Rwanda',
+        'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Korea', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria',
+        'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Timor-Leste', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu',
+        'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States of America', 'Uruguay', 'Uzbekistan',
+        'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam',
+        'Yemen',
+        'Zambia', 'Zimbabwe'
     ];
-    readonly blacklistedCountries: string[] = ['Belarus', 'Russia', 'Crimea', 'Ukraine', 'Israel', 'Yemen', 'Palestine', 'Sudan', 'DRC Congo', 'Somalia'];
-    readonly countryList: string[] = ['Shanghai, China', 'Singapore, Singapore', 'Dubai, UAE', ...this.blacklistedCountries];
-    readonly allCountries: string[] = ['Afghanistan', 'Albania', 'Algeria', 'Angola', 'Argentina', 'Australia', 'Brazil', 'Canada', 'China', 'Egypt', 'France', 'Germany', 'India', 'Indonesia', 'Iran', 'Japan', 'Mexico', 'Nigeria', 'Pakistan', 'Saudi Arabia', 'South Africa', 'Turkey', 'United Kingdom', 'United States'];
-    private readonly TAX_RATES = { PHCF: 0.0045, TRAINING_LEVY: 0.002, STAMP_DUTY: 40 };
+    private readonly TAX_RATES = { PHCF: 0.00525, TRAINING_LEVY: 0.0025, STAMP_DUTY: 40, COMMISSION_RATE: 0.10 };
 
     constructor(private fb: FormBuilder, private router: Router) {
         this.quotationForm = this.createQuotationForm();
@@ -87,78 +104,58 @@ export class MarineCargoQuotationComponent implements OnInit {
     private createQuotationForm(): FormGroup {
         return this.fb.group({
              cargoType: ['', Validators.required],
-             tradeType: ['', Validators.required],
+             tradeType: ['import', Validators.required],
              modeOfShipment: ['', Validators.required],
              marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required],
              marineCargoType: ['', Validators.required],
              origin: ['', Validators.required],
-             destination: [{ value: '', disabled: true }],
+             destination: [{ value: '', disabled: true }], // Initialized as disabled
              coverStartDate: ['', [Validators.required, this.noPastDatesValidator]],
-             sumInsured: ['', [Validators.required, Validators.min(1)]],
+             sumInsured: ['', [Validators.required, Validators.min(10000)]],
              descriptionOfGoods: ['', Validators.required],
-             idfNumber: ['', Validators.required],
-             ucrNumber: ['', Validators.required],
+             ucrNumber: ['', [Validators.required, Validators.pattern('^UCR\\d{7,}$')]],
+             idfNumber: ['', [Validators.required, Validators.pattern('^E\\d{9,}$')]],
         });
     }
 
     private createClientDetailsForm(): FormGroup {
         return this.fb.group({
-            idNumber: ['', Validators.required],
-            kraPin: ['', Validators.required],
-            firstName: ['', Validators.required],
-            lastName: ['', Validators.required],
+            idNumber: ['', Validators.required], kraPin: ['', Validators.required],
+            firstName: ['', Validators.required], lastName: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
-            phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,12}$')]],
-            termsAndConditions: [false, Validators.requiredTrue],
-            dataPrivacyConsent: [false, Validators.requiredTrue],
+            phoneNumber: ['', [Validators.required, Validators.pattern('^07[0-9]{8}$')]],
+            termsAndConditions: [false, Validators.requiredTrue], dataPrivacyConsent: [false, Validators.requiredTrue],
         });
     }
 
-    private createExportRequestForm(): FormGroup {
+    private createModalForm(): FormGroup { 
         return this.fb.group({
-            kraPin: ['', Validators.required],
-            firstName: ['', Validators.required],
-            lastName: ['', Validators.required],
-            email: ['', [Validators.required, Validators.email]],
-            phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,12}$')]],
-            marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required],
-            marineCargoType: ['', Validators.required],
-            idfNumber: ['', Validators.required],
-            ucrNumber: ['', Validators.required],
-            originCountry: [{ value: 'Kenya', disabled: true }],
-            destinationCountry: ['', Validators.required],
+            kraPin: ['', Validators.required], firstName: ['', Validators.required], lastName: ['', Validators.required],
+            email: ['', [Validators.required, Validators.email]], phoneNumber: ['', [Validators.required, Validators.pattern('^07[0-9]{8}$')]],
+            marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required], marineCargoType: ['', Validators.required],
+            idfNumber: ['', Validators.required], ucrNumber: ['', Validators.required],
+            originCountry: ['', Validators.required], destinationCountry: ['', Validators.required], // Destination is editable in modals
             shipmentDate: ['', [Validators.required, this.noPastDatesValidator]],
             goodsDescription: ['', [Validators.required, maxWords(100)]],
-            termsAndConditions: [false, Validators.requiredTrue],
-            dataPrivacyConsent: [false, Validators.requiredTrue],
+            termsAndConditions: [false, Validators.requiredTrue], dataPrivacyConsent: [false, Validators.requiredTrue],
         });
     }
     
+    private createExportRequestForm(): FormGroup {
+        const form = this.createModalForm();
+        form.get('originCountry')?.patchValue('Kenya'); 
+        form.get('originCountry')?.disable();
+        return form;
+    }
+
     private createHighRiskRequestForm(): FormGroup {
-        return this.fb.group({
-            kraPin: ['', Validators.required],
-            firstName: ['', Validators.required],
-            lastName: ['', Validators.required],
-            email: ['', [Validators.required, Validators.email]],
-            phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,12}$')]],
-            marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required],
-            marineCargoType: ['', Validators.required],
-            idfNumber: ['', Validators.required],
-            ucrNumber: ['', Validators.required],
-            originCountry: [{ value: '', disabled: true }],
-            destinationCountry: [{ value: 'Kenya', disabled: true }],
-            shipmentDate: ['', [Validators.required, this.noPastDatesValidator]],
-            goodsDescription: ['', [Validators.required, maxWords(100)]],
-            termsAndConditions: [false, Validators.requiredTrue],
-            dataPrivacyConsent: [false, Validators.requiredTrue],
-        });
+        return this.createModalForm();
     }
 
     private createPaymentForm(): FormGroup {
         return this.fb.group({
             paymentMethod: ['mpesa', Validators.required],
-            phoneNumber: ['', [Validators.required, Validators.pattern('^2547[0-9]{8}$')]],
-            cardNumber: [''], expiryDate: [''], cvv: ['']
+            mpesaPhoneNumber: ['', [Validators.required, Validators.pattern('^2547[0-9]{8}$')]],
         });
     }
 
@@ -167,101 +164,110 @@ export class MarineCargoQuotationComponent implements OnInit {
     }
 
     private setupFormSubscriptions(): void {
-        // No subscription needed for premium calculation here anymore
+        // Sets the destination based on shipment mode for the main import form
+        this.quotationForm.get('modeOfShipment')?.valueChanges.subscribe(mode => {
+            const destControl = this.quotationForm.get('destination');
+            if (mode === 'sea') {
+                destControl?.setValue('Mombasa, Kenya');
+            } else if (mode === 'air') {
+                destControl?.setValue('JKIA, Nairobi, Kenya');
+            } else {
+                destControl?.setValue('');
+            }
+        });
+
         this.quotationForm.get('tradeType')?.valueChanges.subscribe(type => { if (type === 'export') this.showExportModal = true; });
         this.quotationForm.get('origin')?.valueChanges.subscribe(country => { if (this.blacklistedCountries.includes(country)) { this.highRiskRequestForm.patchValue({ originCountry: country }); this.showHighRiskModal = true; } });
-        this.quotationForm.get('modeOfShipment')?.valueChanges.subscribe(mode => { this.quotationForm.patchValue({ destination: mode === 'sea' ? 'Mombasa, Kenya' : (mode === 'air' ? 'Nairobi, JKIA' : '') }); });
-
-        this.paymentForm.get('paymentMethod')?.valueChanges.subscribe(method => {
-            const phoneControl = this.paymentForm.get('phoneNumber');
-            const cardControls = [this.paymentForm.get('cardNumber'), this.paymentForm.get('expiryDate'), this.paymentForm.get('cvv')];
-            if (method === 'mpesa') {
-                phoneControl?.setValidators([Validators.required, Validators.pattern('^2547[0-9]{8}$')]);
-                cardControls.forEach(c => c?.clearValidators());
+        this.quotationForm.get('ucrNumber')?.valueChanges.subscribe(ucr => {
+            if (this.quotationForm.get('ucrNumber')?.valid) {
+                this.importerDetails = { name: 'Global Imports Ltd.', kraPin: 'P051234567X' };
             } else {
-                phoneControl?.clearValidators();
-                cardControls.forEach(c => c?.setValidators([Validators.required]));
+                this.importerDetails = { name: '', kraPin: '' };
             }
-            phoneControl?.updateValueAndValidity();
-            cardControls.forEach(c => c?.updateValueAndValidity());
         });
     }
 
     private calculatePremium(): void {
         const sumInsured = this.quotationForm.get('sumInsured')?.value || 0;
         const productValue = this.quotationForm.get('marineProduct')?.value;
-        const selectedProduct = this.marineProducts.find(p => p.name === productValue || p.code === productValue);
+        const selectedProduct = this.marineProducts.find(p => p.name === productValue);
         const rate = selectedProduct ? selectedProduct.rate : 0;
-
         const basePremium = sumInsured * rate;
-        const { PHCF, TRAINING_LEVY, STAMP_DUTY } = this.TAX_RATES;
+        const { PHCF, TRAINING_LEVY, STAMP_DUTY, COMMISSION_RATE } = this.TAX_RATES;
         const phcf = basePremium * PHCF;
         const trainingLevy = basePremium * TRAINING_LEVY;
+        const commission = this.currentUser.type === 'intermediary' ? basePremium * COMMISSION_RATE : 0;
         const totalPayable = basePremium + phcf + trainingLevy + STAMP_DUTY;
-
-        this.premiumCalculation = { basePremium, phcf, trainingLevy, stampDuty: STAMP_DUTY, totalPayable, currency: 'Kshs' };
+        this.premiumCalculation = { basePremium, phcf, trainingLevy, stampDuty: STAMP_DUTY, commission, totalPayable, currency: 'KES' };
     }
 
     private resetPremiumCalculation(): PremiumCalculation {
-        return { basePremium: 0, phcf: 0, trainingLevy: 0, stampDuty: 0, totalPayable: 0, currency: 'Kshs' };
+        return { basePremium: 0, phcf: 0, trainingLevy: 0, stampDuty: 0, commission: 0, totalPayable: 0, currency: 'KES' };
     }
 
     // --- Modal Handlers & Submissions ---
-    onExportRequestSubmit(): void { if (this.exportRequestForm.valid) { this.closeExportModal(); this.showToast("Thank you for submitting the export details. Our underwriter will contact you shortly.", 'info'); } }
-    closeExportModal(): void { this.showExportModal = false; this.quotationForm.get('tradeType')?.reset(''); this.exportRequestForm.reset({ originCountry: 'Kenya', marineProduct: 'Institute Cargo Clauses (A) - All Risks', marineCargoType: '' }); }
-
-    onHighRiskRequestSubmit(): void { if (this.highRiskRequestForm.valid) { this.closeHighRiskModal(); this.showToast("Your request for a high-risk shipment has been submitted for review.", 'info'); } }
-    closeHighRiskModal(): void { this.showHighRiskModal = false; this.quotationForm.get('origin')?.reset(''); this.highRiskRequestForm.reset({ destinationCountry: 'Kenya', marineProduct: 'Institute Cargo Clauses (A) - All Risks', marineCargoType: '' }); }
+    onExportRequestSubmit(): void { if (this.exportRequestForm.valid) { this.closeAllModals(); this.showToast("Export request submitted. Our underwriter will contact you.", 'info'); } }
+    onHighRiskRequestSubmit(): void { if (this.highRiskRequestForm.valid) { this.closeAllModals(); this.showToast("High-risk shipment request submitted for review.", 'info'); } }
     
-    closePaymentModal(): void { this.showPaymentModal = false; this.isProcessingPayment = false; this.paymentForm.reset({ paymentMethod: 'mpesa' }); }
-    
-    private showToast(message: string, type: 'success' | 'info' = 'success'): void { 
-        this.toastMessage = message; 
-        this.toastType = type;
-        setTimeout(() => {
-            this.toastMessage = '';
-            this.toastType = 'success'; // Reset to default
-        }, 5000); 
+    closeAllModals(): void {
+        this.showExportModal = false;
+        this.showHighRiskModal = false;
+        this.quotationForm.get('tradeType')?.setValue('import', { emitEvent: false });
+        this.quotationForm.get('origin')?.setValue('', { emitEvent: false });
+        this.exportRequestForm.reset({ marineProduct: 'Institute Cargo Clauses (A) - All Risks', originCountry: 'Kenya' });
+        this.highRiskRequestForm.reset({ marineProduct: 'Institute Cargo Clauses (A) - All Risks' });
     }
+
+    closePaymentModal(): void { this.showPaymentModal = false; this.isProcessingPayment = false; this.paymentTransactionId = ''; this.paymentForm.reset({ paymentMethod: 'mpesa' }); }
+    
+    private showToast(message: string, type: 'success' | 'info' | 'error' = 'success'): void { this.toastMessage = message; this.toastType = type; setTimeout(() => this.toastMessage = '', 5000); }
 
     // --- Main Form Actions ---
-    onSubmit(): void { 
-        if (this.quotationForm.valid) { 
-            const tradeType = this.quotationForm.get('tradeType')?.value; 
-            const origin = this.quotationForm.get('origin')?.value; 
-            if (tradeType === 'import' && !this.blacklistedCountries.includes(origin)) { 
-                this.calculatePremium(); // Calculate premium before moving to step 2
-                this.goToStep(2); 
-            } 
-        } else { 
-            this.quotationForm.markAllAsTouched(); 
-        } 
-    }
-    
-    downloadQuote(): void { if (this.clientDetailsForm.valid) { console.log('Client details submitted:', this.clientDetailsForm.value); this.showToast('Quote download initiated and details submitted.'); setTimeout(() => this.closeForm(), 2000); } }
+    onSubmit(): void { if (this.quotationForm.valid) { if (!this.blacklistedCountries.includes(this.quotationForm.get('origin')?.value)) { this.calculatePremium(); this.goToStep(2); } } else { this.quotationForm.markAllAsTouched(); } }
+    downloadQuote(): void { if (this.clientDetailsForm.valid) { this.showToast('Quote download initiated successfully.'); } }
 
     handlePayment(): void {
         if (!this.clientDetailsForm.valid) { this.clientDetailsForm.markAllAsTouched(); return; }
-        console.log('Client details submitted:', this.clientDetailsForm.value);
-        if (this.isLoggedIn) { this.showPaymentModal = true; }
-        else { this.router.navigate(['/sign-in']); }
+        this.paymentTransactionId = `GEM${Date.now()}`;
+        this.showPaymentModal = true;
     }
 
-    onProcessPayment(): void {
-        if (this.paymentForm.valid) {
-            this.isProcessingPayment = true;
-            console.log('Processing payment with details:', this.paymentForm.value);
-            setTimeout(() => {
-                this.closePaymentModal();
-                this.showToast("Payment successful! Your policy documents have been sent to your email.");
-                setTimeout(() => this.closeForm(), 2000);
-            }, 2500);
-        }
+    onProcessSTKPush(): void {
+        if (this.paymentForm.get('mpesaPhoneNumber')?.invalid) { this.paymentForm.get('mpesaPhoneNumber')?.markAsTouched(); return; }
+        this.isProcessingPayment = true;
+        this.showToast('Sending a payment request to your phone...', 'info');
+        setTimeout(() => {
+            this.isProcessingPayment = false;
+            this.showToast('STK push sent. Please enter your PIN to complete payment.', 'success');
+        }, 3000);
     }
+    
+    onProcessCardPayment(): void {
+        this.showToast("Redirecting to our secure payment gateway...", 'info');
+        setTimeout(() => window.open('https://www.example.com/payment-gateway', '_blank'), 1500);
+    }
+
+    verifyMpesaPayment(): void {
+        this.showToast("Verifying your manual payment...", 'info');
+        setTimeout(() => {
+            this.closePaymentModal();
+            this.showToast("Payment successful! Your certificate is ready.", 'success');
+            setTimeout(() => this.downloadCertificate(), 1500);
+        }, 2000);
+    }
+    
+    downloadCertificate(): void { this.showToast("Your policy certificate has been downloaded.", 'success'); console.log("Certificate download process initiated."); setTimeout(() => this.closeForm(), 2000); }
 
     // --- Utility & Navigation ---
     closeForm(): void { this.router.navigate(['/']); }
     getToday(): string { return new Date().toISOString().split('T')[0]; }
     noPastDatesValidator(control: AbstractControl): { [key: string]: boolean } | null { if (!control.value) return null; return control.value < new Date().toISOString().split('T')[0] ? { pastDate: true } : null; }
     goToStep(step: number): void { this.currentStep = step; }
+
+    switchUser(event: any): void {
+        const userType = event.target.value as 'individual' | 'intermediary';
+        this.currentUser = { type: userType, name: userType === 'intermediary' ? 'Intermediary User' : 'Individual User' };
+        this.showToast(`Switched to ${this.currentUser.name} view.`, 'info');
+        if (this.currentStep === 2) { this.calculatePremium(); }
+    }
 }

@@ -15,18 +15,6 @@
   }
 }
 
-/* Custom styling for searchable input fields with accent color (used in modals) */
-.input-accent-bg {
-  background-color: #04b2e1 !important;
-  color: white !important;
-  border-color: #04b2e1 !important; 
-  
-  &::placeholder {
-    color: #a7e4f5; /* Lighter shade of the background for placeholder */
-    opacity: 1;
-  }
-}
-
 /* Custom styling for payment option radio buttons */
 .payment-option {
   @apply flex items-center p-3 border rounded-md cursor-pointer transition-colors w-full;
@@ -62,8 +50,14 @@ input, select, textarea {
   &:focus {
     @apply outline-none ring-2 ring-blue-500 ring-offset-2 border-transparent;
   }
+  
+  // Custom style for disabled inputs to ensure text is not greyed out
   &:disabled {
-    @apply bg-gray-100 cursor-not-allowed opacity-60;
+    background-color: #f3f4f6; // Tailwind's gray-100
+    color: #111827; // Tailwind's gray-900 (strong black text)
+    opacity: 1; // Full opacity
+    cursor: not-allowed;
+    border-color: #d1d5db; // Tailwind's gray-300, same as normal
   }
 }
 
@@ -78,12 +72,13 @@ fieldset:disabled {
   background-color: #21275c; /* Pantone 2758C */
 }
 
-/* Animations for modals, steps, and toast */
+/* Keyframe animations for a smoother UX */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.step-content, .fixed.inset-0 {
+
+.step-content, .fixed.inset-0, .animate-fadeIn {
    animation: fadeIn 0.4s ease-in-out;
 }
 
@@ -91,6 +86,7 @@ fieldset:disabled {
   from { opacity: 0; transform: translateY(100%); }
   to { opacity: 1; transform: translateY(0); }
 }
+
 .fixed.bottom-5 {
     animation: slideInUp 0.5s ease-in-out;
 }

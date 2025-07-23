@@ -7,10 +7,18 @@
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROTKn0j9cVpA67LPdjPeYBR3KnWiwP1gsM3cS27rca-7m8BgvgUylY4uhBnOnVnXFx8Is&usqp=CAU" alt="Geminia Logo" class="h-10 w-auto"/>
                     <h1 class="text-xl font-semibold text-slate-800">Geminia Marine</h1>
                 </div>
-                <a href="/" class="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-50" title="Close and return to homepage">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    Close
-                </a>
+                <!-- Demo User Switcher -->
+                <div class="flex items-center gap-4">
+                    <span class="text-sm font-medium">Demo User:</span>
+                    <select (change)="switchUser($event)" class="rounded-md border-gray-300 text-sm">
+                        <option value="individual" [selected]="currentUser.type === 'individual'">Individual</option>
+                        <option value="intermediary" [selected]="currentUser.type === 'intermediary'">Intermediary</option>
+                    </select>
+                    <a href="/" class="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-50" title="Close and return to homepage">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        Close
+                    </a>
+                </div>
             </div>
         </div>
     </header>
@@ -38,36 +46,36 @@
                         <form [formGroup]="quotationForm" (ngSubmit)="onSubmit()">
                             <fieldset [disabled]="showHighRiskModal || showExportModal">
                                 <div class="mb-6"><label class="mb-3 block text-sm font-medium text-gray-700">Cargo Type <span class="text-red-500">*</span></label><div class="flex gap-4"><label class="flex items-center"><input type="radio" formControlName="cargoType" value="containerized" class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"/><span class="ml-2 text-sm text-gray-700">Containerized</span></label><label class="flex items-center"><input type="radio" formControlName="cargoType" value="non-containerized" class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"/><span class="ml-2 text-sm text-gray-700">Non-Containerized</span></label></div></div>
-                                <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"><div><label class="mb-2 block text-sm font-medium text-gray-700">Mode of Shipment <span class="text-red-500">*</span></label><select formControlName="modeOfShipment" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"><option value="">Select mode</option><option value="sea">Sea</option><option value="air">Air</option></select></div><div><label class="mb-2 block text-sm font-medium text-gray-700">Trade Type <span class="text-red-500">*</span></label><select formControlName="tradeType" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"><option value="">Select trade type</option><option value="import">Import</option><option value="export">Export</option></select></div></div>
+                                <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"><div><label class="mb-2 block text-sm font-medium text-gray-700">Mode of Shipment <span class="text-red-500">*</span></label><select formControlName="modeOfShipment" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"><option value="">Select mode</option><option value="sea">Sea</option><option value="air">Air</option></select></div><div><label class="mb-2 block text-sm font-medium text-gray-700">Trade Type <span class="text-red-500">*</span></label><select formControlName="tradeType" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"><option value="import">Import</option><option value="export">Export</option></select></div></div>
                                 <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700">Select Product <span class="text-red-500">*</span></label>
-                                        <input type="text" formControlName="marineProduct" list="marine-products-list" placeholder="Search for a product..." class="w-full rounded-md border border-gray-300 px-3 py-2"/>
-                                        <datalist id="marine-products-list">
-                                            <option *ngFor="let product of marineProducts" [value]="product.name"></option>
-                                        </datalist>
+                                        <input type="text" formControlName="marineProduct" list="marine-products-list" placeholder="Search for a product..." class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/>
+                                        <datalist id="marine-products-list"><option *ngFor="let product of marineProducts" [value]="product.name"></option></datalist>
                                     </div>
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700">Marine Cargo Type <span class="text-red-500">*</span></label>
-                                        <input type="text" formControlName="marineCargoType" list="cargo-type-list" placeholder="Search for a cargo type..." class="w-full rounded-md border border-gray-300 px-3 py-2"/>
-                                        <datalist id="cargo-type-list">
-                                            <option *ngFor="let type of marineCargoTypes" [value]="type"></option>
-                                        </datalist>
+                                        <input type="text" formControlName="marineCargoType" list="cargo-type-list" placeholder="Search for a cargo type..." class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/>
+                                        <datalist id="cargo-type-list"><option *ngFor="let type of marineCargoTypes" [value]="type"></option></datalist>
                                     </div>
                                 </div>
                                 <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
                                     <div>
-                                        <label class="mb-2 block text-sm font-medium text-gray-700">Origin <span class="text-red-500">*</span></label>
-                                        <input type="text" formControlName="origin" placeholder="Search and select origin..." class="w-full rounded-md border border-gray-300 px-3 py-2" list="origin-list"/>
-                                        <datalist id="origin-list">
-                                            <option *ngFor="let country of countryList" [value]="country"></option>
-                                        </datalist>
+                                        <label class="mb-2 block text-sm font-medium text-gray-700">Country of Origin <span class="text-red-500">*</span></label>
+                                        <input type="text" formControlName="origin" placeholder="Search and select origin..." class="w-full rounded-md border border-gray-300 bg-white px-3 py-2" list="all-countries-list"/>
                                     </div>
-                                    <div><label class="mb-2 block text-sm font-medium text-gray-700">Destination <span class="text-red-500">*</span></label><input type="text" formControlName="destination" class="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 font-medium text-gray-700"/></div>
+                                    <div>
+                                        <label class="mb-2 block text-sm font-medium text-gray-700">Destination</label>
+                                        <input type="text" formControlName="destination" class="w-full rounded-md border border-gray-300 px-3 py-2"/>
+                                    </div>
+                                    <datalist id="all-countries-list"><option *ngFor="let country of allCountriesList" [value]="country"></option></datalist>
                                 </div>
-                                <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"><div><label class="mb-2 block text-sm font-medium text-gray-700">Cover start date <span class="text-red-500">*</span></label><input type="date" formControlName="coverStartDate" [min]="getToday()" class="w-full rounded-md border border-gray-300 px-3 py-2"/></div><div><label class="mb-2 block text-sm font-medium text-gray-700">Sum Insured <span class="text-red-500">*</span></label><input type="number" formControlName="sumInsured" placeholder="2,500,000" class="w-full rounded-md border border-gray-300 px-3 py-2"/></div></div>
-                                <div class="mb-6"><label class="mb-2 block text-sm font-medium text-gray-700">Description of Goods <span class="text-red-500">*</span></label><textarea formControlName="descriptionOfGoods" rows="3" placeholder="Describe the type of goods, their value, quantity, packaging details..." class="w-full rounded-md border border-gray-300 px-3 py-2"></textarea></div>
-                                <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"><div><label class="mb-2 block text-sm font-medium text-gray-700">IDF Number <span class="text-red-500">*</span></label><input type="text" formControlName="idfNumber" placeholder="IDF6598784" class="w-full rounded-md border border-gray-300 px-3 py-2"/></div><div><label class="mb-2 block text-sm font-medium text-gray-700">UCR Number <span class="text-red-500">*</span></label><input type="text" formControlName="ucrNumber" placeholder="UCR 4567890" class="w-full rounded-md border border-gray-300 px-3 py-2"/></div></div>
+                                <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+                                    <div><label class="mb-2 block text-sm font-medium text-gray-700">UCR Number <span class="text-red-500">*</span></label><input type="text" formControlName="ucrNumber" placeholder="e.g., UCR2024001" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
+                                    <div><label class="mb-2 block text-sm font-medium text-gray-700">IDF Number <span class="text-red-500">*</span></label><input type="text" formControlName="idfNumber" placeholder="e.g., E2300012345" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
+                                </div>
+                                <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"><div><label class="mb-2 block text-sm font-medium text-gray-700">Cover start date <span class="text-red-500">*</span></label><input type="date" formControlName="coverStartDate" [min]="getToday()" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div><div><label class="mb-2 block text-sm font-medium text-gray-700">Sum Insured (KES) <span class="text-red-500">*</span></label><input type="number" formControlName="sumInsured" placeholder="2500000" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div></div>
+                                <div class="mb-6"><label class="mb-2 block text-sm font-medium text-gray-700">Description of Goods <span class="text-red-500">*</span></label><textarea formControlName="descriptionOfGoods" rows="3" placeholder="Describe the type of goods, their value, quantity, packaging details..." class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></textarea></div>
                                 <button type="submit" [disabled]="quotationForm.invalid" class="btn-primary w-full rounded-md px-4 py-3 font-medium text-white transition-colors">Get Quote</button>
                             </fieldset>
                         </form>
@@ -78,15 +86,16 @@
                         <div class="rounded-lg bg-white p-8 shadow-sm">
                             <h2 class="mb-6 text-2xl font-semibold text-gray-900">Review Your Quote & Provide Details</h2>
                             <div class="mt-8 pt-6 border-t">
-                                <h3 class="text-xl font-semibold text-gray-800 mb-4">Client Information</h3>
+                                <h3 class="text-xl font-semibold text-gray-800 mb-4">Customer Information</h3>
+                                <p class="text-sm text-gray-500 mb-4">This is the person purchasing the insurance policy.</p>
                                 <form [formGroup]="clientDetailsForm">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">ID Number <span class="text-red-500">*</span></label><input type="text" formControlName="idNumber" class="w-full rounded-md border border-gray-300 px-3 py-2"/></div>
-                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">KRA PIN <span class="text-red-500">*</span></label><input type="text" formControlName="kraPin" class="w-full rounded-md border border-gray-300 px-3 py-2"/></div>
-                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">First Name <span class="text-red-500">*</span></label><input type="text" formControlName="firstName" class="w-full rounded-md border border-gray-300 px-3 py-2"/></div>
-                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">Last Name <span class="text-red-500">*</span></label><input type="text" formControlName="lastName" class="w-full rounded-md border border-gray-300 px-3 py-2"/></div>
-                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">Email Address <span class="text-red-500">*</span></label><input type="email" formControlName="email" class="w-full rounded-md border border-gray-300 px-3 py-2"/></div>
-                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">Phone Number <span class="text-red-500">*</span></label><input type="tel" formControlName="phoneNumber" class="w-full rounded-md border border-gray-300 px-3 py-2"/></div>
+                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">ID Number <span class="text-red-500">*</span></label><input type="text" formControlName="idNumber" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
+                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">KRA PIN <span class="text-red-500">*</span></label><input type="text" formControlName="kraPin" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
+                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">First Name <span class="text-red-500">*</span></label><input type="text" formControlName="firstName" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
+                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">Last Name <span class="text-red-500">*</span></label><input type="text" formControlName="lastName" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
+                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">Email Address <span class="text-red-500">*</span></label><input type="email" formControlName="email" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
+                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">Phone Number <span class="text-red-500">*</span></label><input type="tel" formControlName="phoneNumber" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
                                     </div>
                                     <div class="mt-6 space-y-4"><label class="flex items-start"><input type="checkbox" formControlName="termsAndConditions" class="mt-1 h-4 w-4"/><span class="ml-3 text-sm">I agree to the <a href="/terms" target="_blank" class="font-medium text-blue-600 hover:underline">Terms & Conditions</a>.*</span></label><label class="flex items-start"><input type="checkbox" formControlName="dataPrivacyConsent" class="mt-1 h-4 w-4"/><span class="ml-3 text-sm">I agree to the <a href="/privacy" target="_blank" class="font-medium text-blue-600 hover:underline">Data Privacy Policy</a>.*</span></label></div>
                                 </form>
@@ -114,21 +123,27 @@
                         </div>
                         
                         <div *ngIf="currentStep === 2 && premiumCalculation.basePremium">
-                            <div class="rounded-lg bg-blue-50 p-4">
+                             <div class="rounded-lg bg-blue-50 p-4">
                                 <div class="space-y-3 text-sm">
+                                    <div *ngIf="importerDetails.name" class="space-y-3 pb-3 mb-3 border-b">
+                                        <h4 class="font-bold text-gray-800">Importer Details</h4>
+                                        <div class="flex items-center justify-between"><span>Importer Name</span><span class="font-medium text-right">{{ importerDetails.name }}</span></div>
+                                        <div class="flex items-center justify-between"><span>Importer KRA PIN</span><span class="font-medium">{{ importerDetails.kraPin }}</span></div>
+                                    </div>
+                                    
+                                    <h4 class="font-bold text-gray-800">Premium Calculation</h4>
                                     <div class="flex items-center justify-between font-semibold"><span>Sum Insured</span><span>{{ premiumCalculation.currency }} {{ quotationForm.get('sumInsured')?.value | number:'1.2-2' }}</span></div>
                                     <div class="flex items-center justify-between"><span>Base Premium</span><span>{{ premiumCalculation.currency }} {{ premiumCalculation.basePremium | number:'1.2-2' }}</span></div>
                                     
-                                    <div class="border-t pt-2 mt-2"></div>
-                                    
-                                    <div *ngIf="clientDetailsForm.get('firstName')?.value && clientDetailsForm.get('kraPin')?.value" class="space-y-3">
-                                        <div class="flex items-center justify-between"><span>Importer</span><span class="font-medium text-right">{{ clientDetailsForm.get('firstName')?.value }} {{ clientDetailsForm.get('lastName')?.value }}</span></div>
-                                        <div class="flex items-center justify-between"><span>KRA PIN</span><span class="font-medium">{{ clientDetailsForm.get('kraPin')?.value }}</span></div>
-                                        <div class="border-t pt-2 mt-2"></div>
+                                    <div *ngIf="currentUser.type === 'intermediary' && premiumCalculation.commission > 0" class="flex items-center justify-between text-green-600">
+                                        <span class="font-semibold">Commission (10%)</span>
+                                        <span class="font-semibold">{{ premiumCalculation.currency }} {{ premiumCalculation.commission | number:'1.2-2' }}</span>
                                     </div>
 
-                                    <div class="flex items-center justify-between"><span>PHCF (0.45%)</span><span>{{ premiumCalculation.currency }} {{ premiumCalculation.phcf | number:'1.2-2' }}</span></div>
-                                    <div class="flex items-center justify-between"><span>Training Levy (0.2%)</span><span>{{ premiumCalculation.currency }} {{ premiumCalculation.trainingLevy | number:'1.2-2' }}</span></div>
+                                    <div class="border-t pt-2 mt-2"></div>
+                                    
+                                    <div class="flex items-center justify-between"><span>PHCF (0.525%)</span><span>{{ premiumCalculation.currency }} {{ premiumCalculation.phcf | number:'1.2-2' }}</span></div>
+                                    <div class="flex items-center justify-between"><span>Training Levy (0.25%)</span><span>{{ premiumCalculation.currency }} {{ premiumCalculation.trainingLevy | number:'1.2-2' }}</span></div>
                                     <div class="flex items-center justify-between"><span>Stamp Duty</span><span>{{ premiumCalculation.currency }} {{ premiumCalculation.stampDuty | number:'1.2-2' }}</span></div>
                                     <div class="border-t pt-2 mt-2"><div class="flex items-center justify-between"><span class="text-lg font-semibold">Total Payable</span><span class="text-xl font-bold text-blue-600">{{ premiumCalculation.currency }} {{ premiumCalculation.totalPayable | number:'1.2-2' }}</span></div></div>
                                 </div>
@@ -140,74 +155,37 @@
         </div>
     </div>
 
-    <!-- MODAL 1: Export Request Modal -->
-    <div *ngIf="showExportModal" (click)="closeExportModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
-        <div (click)="$event.stopPropagation()" class="bg-white rounded-lg shadow-xl p-1 w-full max-w-3xl">
-            <div class="p-7 max-h-[90vh] overflow-y-auto">
-                <h2 class="text-2xl font-bold mb-4">Export Shipment Details</h2>
-                <p class="mb-6 text-gray-600">Please provide the following details for your export request.</p>
-                <form [formGroup]="exportRequestForm" (ngSubmit)="onExportRequestSubmit()">
+    <!-- MODAL (Shared structure for Export/High-Risk) -->
+    <div *ngIf="showExportModal || showHighRiskModal" (click)="closeAllModals()" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
+        <div (click)="$event.stopPropagation()" class="bg-white rounded-lg shadow-xl p-1 w-full max-w-3xl max-h-[95vh] overflow-y-auto">
+            <div class="p-7">
+                <h2 class="text-2xl font-bold mb-4">{{ showExportModal ? 'Export Shipment Details' : 'High-Risk Shipment Details' }}</h2>
+                <p class="mb-6 text-gray-600">{{ showExportModal ? 'Please provide the following details for your export request.' : 'Shipments from this origin require manual underwriting. Please provide your details to proceed.' }}</p>
+                <form [formGroup]="showExportModal ? exportRequestForm : highRiskRequestForm" (ngSubmit)="showExportModal ? onExportRequestSubmit() : onHighRiskRequestSubmit()">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label class="block text-sm font-medium mb-1">KRA PIN <span class="text-red-500">*</span></label><input type="text" formControlName="kraPin" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">First Name <span class="text-red-500">*</span></label><input type="text" formControlName="firstName" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">Last Name <span class="text-red-500">*</span></label><input type="text" formControlName="lastName" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">Email Address <span class="text-red-500">*</span></label><input type="email" formControlName="email" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
-                        <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Phone Number <span class="text-red-500">*</span></label><input type="tel" formControlName="phoneNumber" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
+                        <div><label class="block text-sm font-medium mb-1">KRA PIN <span class="text-red-500">*</span></label><input type="text" formControlName="kraPin" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
+                        <div><label class="block text-sm font-medium mb-1">First Name <span class="text-red-500">*</span></label><input type="text" formControlName="firstName" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
+                        <div><label class="block text-sm font-medium mb-1">Last Name <span class="text-red-500">*</span></label><input type="text" formControlName="lastName" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
+                        <div><label class="block text-sm font-medium mb-1">Email Address <span class="text-red-500">*</span></label><input type="email" formControlName="email" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
+                        <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Phone Number <span class="text-red-500">*</span></label><input type="tel" formControlName="phoneNumber" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
                         
-                        <div><label class="block text-sm font-medium mb-1">Select Product <span class="text-red-500">*</span></label><input type="text" formControlName="marineProduct" list="marine-products-list-modal" placeholder="Search for a product..." class="w-full rounded-md border px-3 py-2 input-accent-bg"/><datalist id="marine-products-list-modal"><option *ngFor="let product of marineProducts" [value]="product.name"></option></datalist></div>
-                        <div><label class="block text-sm font-medium mb-1">Marine Cargo Type <span class="text-red-500">*</span></label><input type="text" formControlName="marineCargoType" list="cargo-type-list-modal" placeholder="Search for a cargo type..." class="w-full rounded-md border px-3 py-2 input-accent-bg"/><datalist id="cargo-type-list-modal"><option *ngFor="let type of marineCargoTypes" [value]="type"></option></datalist></div>
+                        <div><label class="block text-sm font-medium mb-1">Select Product <span class="text-red-500">*</span></label><input type="text" formControlName="marineProduct" list="marine-products-list-modal" placeholder="Search for a product..." class="w-full rounded-md border bg-white px-3 py-2"/><datalist id="marine-products-list-modal"><option *ngFor="let product of marineProducts" [value]="product.name"></option></datalist></div>
+                        <div><label class="block text-sm font-medium mb-1">Marine Cargo Type <span class="text-red-500">*</span></label><input type="text" formControlName="marineCargoType" list="cargo-type-list-modal" placeholder="Search for a cargo type..." class="w-full rounded-md border bg-white px-3 py-2"/><datalist id="cargo-type-list-modal"><option *ngFor="let type of marineCargoTypes" [value]="type"></option></datalist></div>
 
-                        <div><label class="block text-sm font-medium mb-1">IDF Number <span class="text-red-500">*</span></label><input type="text" formControlName="idfNumber" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">UCR Number <span class="text-red-500">*</span></label><input type="text" formControlName="ucrNumber" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">Country of Origin</label><input type="text" formControlName="originCountry" class="w-full rounded-md border-gray-200 bg-gray-50 px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">Destination Country <span class="text-red-500">*</span></label><input type="text" formControlName="destinationCountry" class="input-accent-bg w-full rounded-md px-3 py-2" list="all-countries" placeholder="Search and select a country..."><datalist id="all-countries"><option *ngFor="let country of allCountries" [value]="country"></option></datalist></div>
-                        <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Shipment Date <span class="text-red-500">*</span></label><input type="date" formControlName="shipmentDate" [min]="getToday()" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
-                        <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Goods Description (Max 100 words) <span class="text-red-500">*</span></label><textarea formControlName="goodsDescription" rows="3" class="w-full rounded-md border border-gray-300 px-3 py-2"></textarea></div>
+                        <div><label class="block text-sm font-medium mb-1">IDF Number <span class="text-red-500">*</span></label><input type="text" formControlName="idfNumber" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
+                        <div><label class="block text-sm font-medium mb-1">UCR Number <span class="text-red-500">*</span></label><input type="text" formControlName="ucrNumber" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
+                        
+                        <div><label class="block text-sm font-medium mb-1">Country of Origin <span class="text-red-500">*</span></label><input type="text" formControlName="originCountry" class="w-full rounded-md border bg-white px-3 py-2" list="all-countries-modal-list"></div>
+                        <div><label class="block text-sm font-medium mb-1">Destination Country <span class="text-red-500">*</span></label><input type="text" formControlName="destinationCountry" class="w-full rounded-md bg-white px-3 py-2" list="all-countries-modal-list" placeholder="Search and select a country..."></div>
+                        <datalist id="all-countries-modal-list"><option *ngFor="let country of allCountriesList" [value]="country"></option></datalist>
+                        
+                        <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Shipment Date <span class="text-red-500">*</span></label><input type="date" formControlName="shipmentDate" [min]="getToday()" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
+                        <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Goods Description (Max 100 words) <span class="text-red-500">*</span></label><textarea formControlName="goodsDescription" rows="3" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></textarea></div>
                     </div>
                     <div class="mt-6 space-y-4"><label class="flex items-start"><input type="checkbox" formControlName="termsAndConditions" class="mt-1 h-4 w-4"/><span class="ml-3 text-sm">I agree to the <a href="/terms" target="_blank" class="font-medium text-blue-600 hover:underline">Terms and Conditions</a>.*</span></label><label class="flex items-start"><input type="checkbox" formControlName="dataPrivacyConsent" class="mt-1 h-4 w-4"/><span class="ml-3 text-sm">I agree to the <a href="/privacy" target="_blank" class="font-medium text-blue-600 hover:underline">Data Privacy Policy</a>.*</span></label></div>
                     <div class="mt-8 flex justify-end gap-4 border-t pt-6">
-                        <button type="button" (click)="closeExportModal()" class="rounded-md border border-gray-300 px-4 py-2 hover:bg-gray-50">Cancel</button>
-                        <button type="submit" [disabled]="exportRequestForm.invalid" class="btn-primary rounded-md text-white px-4 py-2 font-medium transition-colors">Submit</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 2: High-Risk Country Modal -->
-    <div *ngIf="showHighRiskModal" (click)="closeHighRiskModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
-        <div (click)="$event.stopPropagation()" class="bg-white rounded-lg shadow-xl p-1 w-full max-w-3xl">
-            <div class="p-7 max-h-[90vh] overflow-y-auto">
-                <h2 class="text-2xl font-bold mb-4">High-Risk Shipment Details</h2>
-                <p class="mb-6 text-gray-600">Shipments from this origin require manual underwriting. Please provide your details to proceed.</p>
-                <form [formGroup]="highRiskRequestForm" (ngSubmit)="onHighRiskRequestSubmit()">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                         <div><label class="block text-sm font-medium mb-1">KRA PIN <span class="text-red-500">*</span></label><input type="text" formControlName="kraPin" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">First Name <span class="text-red-500">*</span></label><input type="text" formControlName="firstName" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">Last Name <span class="text-red-500">*</span></label><input type="text" formControlName="lastName" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">Email Address <span class="text-red-500">*</span></label><input type="email" formControlName="email" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
-                        <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Phone Number <span class="text-red-500">*</span></label><input type="tel" formControlName="phoneNumber" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
-                        
-                        <div><label class="block text-sm font-medium mb-1">Select Product <span class="text-red-500">*</span></label><input type="text" formControlName="marineProduct" list="marine-products-list-modal" placeholder="Search for a product..." class="w-full rounded-md border px-3 py-2 input-accent-bg"/></div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Marine Cargo Type <span class="text-red-500">*</span></label>
-                            <input type="text" formControlName="marineCargoType" list="cargo-type-list-modal" placeholder="Search for a cargo type..." class="w-full rounded-md border px-3 py-2 input-accent-bg"/>
-                            <datalist id="cargo-type-list-modal">
-                                <option *ngFor="let type of marineCargoTypes" [value]="type"></option>
-                            </datalist>
-                        </div>
-
-                        <div><label class="block text-sm font-medium mb-1">IDF Number <span class="text-red-500">*</span></label><input type="text" formControlName="idfNumber" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">UCR Number <span class="text-red-500">*</span></label><input type="text" formControlName="ucrNumber" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">Country of Origin</label><input type="text" formControlName="originCountry" class="w-full rounded-md border-gray-200 bg-gray-50 px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">Destination Country</label><input type="text" formControlName="destinationCountry" class="w-full rounded-md border-gray-200 bg-gray-50 px-3 py-2"></div>
-                        <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Shipment Date <span class="text-red-500">*</span></label><input type="date" formControlName="shipmentDate" [min]="getToday()" class="w-full rounded-md border border-gray-300 px-3 py-2"></div>
-                        <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Goods Description (Max 100 words) <span class="text-red-500">*</span></label><textarea formControlName="goodsDescription" rows="3" class="w-full rounded-md border border-gray-300 px-3 py-2"></textarea></div>
-                    </div>
-                    <div class="mt-6 space-y-4"><label class="flex items-start"><input type="checkbox" formControlName="termsAndConditions" class="mt-1 h-4 w-4"/><span class="ml-3 text-sm">I agree to the <a href="/terms" target="_blank" class="font-medium text-blue-600 hover:underline">Terms and Conditions</a>.*</span></label><label class="flex items-start"><input type="checkbox" formControlName="dataPrivacyConsent" class="mt-1 h-4 w-4"/><span class="ml-3 text-sm">I agree to the <a href="/privacy" target="_blank" class="font-medium text-blue-600 hover:underline">Data Privacy Policy</a>.*</span></label></div>
-                    <div class="mt-8 flex justify-end gap-4 border-t pt-6">
-                        <button type="button" (click)="closeHighRiskModal()" class="rounded-md border border-gray-300 px-4 py-2 hover:bg-gray-50">Cancel</button>
-                        <button type="submit" [disabled]="highRiskRequestForm.invalid" class="btn-primary rounded-md text-white px-4 py-2 font-medium transition-colors">Submit Request</button>
+                        <button type="button" (click)="closeAllModals()" class="rounded-md border border-gray-300 px-4 py-2 hover:bg-gray-50">Cancel</button>
+                        <button type="submit" [disabled]="(showExportModal ? exportRequestForm.invalid : highRiskRequestForm.invalid)" class="btn-primary rounded-md text-white px-4 py-2 font-medium transition-colors">Submit Request</button>
                     </div>
                 </form>
             </div>
@@ -216,28 +194,48 @@
     
     <!-- MODAL 3: Payment Modal -->
     <div *ngIf="showPaymentModal" (click)="closePaymentModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
-        <div (click)="$event.stopPropagation()" class="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg">
+        <div (click)="$event.stopPropagation()" class="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg max-h-[95vh] overflow-y-auto">
             <h2 class="text-2xl font-bold mb-2">Complete Your Payment</h2>
             <p class="mb-6 text-gray-600">Total Due: <span class="font-bold text-lg">{{ premiumCalculation.currency }} {{ premiumCalculation.totalPayable | number:'1.2-2' }}</span></p>
-            <form [formGroup]="paymentForm" (ngSubmit)="onProcessPayment()">
-                <div class="mb-6"><label class="mb-3 block text-sm font-medium text-gray-700">Select Payment Method</label><div class="flex gap-4"><label class="payment-option"><input type="radio" formControlName="paymentMethod" value="mpesa" class="h-4 w-4"/><span class="ml-2">M-Pesa</span></label><label class="payment-option"><input type="radio" formControlName="paymentMethod" value="card" class="h-4 w-4"/><span class="ml-2">Card</span></label></div></div>
-                <div *ngIf="paymentForm.get('paymentMethod')?.value === 'mpesa'" class="space-y-4">
-                    <div><label class="mb-2 block text-sm font-medium">M-Pesa Phone Number <span class="text-red-500">*</span></label><input type="text" formControlName="phoneNumber" placeholder="2547XXXXXXXX" class="w-full rounded-md border border-gray-300 p-2"/></div>
-                    <p class="text-xs text-gray-500">A payment prompt will be sent to your phone.</p>
-                </div>
-                <div *ngIf="paymentForm.get('paymentMethod')?.value === 'card'" class="space-y-4">
-                    <div><label class="mb-2 block text-sm font-medium">Card Number <span class="text-red-500">*</span></label><input type="text" formControlName="cardNumber" class="w-full rounded-md border border-gray-300 p-2"/></div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><label class="mb-2 block text-sm font-medium">Expiry Date <span class="text-red-500">*</span></label><input type="text" formControlName="expiryDate" placeholder="MM/YY" class="w-full rounded-md border border-gray-300 p-2"/></div>
-                        <div><label class="mb-2 block text-sm font-medium">CVV <span class="text-red-500">*</span></label><input type="text" formControlName="cvv" placeholder="123" class="w-full rounded-md border border-gray-300 p-2"/></div>
+            
+            <form [formGroup]="paymentForm" (ngSubmit)="onProcessSTKPush()">
+                <div class="mb-6"><label class="mb-3 block text-sm font-medium text-gray-700">Select Payment Method</label><div class="flex gap-4"><label class="payment-option"><input type="radio" formControlName="paymentMethod" value="mpesa" class="h-4 w-4"/><span class="ml-2">M-Pesa</span></label><label class="payment-option"><input type="radio" formControlName="paymentMethod" value="card" class="h-4 w-4"/><span class="ml-2">Credit/Debit Card</span></label></div></div>
+                
+                <!-- M-Pesa Combined View -->
+                <div *ngIf="paymentForm.get('paymentMethod')?.value === 'mpesa'" class="space-y-6 animate-fadeIn">
+                    <!-- Option 1: STK Push -->
+                    <div class="p-4 border rounded-lg">
+                        <label class="block text-sm font-medium mb-2">Option 1: Pay with M-Pesa Express (STK)</label>
+                        <div><label class="mb-2 block text-xs font-medium">M-Pesa Phone Number <span class="text-red-500">*</span></label><input type="text" formControlName="mpesaPhoneNumber" placeholder="2547XXXXXXXX" class="w-full rounded-md border border-gray-300 p-2"/></div>
+                        <button type="submit" [disabled]="paymentForm.get('mpesaPhoneNumber')?.invalid || isProcessingPayment" class="btn-primary mt-3 w-full rounded-md py-2 font-medium text-white transition-colors">
+                           <span *ngIf="!isProcessingPayment">Send Payment Request</span>
+                           <span *ngIf="isProcessingPayment">Sending STK Push...</span>
+                        </button>
+                    </div>
+
+                     <!-- Option 2: Manual Paybill -->
+                    <div class="p-4 border rounded-lg text-center">
+                        <label class="block text-sm font-medium mb-2">Option 2: Pay Manually via Paybill</label>
+                         <div class="space-y-3">
+                            <div><label class="block text-xs font-medium text-gray-500">Business Number</label><p class="text-xl font-bold text-gray-800 tracking-wider">522522</p></div>
+                            <div><label class="block text-xs font-medium text-gray-500">Account Number</label><p class="text-xl font-bold text-gray-800 tracking-wider">{{ paymentTransactionId }}</p></div>
+                        </div>
+                        <button type="button" (click)="verifyMpesaPayment()" class="mt-4 w-full rounded-md py-2 font-medium border border-gray-300 hover:bg-gray-50 transition-colors">I have paid, Verify Now</button>
                     </div>
                 </div>
-                <div class="mt-8 flex justify-end gap-4">
+
+                <!-- Card Payment View -->
+                <div *ngIf="paymentForm.get('paymentMethod')?.value === 'card'" class="text-center p-4 border rounded-md animate-fadeIn">
+                    <p class="text-gray-700">You will be redirected to our secure payment partner to complete your payment.</p>
+                     <div class="mt-6 flex justify-end gap-4">
+                        <button type="button" (click)="closePaymentModal()" class="rounded-md border border-gray-300 px-4 py-2">Cancel</button>
+                        <button (click)="onProcessCardPayment()" class="btn-primary rounded-md text-white px-6 py-2 font-medium transition-colors">Proceed to Payment</button>
+                    </div>
+                </div>
+
+                <!-- Cancel button for M-Pesa -->
+                <div *ngIf="paymentForm.get('paymentMethod')?.value === 'mpesa'" class="mt-8 flex justify-end">
                     <button type="button" (click)="closePaymentModal()" class="rounded-md border border-gray-300 px-4 py-2">Cancel</button>
-                    <button type="submit" [disabled]="paymentForm.invalid || isProcessingPayment" class="btn-primary rounded-md text-white px-6 py-2 font-medium transition-colors">
-                        <span *ngIf="!isProcessingPayment">Pay Now</span>
-                        <span *ngIf="isProcessingPayment">Processing...</span>
-                    </button>
                 </div>
             </form>
         </div>
@@ -245,7 +243,7 @@
     
     <!-- Universal Toast Message -->
     <div *ngIf="toastMessage" class="fixed bottom-5 right-5 text-white py-3 px-6 rounded-lg shadow-lg" 
-         [ngClass]="{'bg-green-500': toastType === 'success', 'toast-info': toastType === 'info'}">
+         [ngClass]="{'bg-green-500': toastType === 'success', 'toast-info': toastType === 'info', 'bg-red-500': toastType === 'error'}">
         {{ toastMessage }}
     </div>
 </div>
