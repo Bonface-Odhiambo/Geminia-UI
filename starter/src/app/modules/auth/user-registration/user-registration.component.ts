@@ -109,7 +109,7 @@ export class MarineCargoQuotationComponent implements OnInit {
              marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required],
              marineCargoType: ['', Validators.required],
              origin: ['', Validators.required],
-             destination: [{ value: '', disabled: true }], // Initialized as disabled
+             destination: [''], // No longer disabled, will be set programmatically
              coverStartDate: ['', [Validators.required, this.noPastDatesValidator]],
              sumInsured: ['', [Validators.required, Validators.min(10000)]],
              descriptionOfGoods: ['', Validators.required],
@@ -134,7 +134,7 @@ export class MarineCargoQuotationComponent implements OnInit {
             email: ['', [Validators.required, Validators.email]], phoneNumber: ['', [Validators.required, Validators.pattern('^07[0-9]{8}$')]],
             marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required], marineCargoType: ['', Validators.required],
             idfNumber: ['', Validators.required], ucrNumber: ['', Validators.required],
-            originCountry: ['', Validators.required], destinationCountry: ['', Validators.required], // Destination is editable in modals
+            originCountry: ['', Validators.required], destinationCountry: ['', Validators.required],
             shipmentDate: ['', [Validators.required, this.noPastDatesValidator]],
             goodsDescription: ['', [Validators.required, maxWords(100)]],
             termsAndConditions: [false, Validators.requiredTrue], dataPrivacyConsent: [false, Validators.requiredTrue],
@@ -144,7 +144,7 @@ export class MarineCargoQuotationComponent implements OnInit {
     private createExportRequestForm(): FormGroup {
         const form = this.createModalForm();
         form.get('originCountry')?.patchValue('Kenya'); 
-        form.get('originCountry')?.disable();
+        form.get('originCountry')?.disable(); // Can still be disabled here as it's a fixed value in this context
         return form;
     }
 
@@ -164,7 +164,6 @@ export class MarineCargoQuotationComponent implements OnInit {
     }
 
     private setupFormSubscriptions(): void {
-        // Sets the destination based on shipment mode for the main import form
         this.quotationForm.get('modeOfShipment')?.valueChanges.subscribe(mode => {
             const destControl = this.quotationForm.get('destination');
             if (mode === 'sea') {
@@ -176,7 +175,7 @@ export class MarineCargoQuotationComponent implements OnInit {
             }
         });
 
-        this.quotationForm.get('tradeType')?.valueChanges.subscribe(type => { if (type === 'export') this.showExportModal = true; });
+        this.quotationForm.get('tradeType')?.valueChanges.subscribe(type => { if (type === 'export') { this.showExportModal = true; }});
         this.quotationForm.get('origin')?.valueChanges.subscribe(country => { if (this.blacklistedCountries.includes(country)) { this.highRiskRequestForm.patchValue({ originCountry: country }); this.showHighRiskModal = true; } });
         this.quotationForm.get('ucrNumber')?.valueChanges.subscribe(ucr => {
             if (this.quotationForm.get('ucrNumber')?.valid) {
@@ -205,7 +204,6 @@ export class MarineCargoQuotationComponent implements OnInit {
         return { basePremium: 0, phcf: 0, trainingLevy: 0, stampDuty: 0, commission: 0, totalPayable: 0, currency: 'KES' };
     }
 
-    // --- Modal Handlers & Submissions ---
     onExportRequestSubmit(): void { if (this.exportRequestForm.valid) { this.closeAllModals(); this.showToast("Export request submitted. Our underwriter will contact you.", 'info'); } }
     onHighRiskRequestSubmit(): void { if (this.highRiskRequestForm.valid) { this.closeAllModals(); this.showToast("High-risk shipment request submitted for review.", 'info'); } }
     
@@ -222,8 +220,7 @@ export class MarineCargoQuotationComponent implements OnInit {
     
     private showToast(message: string, type: 'success' | 'info' | 'error' = 'success'): void { this.toastMessage = message; this.toastType = type; setTimeout(() => this.toastMessage = '', 5000); }
 
-    // --- Main Form Actions ---
-    onSubmit(): void { if (this.quotationForm.valid) { if (!this.blacklistedCountries.includes(this.quotationForm.get('origin')?.value)) { this.calculatePremium(); this.goToStep(2); } } else { this.quotationForm.markAllAsTouched(); } }
+    onSubmit(): void { if (this.quotationForm.valid) { if (!this.showHighRiskModal && !this.showExportModal) { this.calculatePremium(); this.goToStep(2); } } else { this.quotationForm.markAllAsTouched(); } }
     downloadQuote(): void { if (this.clientDetailsForm.valid) { this.showToast('Quote download initiated successfully.'); } }
 
     handlePayment(): void {
@@ -258,7 +255,6 @@ export class MarineCargoQuotationComponent implements OnInit {
     
     downloadCertificate(): void { this.showToast("Your policy certificate has been downloaded.", 'success'); console.log("Certificate download process initiated."); setTimeout(() => this.closeForm(), 2000); }
 
-    // --- Utility & Navigation ---
     closeForm(): void { this.router.navigate(['/']); }
     getToday(): string { return new Date().toISOString().split('T')[0]; }
     noPastDatesValidator(control: AbstractControl): { [key: string]: boolean } | null { if (!control.value) return null; return control.value < new Date().toISOString().split('T')[0] ? { pastDate: true } : null; }

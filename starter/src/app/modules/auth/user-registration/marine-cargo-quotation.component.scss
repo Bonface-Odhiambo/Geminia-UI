@@ -45,20 +45,26 @@ select {
   border-color: #f87171 !important; /* red-400 */
 }
 
-/* Base focus and disabled states for form elements */
+/* Base focus and disabled/readonly states for form elements */
 input, select, textarea {
   &:focus {
     @apply outline-none ring-2 ring-blue-500 ring-offset-2 border-transparent;
   }
   
-  // Custom style for disabled inputs to ensure text is not greyed out
+  // Ensures disabled fields in modals look consistent and are not greyed out
   &:disabled {
-    background-color: #f3f4f6; // Tailwind's gray-100
-    color: #111827; // Tailwind's gray-900 (strong black text)
-    opacity: 1; // Full opacity
+    background-color: #ffffff; // White background
+    color: #111827; // Strong black text
+    opacity: 1; 
     cursor: not-allowed;
-    border-color: #d1d5db; // Tailwind's gray-300, same as normal
   }
+}
+
+// Styles the readonly 'Destination' field to look like a normal input
+input[readonly] {
+  background-color: #ffffff; // White background
+  color: #111827; // Strong black text
+  cursor: not-allowed;
 }
 
 /* "Freezes" the main form when a modal is active */
