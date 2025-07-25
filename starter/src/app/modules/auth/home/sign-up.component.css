@@ -1,0 +1,35 @@
+/* Custom styles for the sign-up component */
+
+/* Make input placeholders faint */
+::placeholder {
+  color: #a0aec0; /* Tailwind's gray-400 */
+  opacity: 1; /* Override Firefox's lower default opacity */
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #a0aec0;
+  opacity: 1;
+}
+
+/* Fallbacks for older browsers */
+:-ms-input-placeholder {
+  color: #a0aec0 !important;
+}
+
+::-ms-input-placeholder {
+  color: #a0aec0;
+}
+
+/* Custom styling for the bottom toast message */
+.custom-toast {
+  background-color: #222d5b !important; /* Pantone blue */
+  color: white !important;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.custom-toast .fuse-alert-icon,
+.custom-toast .fuse-alert-message {
+  color: white !important;
+}

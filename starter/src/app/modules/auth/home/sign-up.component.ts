@@ -5,6 +5,7 @@ import {
   ChangeDetectorRef,
   ViewEncapsulation,
   inject,
+  OnDestroy,
 } from '@angular/core';
 import {
   FormBuilder,
@@ -16,6 +17,8 @@ import { Router, RouterModule } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import {
   animate,
   style,
@@ -24,6 +27,7 @@ import {
 } from '@angular/animations';
 import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
 import { QuoteModalComponent } from '../shared';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'auth-sign-up',
@@ -36,6 +40,8 @@ import { QuoteModalComponent } from '../shared';
     MatIconModule,
     MatProgressSpinnerModule,
     MatDialogModule,
+    MatRadioModule,
+    MatCheckboxModule,
   ],
   templateUrl: './sign-up.component.html',
   styleUrls: ['./sign-up.component.css'],
@@ -53,23 +59,39 @@ import { QuoteModalComponent } from '../shared';
     ]),
   ],
 })
-export class AuthSignUpComponent implements OnInit {
+export class AuthSignUpComponent implements OnInit, OnDestroy {
   private _formBuilder = inject(FormBuilder);
   private _router = inject(Router);
   private _dialog = inject(MatDialog);
   private _cd = inject(ChangeDetectorRef);
+  private _unsubscribeAll = new Subject<void>();
 
-  private readonly VALID_CREDENTIALS = {
-    username: 'principalresearcher138@gmail.com',
-    password: '1234567',
-  };
+  private readonly VALID_USERS = [
+    {
+      username: 'individual@geminia.com',
+      password: 'password123',
+      type: 'individual',
+    },
+    {
+      username: 'intermediary@geminia.com',
+      password: 'password456',
+      type: 'intermediary',
+    },
+  ];
 
+  formType: 'login' | 'register' = 'login';
   signInForm!: FormGroup;
+  registerForm!: FormGroup;
   showPassword = false;
   showAlert = false;
-  alert: { type: FuseAlertType; message: string } = {
+  alert: {
+    type: FuseAlertType;
+    message: string;
+    position: 'inline' | 'bottom';
+  } = {
     type: 'error',
     message: '',
+    position: 'inline',
   };
 
   ngOnInit(): void {
@@ -77,6 +99,33 @@ export class AuthSignUpComponent implements OnInit {
       username: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
+
+    this.registerForm = this._formBuilder.group({
+      accountType: ['individual', Validators.required],
+      fullName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      kraPin: ['', Validators.required],
+      phoneNumber: ['', Validators.required],
+      iraNumber: [''],
+      pinNumber: [''],
+      password: ['', Validators.required],
+      agreementAccepted: [false, Validators.requiredTrue],
+    });
+
+    this.registerForm
+      .get('accountType')
+      .valueChanges.pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((type) => {
+        this.updateValidators(type);
+      });
+
+    // Set initial validators
+    this.updateValidators('individual');
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
   }
 
   togglePasswordVisibility(): void {
@@ -85,7 +134,11 @@ export class AuthSignUpComponent implements OnInit {
 
   signIn(): void {
     if (this.signInForm.invalid) {
-      this.triggerAlert('error', 'Please fill in all required fields.');
+      this.triggerAlert(
+        'error',
+        'Please fill in all required fields.',
+        'inline'
+      );
       return;
     }
 
@@ -97,23 +150,106 @@ export class AuthSignUpComponent implements OnInit {
     }, 1500);
   }
 
-  /**
-   * Opens the quote modal for Marine Insurance.
-   */
+  register(): void {
+    if (this.registerForm.invalid) {
+      this.triggerAlert(
+        'error',
+        'Please fill in all required fields and accept the policies.',
+        'inline'
+      );
+      return;
+    }
+
+    this.registerForm.disable();
+    this.showAlert = false;
+
+    setTimeout(() => {
+      this.triggerAlert(
+        'success',
+        'Account created successfully! You can now sign in.',
+        'bottom'
+      );
+      this.formType = 'login';
+      this.registerForm.enable();
+      this.registerForm.reset({ accountType: 'individual' });
+      this.updateValidators('individual');
+    }, 1500);
+  }
+
+  private handleCredentialAuthentication(): void {
+    const { username, password } = this.signInForm.getRawValue();
+    const user = this.VALID_USERS.find(
+      (u) =>
+        u.username.toLowerCase() === username.toLowerCase().trim() &&
+        u.password === password
+    );
+
+    if (user) {
+      this.triggerAlert(
+        'success',
+        'Sign in successful! Redirecting...',
+        'bottom'
+      );
+      setTimeout(() => this._router.navigate(['/sign-up/dashboard']), 2000);
+    } else {
+      this.triggerAlert(
+        'error',
+        'Invalid credentials. Please try again.',
+        'inline'
+      );
+      this.signInForm.enable();
+    }
+  }
+
+  private triggerAlert(
+    type: FuseAlertType,
+    message: string,
+    position: 'inline' | 'bottom'
+  ): void {
+    this.alert = { type, message, position };
+    this.showAlert = true;
+    this._cd.markForCheck();
+
+    setTimeout(() => {
+      this.showAlert = false;
+      this._cd.markForCheck();
+    }, 5000);
+  }
+
+  private updateValidators(accountType: string): void {
+    const individualControls = ['fullName', 'email', 'kraPin', 'phoneNumber'];
+    const intermediaryControls = ['iraNumber', 'pinNumber'];
+
+    if (accountType === 'individual') {
+      individualControls.forEach((controlName) =>
+        this.registerForm.get(controlName).setValidators([Validators.required])
+      );
+      intermediaryControls.forEach((controlName) =>
+        this.registerForm.get(controlName).clearValidators()
+      );
+    } else {
+      intermediaryControls.forEach((controlName) =>
+        this.registerForm.get(controlName).setValidators([Validators.required])
+      );
+      individualControls.forEach((controlName) =>
+        this.registerForm.get(controlName).clearValidators()
+      );
+    }
+
+    // Update validity for all controls
+    Object.keys(this.registerForm.controls).forEach((key) => {
+      this.registerForm.get(key).updateValueAndValidity({ emitEvent: false });
+    });
+  }
+
   navigateToMarineQuote(): void {
     this.openQuoteModal('marine');
   }
 
-  /**
-   * Opens the quote modal for Travel Insurance.
-   */
   navigateToTravelQuote(): void {
     this.openQuoteModal('travel');
   }
 
-  /**
-   * Opens the quote modal dialog with the specified insurance type.
-   */
   private openQuoteModal(insuranceType: 'marine' | 'travel'): void {
     const dialogRef = this._dialog.open(QuoteModalComponent, {
       width: '500px',
@@ -125,33 +261,10 @@ export class AuthSignUpComponent implements OnInit {
       if (result?.success) {
         this.triggerAlert(
           'success',
-          `Your ${insuranceType} insurance quote request was submitted. We will contact you shortly.`
+          `Your ${insuranceType} insurance quote request was submitted. We will contact you shortly.`,
+          'bottom'
         );
       }
     });
-  }
-
-  private handleCredentialAuthentication(): void {
-    const { username, password } = this.signInForm.getRawValue();
-
-    if (
-      username.toLowerCase().trim() === this.VALID_CREDENTIALS.username &&
-      password === this.VALID_CREDENTIALS.password
-    ) {
-      this.triggerAlert('success', 'Sign in successful! Redirecting...');
-      setTimeout(() => this._router.navigate(['/dashboard']), 1500);
-    } else {
-      this.triggerAlert('error', 'Invalid credentials. Please try again.');
-      this.signInForm.enable();
-    }
-  }
-
-  private triggerAlert(type: FuseAlertType, message: string): void {
-    this.alert = { type, message };
-    this.showAlert = true;
-    this._cd.markForCheck();
-    setTimeout(() => {
-      this.showAlert = false;
-    }, 5000);
   }
 }
