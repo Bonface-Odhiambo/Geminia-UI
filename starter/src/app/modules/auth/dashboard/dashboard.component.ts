@@ -793,7 +793,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     
     logout(): void { 
         if (confirm('Are you sure you want to logout?')) { 
-            this.router.navigate(['/sign-in']); 
+            this.router.navigate(['/']); 
         } 
     }
 }
