@@ -1,118 +1,140 @@
-// Brand color variables
-$primary-color: #1DAEEB;
-$primary-color-dark: #1B9FD1;
-$sidebar-icon-blue: #4FC3F7;
+// Define the only allowed colors as variables for easy use
+$pantone-light-blue: #04b2e1;
+$pantone-dark-blue: #21275c;
+$white: #ffffff;
 
-// Role indicator colors
-$role-individual: #10b981;
-$role-corporate: #3b82f6;
-$role-intermediary: #8b5cf6;
-
-// Text and background utility colors
-$text-white-70: rgba(255, 255, 255, 0.7);
-$text-white-80: rgba(255, 255, 255, 0.8);
-$bg-white-10: rgba(255, 255, 255, 0.1);
-$bg-white-20: rgba(255, 255, 255, 0.2);
-$border-white-20: rgba(255, 255, 255, 0.2);
-
-:host {
-  --geminia-primary-color: #{$primary-color};
-  --geminia-primary-dark: #{$primary-color-dark};
-  --sidebar-icon-blue: #{$sidebar-icon-blue};
+// --- UTILITY CLASSES ---
+.bg-pantone-light-blue {
+  background-color: $pantone-light-blue !important;
+}
+.bg-pantone-dark-blue {
+  background-color: $pantone-dark-blue !important;
+}
+.text-pantone-light-blue {
+  color: $pantone-light-blue !important;
+}
+.text-pantone-dark-blue {
+  color: $pantone-dark-blue !important;
 }
 
-// Sidebar styles
-.sidebar-gradient {
-  background: linear-gradient(135deg, $primary-color 0%, $primary-color-dark 100%);
-  position: relative;
+// --- COMPONENT STYLES ---
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.03);
-    pointer-events: none;
-  }
+.sidebar-bg {
+  background-color: $pantone-light-blue;
 }
 
-.sidebar-icon-blue {
-  color: var(--sidebar-icon-blue) !important;
-}
-
-.user-profile-section {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  border: 1px solid $border-white-20;
-  backdrop-filter: blur(10px);
-}
-
-// Navigation menu item styles
 .nav-menu-item {
-  &.active-menu-item {
-    background-color: $bg-white-20 !important;
-    color: white !important;
-    font-weight: 600 !important;
-
-    .sidebar-icon-blue {
-      color: #E1F5FE !important;
-      filter: drop-shadow(0 0 6px rgba(225, 245, 254, 0.5));
-    }
-  }
-
-  &:hover {
-    .sidebar-icon-blue {
-      color: #81D4FA !important;
-      filter: drop-shadow(0 0 4px rgba(79, 195, 247, 0.3));
-    }
+  .sidebar-nav-icon {
+    color: $pantone-dark-blue;
+    transition: color 0.2s ease-in-out;
   }
 }
 
-// Role indicator dots
-.role-indicator {
-  &.individual { background-color: $role-individual; }
-  &.corporate { background-color: $role-corporate; }
-  &.intermediary { background-color: $role-intermediary; }
+.nav-menu-item.active-menu-item {
+  background-color: rgba($pantone-dark-blue, 0.3) !important;
+  color: $white !important;
+  font-weight: 600 !important;
+
+  .sidebar-nav-icon {
+    color: $white !important;
+  }
 }
 
-// Card styles
-.dashboard-card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+.stats-card {
+  background-color: $white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 
   &:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07);
     transform: translateY(-2px);
   }
 }
 
-// Utility classes for color overrides
-.text-white-70 { color: $text-white-70; }
-.text-white-80 { color: $text-white-80; }
-.bg-white-10 { background-color: $bg-white-10; }
-.bg-white-20 { background-color: $bg-white-20; }
-.border-white-20 { border-color: $border-white-20; }
-.text-geminia-blue { color: var(--geminia-primary-color); }
-.hover\:text-geminia-blue:hover { color: var(--geminia-primary-color); }
+.policy-details-collapsible {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-out;
+  background-color: #f9fafb; // A very light gray for the detail background
+  
+  &.expanded {
+    max-height: 1000px; /* Increased to accommodate details */
+    transition: max-height 0.6s ease-in;
+  }
+}
 
-.bg-blue-100 { background-color: rgba(29, 174, 235, 0.1) !important; }
-.text-green-600 { color: #16a34a !important; }
-.bg-green-100 { background-color: #dcfce7 !important; }
+// UPDATED: Styles for the new policy detail view
+.detail-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: $pantone-light-blue;
+  margin-top: 1.25rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.policy-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 0.75rem 1.5rem; // row-gap and column-gap
+  
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-item-full {
+  grid-column: 1 / -1; // Makes item span full width
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.75rem;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  color: #6b7280; // Gray-500
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-value {
+  font-size: 0.9rem;
+  color: $pantone-dark-blue;
+  font-weight: 500;
+  word-break: break-word;
+}
+
 
 // Mobile sidebar responsiveness
 @media (max-width: 1024px) {
-  .sidebar-gradient {
+  .sidebar-bg {
     position: fixed;
     z-index: 50;
     transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
+    &.mobile-open { transform: translateX(0); }
+  }
+}
 
-    &.mobile-open {
-      transform: translateX(0);
-    }
+// Styles for the custom Geminia Toast Message
+::ng-deep .geminia-toast-panel {
+  --mdc-snackbar-container-color: #{$pantone-dark-blue};
+  --mdc-snackbar-supporting-text-color: #{$white};
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  font-weight: 500;
+
+  .mat-mdc-button.mat-mdc-snack-bar-action {
+    color: #{$pantone-light-blue} !important;
+    font-weight: 700;
   }
 }

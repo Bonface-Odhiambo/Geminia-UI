@@ -4,18 +4,54 @@
         <div class="mx-auto max-w-7xl px-6">
             <div class="flex items-center justify-between py-3">
                 <div class="flex items-center gap-4">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROTKn0j9cVpA67LPdjPeYBR3KnWiwP1gsM3cS27rca-7m8BgvgUylY4uhBnOnVnXFx8Is&usqp=CAU" alt="Geminia Logo" class="h-10 w-auto"/>
-                    <h1 class="text-xl font-semibold text-slate-800">Geminia Marine</h1>
+                    <img
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROTKn0j9cVpA67LPdjPeYBR3KnWiwP1gsM3cS27rca-7m8BgvgUylY4uhBnOnVnXFx8Is&usqp=CAU"
+                        alt="Geminia Logo"
+                        class="h-10 w-auto"
+                    />
+                    <h1 class="text-xl font-semibold text-slate-800">
+                        Geminia Marine
+                    </h1>
                 </div>
                 <!-- Demo User Switcher -->
                 <div class="flex items-center gap-4">
                     <span class="text-sm font-medium">Demo User:</span>
-                    <select (change)="switchUser($event)" class="rounded-md border-gray-300 text-sm">
-                        <option value="individual" [selected]="currentUser.type === 'individual'">Individual</option>
-                        <option value="intermediary" [selected]="currentUser.type === 'intermediary'">Intermediary</option>
+                    <select
+                        (change)="switchUser($event)"
+                        class="rounded-md border-gray-300 text-sm"
+                    >
+                        <option
+                            value="individual"
+                            [selected]="currentUser.type === 'individual'"
+                        >
+                            Individual
+                        </option>
+                        <option
+                            value="intermediary"
+                            [selected]="currentUser.type === 'intermediary'"
+                        >
+                            Intermediary
+                        </option>
                     </select>
-                    <a href="/" class="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-50" title="Close and return to homepage">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <a
+                        href="/"
+                        class="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-50"
+                        title="Close and return to homepage"
+                    >
+                        <svg
+                            class="h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"
+                            ></path>
+                        </svg>
                         Close
                     </a>
                 </div>
@@ -29,9 +65,45 @@
             <!-- Progress Steps -->
             <div class="mb-8">
                 <div class="flex items-center space-x-4">
-                    <div class="flex items-center"><div [class]="currentStep >= 1 ? 'flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-sm font-medium text-white' : 'flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-sm font-medium text-gray-600'">1</div><span [class]="currentStep >= 1 ? 'ml-2 text-sm font-medium text-sky-500' : 'ml-2 text-sm text-gray-500'">Shipment Details</span></div>
+                    <div class="flex items-center">
+                        <div
+                            [class]="
+                                currentStep >= 1
+                                    ? 'flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-sm font-medium text-white'
+                                    : 'flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-sm font-medium text-gray-600'
+                            "
+                        >
+                            1
+                        </div>
+                        <span
+                            [class]="
+                                currentStep >= 1
+                                    ? 'ml-2 text-sm font-medium text-sky-500'
+                                    : 'ml-2 text-sm text-gray-500'
+                            "
+                            >Shipment Details</span
+                        >
+                    </div>
                     <div class="h-px w-8 bg-gray-300"></div>
-                    <div class="flex items-center"><div [class]="currentStep >= 2 ? 'flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-sm font-medium text-white' : 'flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-sm font-medium text-gray-600'">2</div><span [class]="currentStep >= 2 ? 'ml-2 text-sm font-medium text-sky-500' : 'ml-2 text-sm text-gray-500'">Review & Pay</span></div>
+                    <div class="flex items-center">
+                        <div
+                            [class]="
+                                currentStep >= 2
+                                    ? 'flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-sm font-medium text-white'
+                                    : 'flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-sm font-medium text-gray-600'
+                            "
+                        >
+                            2
+                        </div>
+                        <span
+                            [class]="
+                                currentStep >= 2
+                                    ? 'ml-2 text-sm font-medium text-sky-500'
+                                    : 'ml-2 text-sm text-gray-500'
+                            "
+                            >Review & Pay</span
+                        >
+                    </div>
                 </div>
             </div>
 
@@ -40,71 +112,437 @@
                 <!-- Left Column: Forms -->
                 <div class="lg:col-span-2">
                     <!-- Step 1: Shipment Details Form -->
-                    <div *ngIf="currentStep === 1" class="rounded-lg bg-white p-6 shadow-sm step-content">
-                        <h2 class="mb-2 text-2xl font-semibold text-gray-900">Marine Cargo Quotation Form</h2>
-                        <p class="mb-6 text-gray-600">Complete the details below for your marine cargo insurance quote</p>
-                        <form [formGroup]="quotationForm" (ngSubmit)="onSubmit()">
-                            <fieldset [disabled]="showHighRiskModal || showExportModal">
-                                <div class="mb-6"><label class="mb-3 block text-sm font-medium text-gray-700">Cargo Type <span class="text-red-500">*</span></label><div class="flex gap-4"><label class="flex items-center"><input type="radio" formControlName="cargoType" value="containerized" class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"/><span class="ml-2 text-sm text-gray-700">Containerized</span></label><label class="flex items-center"><input type="radio" formControlName="cargoType" value="non-containerized" class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"/><span class="ml-2 text-sm text-gray-700">Non-Containerized</span></label></div></div>
-                                <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"><div><label class="mb-2 block text-sm font-medium text-gray-700">Mode of Shipment <span class="text-red-500">*</span></label><select formControlName="modeOfShipment" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"><option value="">Select mode</option><option value="sea">Sea</option><option value="air">Air</option></select></div><div><label class="mb-2 block text-sm font-medium text-gray-700">Trade Type <span class="text-red-500">*</span></label><select formControlName="tradeType" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"><option value="import">Import</option><option value="export">Export</option></select></div></div>
-                                <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-                                    <div>
-                                        <label class="mb-2 block text-sm font-medium text-gray-700">Select Product <span class="text-red-500">*</span></label>
-                                        <input type="text" formControlName="marineProduct" list="marine-products-list" placeholder="Search for a product..." class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/>
-                                        <datalist id="marine-products-list"><option *ngFor="let product of marineProducts" [value]="product.name"></option></datalist>
-                                    </div>
-                                    <div>
-                                        <label class="mb-2 block text-sm font-medium text-gray-700">Marine Cargo Type <span class="text-red-500">*</span></label>
-                                        <input type="text" formControlName="marineCargoType" list="cargo-type-list" placeholder="Search for a cargo type..." class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/>
-                                        <datalist id="cargo-type-list"><option *ngFor="let type of marineCargoTypes" [value]="type"></option></datalist>
+                    <div
+                        *ngIf="currentStep === 1"
+                        class="step-content rounded-lg bg-white p-6 shadow-sm"
+                    >
+                        <h2 class="mb-2 text-2xl font-semibold text-gray-900">
+                            Marine Cargo Quotation Form
+                        </h2>
+                        <p class="mb-6 text-gray-600">
+                            Complete the details below for your marine cargo
+                            insurance quote
+                        </p>
+                        <form
+                            [formGroup]="quotationForm"
+                            (ngSubmit)="onSubmit()"
+                        >
+                            <fieldset
+                                [disabled]="
+                                    showHighRiskModal || showExportModal
+                                "
+                            >
+                                <div class="mb-6">
+                                    <label
+                                        class="mb-3 block text-sm font-medium text-gray-700"
+                                        >Cargo Type
+                                        <span class="text-red-500"
+                                            >*</span
+                                        ></label
+                                    >
+                                    <div class="flex gap-4">
+                                        <label class="flex items-center"
+                                            ><input
+                                                type="radio"
+                                                formControlName="cargoType"
+                                                value="containerized"
+                                                class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            /><span
+                                                class="ml-2 text-sm text-gray-700"
+                                                >Containerized</span
+                                            ></label
+                                        ><label class="flex items-center"
+                                            ><input
+                                                type="radio"
+                                                formControlName="cargoType"
+                                                value="non-containerized"
+                                                class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            /><span
+                                                class="ml-2 text-sm text-gray-700"
+                                                >Non-Containerized</span
+                                            ></label
+                                        >
                                     </div>
                                 </div>
-                                <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+                                <div
+                                    class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"
+                                >
                                     <div>
-                                        <label class="mb-2 block text-sm font-medium text-gray-700">Country of Origin <span class="text-red-500">*</span></label>
-                                        <input type="text" formControlName="origin" placeholder="Search and select origin..." class="w-full rounded-md border border-gray-300 bg-white px-3 py-2" list="all-countries-list"/>
+                                        <label
+                                            class="mb-2 block text-sm font-medium text-gray-700"
+                                            >Mode of Shipment
+                                            <span class="text-red-500"
+                                                >*</span
+                                            ></label
+                                        ><select
+                                            formControlName="modeOfShipment"
+                                            class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                        >
+                                            <option value="">
+                                                Select mode
+                                            </option>
+                                            <option value="sea">Sea</option>
+                                            <option value="air">Air</option>
+                                        </select>
                                     </div>
                                     <div>
-                                        <label class="mb-2 block text-sm font-medium text-gray-700">Destination</label>
-                                        <input type="text" formControlName="destination" class="w-full rounded-md border border-gray-300 px-3 py-2" readonly/>
+                                        <label
+                                            class="mb-2 block text-sm font-medium text-gray-700"
+                                            >Trade Type
+                                            <span class="text-red-500"
+                                                >*</span
+                                            ></label
+                                        ><select
+                                            formControlName="tradeType"
+                                            class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                        >
+                                            <option value="import">
+                                                Import
+                                            </option>
+                                            <option value="export">
+                                                Export
+                                            </option>
+                                        </select>
                                     </div>
-                                    <datalist id="all-countries-list"><option *ngFor="let country of allCountriesList" [value]="country"></option></datalist>
                                 </div>
-                                <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-                                    <div><label class="mb-2 block text-sm font-medium text-gray-700">UCR Number <span class="text-red-500">*</span></label><input type="text" formControlName="ucrNumber" placeholder="e.g., UCR2024001" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
-                                    <div><label class="mb-2 block text-sm font-medium text-gray-700">IDF Number <span class="text-red-500">*</span></label><input type="text" formControlName="idfNumber" placeholder="e.g., E2300012345" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
+                                <div
+                                    class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"
+                                >
+                                    <div>
+                                        <label
+                                            class="mb-2 block text-sm font-medium text-gray-700"
+                                            >Select Product
+                                            <span class="text-red-500"
+                                                >*</span
+                                            ></label
+                                        >
+                                        <input
+                                            type="text"
+                                            formControlName="marineProduct"
+                                            list="marine-products-list"
+                                            placeholder="Search for a product..."
+                                            class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                        />
+                                        <datalist id="marine-products-list">
+                                            <option
+                                                *ngFor="
+                                                    let product of marineProducts
+                                                "
+                                                [value]="product.name"
+                                            ></option>
+                                        </datalist>
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="mb-2 block text-sm font-medium text-gray-700"
+                                            >Marine Cargo Type
+                                            <span class="text-red-500"
+                                                >*</span
+                                            ></label
+                                        >
+                                        <input
+                                            type="text"
+                                            formControlName="marineCargoType"
+                                            list="cargo-type-list"
+                                            placeholder="Search for a cargo type..."
+                                            class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                        />
+                                        <datalist id="cargo-type-list">
+                                            <option
+                                                *ngFor="
+                                                    let type of marineCargoTypes
+                                                "
+                                                [value]="type"
+                                            ></option>
+                                        </datalist>
+                                    </div>
                                 </div>
-                                <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"><div><label class="mb-2 block text-sm font-medium text-gray-700">Cover start date <span class="text-red-500">*</span></label><input type="date" formControlName="coverStartDate" [min]="getToday()" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div><div><label class="mb-2 block text-sm font-medium text-gray-700">Sum Insured (KES) <span class="text-red-500">*</span></label><input type="number" formControlName="sumInsured" placeholder="2500000" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div></div>
-                                <div class="mb-6"><label class="mb-2 block text-sm font-medium text-gray-700">Description of Goods <span class="text-red-500">*</span></label><textarea formControlName="descriptionOfGoods" rows="3" placeholder="Describe the type of goods, their value, quantity, packaging details..." class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></textarea></div>
-                                <button type="submit" [disabled]="quotationForm.invalid" class="btn-primary w-full rounded-md px-4 py-3 font-medium text-white transition-colors">Get Quote</button>
+                                <div
+                                    class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"
+                                >
+                                    <div>
+                                        <label
+                                            class="mb-2 block text-sm font-medium text-gray-700"
+                                            >Country of Origin
+                                            <span class="text-red-500"
+                                                >*</span
+                                            ></label
+                                        >
+                                        <input
+                                            type="text"
+                                            formControlName="origin"
+                                            placeholder="Search and select origin..."
+                                            class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                            list="all-countries-list"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="mb-2 block text-sm font-medium text-gray-700"
+                                            >Destination</label
+                                        >
+                                        <input
+                                            type="text"
+                                            formControlName="destination"
+                                            class="w-full rounded-md border border-gray-300 px-3 py-2"
+                                            readonly
+                                        />
+                                    </div>
+                                    <datalist id="all-countries-list">
+                                        <option
+                                            *ngFor="
+                                                let country of allCountriesList
+                                            "
+                                            [value]="country"
+                                        ></option>
+                                    </datalist>
+                                </div>
+                                <div
+                                    class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"
+                                >
+                                    <div>
+                                        <label
+                                            class="mb-2 block text-sm font-medium text-gray-700"
+                                            >UCR Number
+                                            <span class="text-red-500"
+                                                >*</span
+                                            ></label
+                                        ><input
+                                            type="text"
+                                            formControlName="ucrNumber"
+                                            placeholder="e.g., UCR2024001"
+                                            class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="mb-2 block text-sm font-medium text-gray-700"
+                                            >IDF Number
+                                            <span class="text-red-500"
+                                                >*</span
+                                            ></label
+                                        ><input
+                                            type="text"
+                                            formControlName="idfNumber"
+                                            placeholder="e.g., E2300012345"
+                                            class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                        />
+                                    </div>
+                                </div>
+                                <div
+                                    class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2"
+                                >
+                                    <div>
+                                        <label
+                                            class="mb-2 block text-sm font-medium text-gray-700"
+                                            >Cover start date
+                                            <span class="text-red-500"
+                                                >*</span
+                                            ></label
+                                        ><input
+                                            type="date"
+                                            formControlName="coverStartDate"
+                                            [min]="getToday()"
+                                            class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="mb-2 block text-sm font-medium text-gray-700"
+                                            >Sum Insured (KES)
+                                            <span class="text-red-500"
+                                                >*</span
+                                            ></label
+                                        ><input
+                                            type="number"
+                                            formControlName="sumInsured"
+                                            placeholder="2500000"
+                                            class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="mb-6">
+                                    <label
+                                        class="mb-2 block text-sm font-medium text-gray-700"
+                                        >Description of Goods
+                                        <span class="text-red-500"
+                                            >*</span
+                                        ></label
+                                    ><textarea
+                                        formControlName="descriptionOfGoods"
+                                        rows="3"
+                                        placeholder="Describe the type of goods, their value, quantity, packaging details..."
+                                        class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                    ></textarea>
+                                </div>
+                                <button
+                                    type="submit"
+                                    [disabled]="quotationForm.invalid"
+                                    class="btn-primary w-full rounded-md px-4 py-3 font-medium text-white transition-colors"
+                                >
+                                    Get Quote
+                                </button>
                             </fieldset>
                         </form>
                     </div>
 
                     <!-- Step 2: Quote Review Form -->
-                    <div *ngIf="currentStep === 2" class="mx-auto max-w-4xl step-content">
+                    <div
+                        *ngIf="currentStep === 2"
+                        class="step-content mx-auto max-w-4xl"
+                    >
                         <div class="rounded-lg bg-white p-8 shadow-sm">
-                            <h2 class="mb-6 text-2xl font-semibold text-gray-900">Review Your Quote & Provide Details</h2>
-                            <div class="mt-8 pt-6 border-t">
-                                <h3 class="text-xl font-semibold text-gray-800 mb-4">Customer Information</h3>
-                                <p class="text-sm text-gray-500 mb-4">This is the person purchasing the insurance policy.</p>
+                            <h2
+                                class="mb-6 text-2xl font-semibold text-gray-900"
+                            >
+                                Review Your Quote & Provide Details
+                            </h2>
+                            <div class="mt-8 border-t pt-6">
+                                <h3
+                                    class="mb-4 text-xl font-semibold text-gray-800"
+                                >
+                                    Customer Information
+                                </h3>
+                                <p class="mb-4 text-sm text-gray-500">
+                                    This is the person purchasing the insurance
+                                    policy.
+                                </p>
                                 <form [formGroup]="clientDetailsForm">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">ID Number <span class="text-red-500">*</span></label><input type="text" formControlName="idNumber" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
-                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">KRA PIN <span class="text-red-500">*</span></label><input type="text" formControlName="kraPin" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
-                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">First Name <span class="text-red-500">*</span></label><input type="text" formControlName="firstName" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
-                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">Last Name <span class="text-red-500">*</span></label><input type="text" formControlName="lastName" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
-                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">Email Address <span class="text-red-500">*</span></label><input type="email" formControlName="email" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
-                                        <div><label class="mb-2 block text-sm font-medium text-gray-700">Phone Number <span class="text-red-500">*</span></label><input type="tel" formControlName="phoneNumber" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"/></div>
+                                    <div
+                                        class="grid grid-cols-1 gap-6 md:grid-cols-2"
+                                    >
+                                        <div>
+                                            <label
+                                                class="mb-2 block text-sm font-medium text-gray-700"
+                                                >ID Number
+                                                <span class="text-red-500"
+                                                    >*</span
+                                                ></label
+                                            ><input
+                                                type="text"
+                                                formControlName="idNumber"
+                                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label
+                                                class="mb-2 block text-sm font-medium text-gray-700"
+                                                >KRA PIN
+                                                <span class="text-red-500"
+                                                    >*</span
+                                                ></label
+                                            ><input
+                                                type="text"
+                                                formControlName="kraPin"
+                                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label
+                                                class="mb-2 block text-sm font-medium text-gray-700"
+                                                >First Name
+                                                <span class="text-red-500"
+                                                    >*</span
+                                                ></label
+                                            ><input
+                                                type="text"
+                                                formControlName="firstName"
+                                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label
+                                                class="mb-2 block text-sm font-medium text-gray-700"
+                                                >Last Name
+                                                <span class="text-red-500"
+                                                    >*</span
+                                                ></label
+                                            ><input
+                                                type="text"
+                                                formControlName="lastName"
+                                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label
+                                                class="mb-2 block text-sm font-medium text-gray-700"
+                                                >Email Address
+                                                <span class="text-red-500"
+                                                    >*</span
+                                                ></label
+                                            ><input
+                                                type="email"
+                                                formControlName="email"
+                                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label
+                                                class="mb-2 block text-sm font-medium text-gray-700"
+                                                >Phone Number
+                                                <span class="text-red-500"
+                                                    >*</span
+                                                ></label
+                                            ><input
+                                                type="tel"
+                                                formControlName="phoneNumber"
+                                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                            />
+                                        </div>
                                     </div>
-                                    <div class="mt-6 space-y-4"><label class="flex items-start"><input type="checkbox" formControlName="termsAndConditions" class="mt-1 h-4 w-4"/><span class="ml-3 text-sm">I agree to the <a href="/terms" target="_blank" class="font-medium text-blue-600 hover:underline">Terms & Conditions</a>.*</span></label><label class="flex items-start"><input type="checkbox" formControlName="dataPrivacyConsent" class="mt-1 h-4 w-4"/><span class="ml-3 text-sm">I agree to the <a href="/privacy" target="_blank" class="font-medium text-blue-600 hover:underline">Data Privacy Policy</a>.*</span></label></div>
+                                    <div class="mt-6 space-y-4">
+                                        <label class="flex items-start"
+                                            ><input
+                                                type="checkbox"
+                                                formControlName="termsAndConditions"
+                                                class="mt-1 h-4 w-4"
+                                            /><span class="ml-3 text-sm"
+                                                >I agree to the
+                                                <a
+                                                    href="/terms"
+                                                    target="_blank"
+                                                    class="font-medium text-blue-600 hover:underline"
+                                                    >Terms & Conditions</a
+                                                >.*</span
+                                            ></label
+                                        ><label class="flex items-start"
+                                            ><input
+                                                type="checkbox"
+                                                formControlName="dataPrivacyConsent"
+                                                class="mt-1 h-4 w-4"
+                                            /><span class="ml-3 text-sm"
+                                                >I agree to the
+                                                <a
+                                                    href="/privacy"
+                                                    target="_blank"
+                                                    class="font-medium text-blue-600 hover:underline"
+                                                    >Data Privacy Policy</a
+                                                >.*</span
+                                            ></label
+                                        >
+                                    </div>
                                 </form>
                             </div>
                             <div class="mt-8 flex items-center justify-between">
-                                <button (click)="goToStep(1)" class="rounded-md border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50">Back to Edit</button>
+                                <button
+                                    (click)="goToStep(1)"
+                                    class="rounded-md border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50"
+                                >
+                                    Back to Edit
+                                </button>
                                 <div class="flex gap-4">
-                                    <button (click)="downloadQuote()" [disabled]="clientDetailsForm.invalid" class="btn-primary rounded-md px-6 py-2 font-medium text-white transition-colors">Download Quote</button>
-                                    <button (click)="handlePayment()" [disabled]="clientDetailsForm.invalid" class="btn-primary rounded-md px-6 py-2 font-medium text-white transition-colors">Proceed to Payment</button>
+                                    <button
+                                        (click)="downloadQuote()"
+                                        [disabled]="clientDetailsForm.invalid"
+                                        class="btn-primary rounded-md px-6 py-2 font-medium text-white transition-colors"
+                                    >
+                                        Download Quote
+                                    </button>
+                                    <a
+                                        href="/"
+                                        class="btn-primary rounded-md px-6 py-2 font-medium text-white transition-colors"
+                                        >Proceed to Payment</a
+                                    >
                                 </div>
                             </div>
                         </div>
@@ -113,39 +551,174 @@
 
                 <!-- Right Column: Premium Summary -->
                 <div class="lg:col-span-1">
-                    <div class="sticky top-24 rounded-lg bg-white p-6 shadow-sm">
-                        <h3 class="mb-2 text-lg font-semibold text-gray-900">Premium Summary</h3>
-                        <p class="mb-4 text-sm text-gray-600" *ngIf="currentStep === 1">Calculation is shown in the next step</p>
-                        <p class="mb-4 text-sm text-gray-600" *ngIf="currentStep === 2">Final calculation</p>
-                        
-                        <div *ngIf="currentStep === 1" class="rounded-lg bg-gray-50 p-4">
-                            <p class="text-center text-gray-500">Complete the form to proceed</p>
+                    <div
+                        class="sticky top-24 rounded-lg bg-white p-6 shadow-sm"
+                    >
+                        <h3 class="mb-2 text-lg font-semibold text-gray-900">
+                            Premium Summary
+                        </h3>
+                        <p
+                            class="mb-4 text-sm text-gray-600"
+                            *ngIf="currentStep === 1"
+                        >
+                            Calculation is shown in the next step
+                        </p>
+                        <p
+                            class="mb-4 text-sm text-gray-600"
+                            *ngIf="currentStep === 2"
+                        >
+                            Final calculation
+                        </p>
+
+                        <div
+                            *ngIf="currentStep === 1"
+                            class="rounded-lg bg-gray-50 p-4"
+                        >
+                            <p class="text-center text-gray-500">
+                                Complete the form to proceed
+                            </p>
                         </div>
-                        
-                        <div *ngIf="currentStep === 2 && premiumCalculation.basePremium">
-                             <div class="rounded-lg bg-blue-50 p-4">
+
+                        <div
+                            *ngIf="
+                                currentStep === 2 &&
+                                premiumCalculation.basePremium
+                            "
+                        >
+                            <div class="rounded-lg bg-blue-50 p-4">
                                 <div class="space-y-3 text-sm">
-                                    <div *ngIf="importerDetails.name" class="space-y-3 pb-3 mb-3 border-b">
-                                        <h4 class="font-bold text-gray-800">Importer Details</h4>
-                                        <div class="flex items-center justify-between"><span>Importer Name</span><span class="font-medium text-right">{{ importerDetails.name }}</span></div>
-                                        <div class="flex items-center justify-between"><span>Importer KRA PIN</span><span class="font-medium">{{ importerDetails.kraPin }}</span></div>
-                                    </div>
-                                    
-                                    <h4 class="font-bold text-gray-800">Premium Calculation</h4>
-                                    <div class="flex items-center justify-between font-semibold"><span>Sum Insured</span><span>{{ premiumCalculation.currency }} {{ quotationForm.get('sumInsured')?.value | number:'1.2-2' }}</span></div>
-                                    <div class="flex items-center justify-between"><span>Base Premium</span><span>{{ premiumCalculation.currency }} {{ premiumCalculation.basePremium | number:'1.2-2' }}</span></div>
-                                    
-                                    <div *ngIf="currentUser.type === 'intermediary' && premiumCalculation.commission > 0" class="flex items-center justify-between text-green-600">
-                                        <span class="font-semibold">Commission (10%)</span>
-                                        <span class="font-semibold">{{ premiumCalculation.currency }} {{ premiumCalculation.commission | number:'1.2-2' }}</span>
+                                    <div
+                                        *ngIf="importerDetails.name"
+                                        class="mb-3 space-y-3 border-b pb-3"
+                                    >
+                                        <h4 class="font-bold text-gray-800">
+                                            Importer Details
+                                        </h4>
+                                        <div
+                                            class="flex items-center justify-between"
+                                        >
+                                            <span>Importer Name</span
+                                            ><span
+                                                class="text-right font-medium"
+                                                >{{
+                                                    importerDetails.name
+                                                }}</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="flex items-center justify-between"
+                                        >
+                                            <span>Importer KRA PIN</span
+                                            ><span class="font-medium">{{
+                                                importerDetails.kraPin
+                                            }}</span>
+                                        </div>
                                     </div>
 
-                                    <div class="border-t pt-2 mt-2"></div>
-                                    
-                                    <div class="flex items-center justify-between"><span>PHCF (0.525%)</span><span>{{ premiumCalculation.currency }} {{ premiumCalculation.phcf | number:'1.2-2' }}</span></div>
-                                    <div class="flex items-center justify-between"><span>Training Levy (0.25%)</span><span>{{ premiumCalculation.currency }} {{ premiumCalculation.trainingLevy | number:'1.2-2' }}</span></div>
-                                    <div class="flex items-center justify-between"><span>Stamp Duty</span><span>{{ premiumCalculation.currency }} {{ premiumCalculation.stampDuty | number:'1.2-2' }}</span></div>
-                                    <div class="border-t pt-2 mt-2"><div class="flex items-center justify-between"><span class="text-lg font-semibold">Total Payable</span><span class="text-xl font-bold text-blue-600">{{ premiumCalculation.currency }} {{ premiumCalculation.totalPayable | number:'1.2-2' }}</span></div></div>
+                                    <h4 class="font-bold text-gray-800">
+                                        Premium Calculation
+                                    </h4>
+                                    <div
+                                        class="flex items-center justify-between font-semibold"
+                                    >
+                                        <span>Sum Insured</span
+                                        ><span
+                                            >{{ premiumCalculation.currency }}
+                                            {{
+                                                quotationForm.get('sumInsured')
+                                                    ?.value | number: '1.2-2'
+                                            }}</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center justify-between"
+                                    >
+                                        <span>Base Premium</span
+                                        ><span
+                                            >{{ premiumCalculation.currency }}
+                                            {{
+                                                premiumCalculation.basePremium
+                                                    | number: '1.2-2'
+                                            }}</span
+                                        >
+                                    </div>
+
+                                    <div
+                                        *ngIf="
+                                            currentUser.type ===
+                                                'intermediary' &&
+                                            premiumCalculation.commission > 0
+                                        "
+                                        class="flex items-center justify-between text-green-600"
+                                    >
+                                        <span class="font-semibold"
+                                            >Commission (10%)</span
+                                        >
+                                        <span class="font-semibold"
+                                            >{{ premiumCalculation.currency }}
+                                            {{
+                                                premiumCalculation.commission
+                                                    | number: '1.2-2'
+                                            }}</span
+                                        >
+                                    </div>
+
+                                    <div class="mt-2 border-t pt-2"></div>
+
+                                    <div
+                                        class="flex items-center justify-between"
+                                    >
+                                        <span>PHCF (0.525%)</span
+                                        ><span
+                                            >{{ premiumCalculation.currency }}
+                                            {{
+                                                premiumCalculation.phcf
+                                                    | number: '1.2-2'
+                                            }}</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center justify-between"
+                                    >
+                                        <span>Training Levy (0.25%)</span
+                                        ><span
+                                            >{{ premiumCalculation.currency }}
+                                            {{
+                                                premiumCalculation.trainingLevy
+                                                    | number: '1.2-2'
+                                            }}</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center justify-between"
+                                    >
+                                        <span>Stamp Duty</span
+                                        ><span
+                                            >{{ premiumCalculation.currency }}
+                                            {{
+                                                premiumCalculation.stampDuty
+                                                    | number: '1.2-2'
+                                            }}</span
+                                        >
+                                    </div>
+                                    <div class="mt-2 border-t pt-2">
+                                        <div
+                                            class="flex items-center justify-between"
+                                        >
+                                            <span class="text-lg font-semibold"
+                                                >Total Payable</span
+                                            ><span
+                                                class="text-xl font-bold text-blue-600"
+                                                >{{
+                                                    premiumCalculation.currency
+                                                }}
+                                                {{
+                                                    premiumCalculation.totalPayable
+                                                        | number: '1.2-2'
+                                                }}</span
+                                            >
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -156,94 +729,433 @@
     </div>
 
     <!-- MODAL (Shared structure for Export/High-Risk) -->
-    <div *ngIf="showExportModal || showHighRiskModal" (click)="closeAllModals()" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
-        <div (click)="$event.stopPropagation()" class="bg-white rounded-lg shadow-xl p-1 w-full max-w-3xl max-h-[95vh] overflow-y-auto">
+    <div
+        *ngIf="showExportModal || showHighRiskModal"
+        (click)="closeAllModals()"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4"
+    >
+        <div
+            (click)="$event.stopPropagation()"
+            class="max-h-[95vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-1 shadow-xl"
+        >
             <div class="p-7">
-                <h2 class="text-2xl font-bold mb-4">{{ showExportModal ? 'Export Shipment Details' : 'High-Risk Shipment Details' }}</h2>
-                <p class="mb-6 text-gray-600">{{ showExportModal ? 'Please provide the following details for your export request.' : 'Shipments from this origin require manual underwriting. Please provide your details to proceed.' }}</p>
-                <form [formGroup]="showExportModal ? exportRequestForm : highRiskRequestForm" (ngSubmit)="showExportModal ? onExportRequestSubmit() : onHighRiskRequestSubmit()">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label class="block text-sm font-medium mb-1">KRA PIN <span class="text-red-500">*</span></label><input type="text" formControlName="kraPin" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">First Name <span class="text-red-500">*</span></label><input type="text" formControlName="firstName" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">Last Name <span class="text-red-500">*</span></label><input type="text" formControlName="lastName" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">Email Address <span class="text-red-500">*</span></label><input type="email" formControlName="email" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
-                        <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Phone Number <span class="text-red-500">*</span></label><input type="tel" formControlName="phoneNumber" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
-                        
-                        <div><label class="block text-sm font-medium mb-1">Select Product <span class="text-red-500">*</span></label><input type="text" formControlName="marineProduct" list="marine-products-list-modal" placeholder="Search for a product..." class="w-full rounded-md border bg-white px-3 py-2"/><datalist id="marine-products-list-modal"><option *ngFor="let product of marineProducts" [value]="product.name"></option></datalist></div>
-                        <div><label class="block text-sm font-medium mb-1">Marine Cargo Type <span class="text-red-500">*</span></label><input type="text" formControlName="marineCargoType" list="cargo-type-list-modal" placeholder="Search for a cargo type..." class="w-full rounded-md border bg-white px-3 py-2"/><datalist id="cargo-type-list-modal"><option *ngFor="let type of marineCargoTypes" [value]="type"></option></datalist></div>
+                <h2 class="mb-4 text-2xl font-bold">
+                    {{
+                        showExportModal
+                            ? 'Export Shipment Details'
+                            : 'High-Risk Shipment Details'
+                    }}
+                </h2>
+                <p class="mb-6 text-gray-600">
+                    {{
+                        showExportModal
+                            ? 'Please provide the following details for your export request.'
+                            : 'Shipments from this origin require manual underwriting. Please provide your details to proceed.'
+                    }}
+                </p>
+                <form
+                    [formGroup]="
+                        showExportModal
+                            ? exportRequestForm
+                            : highRiskRequestForm
+                    "
+                    (ngSubmit)="
+                        showExportModal
+                            ? onExportRequestSubmit()
+                            : onHighRiskRequestSubmit()
+                    "
+                >
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div>
+                            <label class="mb-1 block text-sm font-medium"
+                                >KRA PIN
+                                <span class="text-red-500">*</span></label
+                            ><input
+                                type="text"
+                                formControlName="kraPin"
+                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                            />
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-sm font-medium"
+                                >First Name
+                                <span class="text-red-500">*</span></label
+                            ><input
+                                type="text"
+                                formControlName="firstName"
+                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                            />
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-sm font-medium"
+                                >Last Name
+                                <span class="text-red-500">*</span></label
+                            ><input
+                                type="text"
+                                formControlName="lastName"
+                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                            />
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-sm font-medium"
+                                >Email Address
+                                <span class="text-red-500">*</span></label
+                            ><input
+                                type="email"
+                                formControlName="email"
+                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                            />
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="mb-1 block text-sm font-medium"
+                                >Phone Number
+                                <span class="text-red-500">*</span></label
+                            ><input
+                                type="tel"
+                                formControlName="phoneNumber"
+                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                            />
+                        </div>
 
-                        <div><label class="block text-sm font-medium mb-1">IDF Number <span class="text-red-500">*</span></label><input type="text" formControlName="idfNumber" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
-                        <div><label class="block text-sm font-medium mb-1">UCR Number <span class="text-red-500">*</span></label><input type="text" formControlName="ucrNumber" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
-                        
-                        <div><label class="block text-sm font-medium mb-1">Country of Origin <span class="text-red-500">*</span></label><input type="text" formControlName="originCountry" class="w-full rounded-md border bg-white px-3 py-2" list="all-countries-modal-list"></div>
-                        <div><label class="block text-sm font-medium mb-1">Destination Country <span class="text-red-500">*</span></label><input type="text" formControlName="destinationCountry" class="w-full rounded-md bg-white px-3 py-2" list="all-countries-modal-list" placeholder="Search and select a country..."></div>
-                        <datalist id="all-countries-modal-list"><option *ngFor="let country of allCountriesList" [value]="country"></option></datalist>
-                        
-                        <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Shipment Date <span class="text-red-500">*</span></label><input type="date" formControlName="shipmentDate" [min]="getToday()" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></div>
-                        <div class="md:col-span-2"><label class="block text-sm font-medium mb-1">Goods Description (Max 100 words) <span class="text-red-500">*</span></label><textarea formControlName="goodsDescription" rows="3" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"></textarea></div>
+                        <div>
+                            <label class="mb-1 block text-sm font-medium"
+                                >Select Product
+                                <span class="text-red-500">*</span></label
+                            ><input
+                                type="text"
+                                formControlName="marineProduct"
+                                list="marine-products-list-modal"
+                                placeholder="Search for a product..."
+                                class="w-full rounded-md border bg-white px-3 py-2"
+                            /><datalist id="marine-products-list-modal">
+                                <option
+                                    *ngFor="let product of marineProducts"
+                                    [value]="product.name"
+                                ></option>
+                            </datalist>
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-sm font-medium"
+                                >Marine Cargo Type
+                                <span class="text-red-500">*</span></label
+                            ><input
+                                type="text"
+                                formControlName="marineCargoType"
+                                list="cargo-type-list-modal"
+                                placeholder="Search for a cargo type..."
+                                class="w-full rounded-md border bg-white px-3 py-2"
+                            /><datalist id="cargo-type-list-modal">
+                                <option
+                                    *ngFor="let type of marineCargoTypes"
+                                    [value]="type"
+                                ></option>
+                            </datalist>
+                        </div>
+
+                        <div>
+                            <label class="mb-1 block text-sm font-medium"
+                                >IDF Number
+                                <span class="text-red-500">*</span></label
+                            ><input
+                                type="text"
+                                formControlName="idfNumber"
+                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                            />
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-sm font-medium"
+                                >UCR Number
+                                <span class="text-red-500">*</span></label
+                            ><input
+                                type="text"
+                                formControlName="ucrNumber"
+                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                            />
+                        </div>
+
+                        <div>
+                            <label class="mb-1 block text-sm font-medium"
+                                >Country of Origin
+                                <span class="text-red-500">*</span></label
+                            ><input
+                                type="text"
+                                formControlName="originCountry"
+                                class="w-full rounded-md border bg-white px-3 py-2"
+                                list="all-countries-modal-list"
+                            />
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-sm font-medium"
+                                >Destination Country
+                                <span class="text-red-500">*</span></label
+                            ><input
+                                type="text"
+                                formControlName="destinationCountry"
+                                class="w-full rounded-md bg-white px-3 py-2"
+                                list="all-countries-modal-list"
+                                placeholder="Search and select a country..."
+                            />
+                        </div>
+                        <datalist id="all-countries-modal-list">
+                            <option
+                                *ngFor="let country of allCountriesList"
+                                [value]="country"
+                            ></option>
+                        </datalist>
+
+                        <div class="md:col-span-2">
+                            <label class="mb-1 block text-sm font-medium"
+                                >Shipment Date
+                                <span class="text-red-500">*</span></label
+                            ><input
+                                type="date"
+                                formControlName="shipmentDate"
+                                [min]="getToday()"
+                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                            />
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="mb-1 block text-sm font-medium"
+                                >Goods Description (Max 100 words)
+                                <span class="text-red-500">*</span></label
+                            ><textarea
+                                formControlName="goodsDescription"
+                                rows="3"
+                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                            ></textarea>
+                        </div>
                     </div>
-                    <div class="mt-6 space-y-4"><label class="flex items-start"><input type="checkbox" formControlName="termsAndConditions" class="mt-1 h-4 w-4"/><span class="ml-3 text-sm">I agree to the <a href="/terms" target="_blank" class="font-medium text-blue-600 hover:underline">Terms and Conditions</a>.*</span></label><label class="flex items-start"><input type="checkbox" formControlName="dataPrivacyConsent" class="mt-1 h-4 w-4"/><span class="ml-3 text-sm">I agree to the <a href="/privacy" target="_blank" class="font-medium text-blue-600 hover:underline">Data Privacy Policy</a>.*</span></label></div>
+                    <div class="mt-6 space-y-4">
+                        <label class="flex items-start"
+                            ><input
+                                type="checkbox"
+                                formControlName="termsAndConditions"
+                                class="mt-1 h-4 w-4"
+                            /><span class="ml-3 text-sm"
+                                >I agree to the
+                                <a
+                                    href="/terms"
+                                    target="_blank"
+                                    class="font-medium text-blue-600 hover:underline"
+                                    >Terms and Conditions</a
+                                >.*</span
+                            ></label
+                        ><label class="flex items-start"
+                            ><input
+                                type="checkbox"
+                                formControlName="dataPrivacyConsent"
+                                class="mt-1 h-4 w-4"
+                            /><span class="ml-3 text-sm"
+                                >I agree to the
+                                <a
+                                    href="/privacy"
+                                    target="_blank"
+                                    class="font-medium text-blue-600 hover:underline"
+                                    >Data Privacy Policy</a
+                                >.*</span
+                            ></label
+                        >
+                    </div>
                     <div class="mt-8 flex justify-end gap-4 border-t pt-6">
-                        <button type="button" (click)="closeAllModals()" class="rounded-md border border-gray-300 px-4 py-2 hover:bg-gray-50">Cancel</button>
-                        <button type="submit" [disabled]="(showExportModal ? exportRequestForm.invalid : highRiskRequestForm.invalid)" class="btn-primary rounded-md text-white px-4 py-2 font-medium transition-colors">Submit Request</button>
+                        <button
+                            type="button"
+                            (click)="closeAllModals()"
+                            class="rounded-md border border-gray-300 px-4 py-2 hover:bg-gray-50"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            [disabled]="
+                                showExportModal
+                                    ? exportRequestForm.invalid
+                                    : highRiskRequestForm.invalid
+                            "
+                            class="btn-primary rounded-md px-4 py-2 font-medium text-white transition-colors"
+                        >
+                            Submit Request
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    
+
     <!-- MODAL 3: Payment Modal -->
-    <div *ngIf="showPaymentModal" (click)="closePaymentModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
-        <div (click)="$event.stopPropagation()" class="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg max-h-[95vh] overflow-y-auto">
-            <h2 class="text-2xl font-bold mb-2">Complete Your Payment</h2>
-            <p class="mb-6 text-gray-600">Total Due: <span class="font-bold text-lg">{{ premiumCalculation.currency }} {{ premiumCalculation.totalPayable | number:'1.2-2' }}</span></p>
-            
+    <div
+        *ngIf="showPaymentModal"
+        (click)="closePaymentModal()"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4"
+    >
+        <div
+            (click)="$event.stopPropagation()"
+            class="max-h-[95vh] w-full max-w-lg overflow-y-auto rounded-lg bg-white p-8 shadow-xl"
+        >
+            <h2 class="mb-2 text-2xl font-bold">Complete Your Payment</h2>
+            <p class="mb-6 text-gray-600">
+                Total Due:
+                <span class="text-lg font-bold"
+                    >{{ premiumCalculation.currency }}
+                    {{
+                        premiumCalculation.totalPayable | number: '1.2-2'
+                    }}</span
+                >
+            </p>
+
             <form [formGroup]="paymentForm" (ngSubmit)="onProcessSTKPush()">
-                <div class="mb-6"><label class="mb-3 block text-sm font-medium text-gray-700">Select Payment Method</label><div class="flex gap-4"><label class="payment-option"><input type="radio" formControlName="paymentMethod" value="mpesa" class="h-4 w-4"/><span class="ml-2">M-Pesa</span></label><label class="payment-option"><input type="radio" formControlName="paymentMethod" value="card" class="h-4 w-4"/><span class="ml-2">Credit/Debit Card</span></label></div></div>
-                
+                <div class="mb-6">
+                    <label class="mb-3 block text-sm font-medium text-gray-700"
+                        >Select Payment Method</label
+                    >
+                    <div class="flex gap-4">
+                        <label class="payment-option"
+                            ><input
+                                type="radio"
+                                formControlName="paymentMethod"
+                                value="mpesa"
+                                class="h-4 w-4"
+                            /><span class="ml-2">M-Pesa</span></label
+                        ><label class="payment-option"
+                            ><input
+                                type="radio"
+                                formControlName="paymentMethod"
+                                value="card"
+                                class="h-4 w-4"
+                            /><span class="ml-2">Credit/Debit Card</span></label
+                        >
+                    </div>
+                </div>
+
                 <!-- M-Pesa Combined View -->
-                <div *ngIf="paymentForm.get('paymentMethod')?.value === 'mpesa'" class="space-y-6 animate-fadeIn">
+                <div
+                    *ngIf="paymentForm.get('paymentMethod')?.value === 'mpesa'"
+                    class="animate-fadeIn space-y-6"
+                >
                     <!-- Option 1: STK Push -->
-                    <div class="p-4 border rounded-lg">
-                        <label class="block text-sm font-medium mb-2">Option 1: Pay with M-Pesa Express (STK)</label>
-                        <div><label class="mb-2 block text-xs font-medium">M-Pesa Phone Number <span class="text-red-500">*</span></label><input type="text" formControlName="mpesaPhoneNumber" placeholder="2547XXXXXXXX" class="w-full rounded-md border border-gray-300 p-2"/></div>
-                        <button type="submit" [disabled]="paymentForm.get('mpesaPhoneNumber')?.invalid || isProcessingPayment" class="btn-primary mt-3 w-full rounded-md py-2 font-medium text-white transition-colors">
-                           <span *ngIf="!isProcessingPayment">Send Payment Request</span>
-                           <span *ngIf="isProcessingPayment">Sending STK Push...</span>
+                    <div class="rounded-lg border p-4">
+                        <label class="mb-2 block text-sm font-medium"
+                            >Option 1: Pay with M-Pesa Express (STK)</label
+                        >
+                        <div>
+                            <label class="mb-2 block text-xs font-medium"
+                                >M-Pesa Phone Number
+                                <span class="text-red-500">*</span></label
+                            ><input
+                                type="text"
+                                formControlName="mpesaPhoneNumber"
+                                placeholder="2547XXXXXXXX"
+                                class="w-full rounded-md border border-gray-300 p-2"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            [disabled]="
+                                paymentForm.get('mpesaPhoneNumber')?.invalid ||
+                                isProcessingPayment
+                            "
+                            class="btn-primary mt-3 w-full rounded-md py-2 font-medium text-white transition-colors"
+                        >
+                            <span *ngIf="!isProcessingPayment"
+                                >Send Payment Request</span
+                            >
+                            <span *ngIf="isProcessingPayment"
+                                >Sending STK Push...</span
+                            >
                         </button>
                     </div>
 
-                     <!-- Option 2: Manual Paybill -->
-                    <div class="p-4 border rounded-lg text-center">
-                        <label class="block text-sm font-medium mb-2">Option 2: Pay Manually via Paybill</label>
-                         <div class="space-y-3">
-                            <div><label class="block text-xs font-medium text-gray-500">Business Number</label><p class="text-xl font-bold text-gray-800 tracking-wider">522522</p></div>
-                            <div><label class="block text-xs font-medium text-gray-500">Account Number</label><p class="text-xl font-bold text-gray-800 tracking-wider">{{ paymentTransactionId }}</p></div>
+                    <!-- Option 2: Manual Paybill -->
+                    <div class="rounded-lg border p-4 text-center">
+                        <label class="mb-2 block text-sm font-medium"
+                            >Option 2: Pay Manually via Paybill</label
+                        >
+                        <div class="space-y-3">
+                            <div>
+                                <label
+                                    class="block text-xs font-medium text-gray-500"
+                                    >Business Number</label
+                                >
+                                <p
+                                    class="text-xl font-bold tracking-wider text-gray-800"
+                                >
+                                    522522
+                                </p>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-medium text-gray-500"
+                                    >Account Number</label
+                                >
+                                <p
+                                    class="text-xl font-bold tracking-wider text-gray-800"
+                                >
+                                    {{ paymentTransactionId }}
+                                </p>
+                            </div>
                         </div>
-                        <button type="button" (click)="verifyMpesaPayment()" class="mt-4 w-full rounded-md py-2 font-medium border border-gray-300 hover:bg-gray-50 transition-colors">I have paid, Verify Now</button>
+                        <button
+                            type="button"
+                            (click)="verifyMpesaPayment()"
+                            class="mt-4 w-full rounded-md border border-gray-300 py-2 font-medium transition-colors hover:bg-gray-50"
+                        >
+                            I have paid, Verify Now
+                        </button>
                     </div>
                 </div>
 
                 <!-- Card Payment View -->
-                <div *ngIf="paymentForm.get('paymentMethod')?.value === 'card'" class="text-center p-4 border rounded-md animate-fadeIn">
-                    <p class="text-gray-700">You will be redirected to our secure payment partner to complete your payment.</p>
-                     <div class="mt-6 flex justify-end gap-4">
-                        <button type="button" (click)="closePaymentModal()" class="rounded-md border border-gray-300 px-4 py-2">Cancel</button>
-                        <button (click)="onProcessCardPayment()" class="btn-primary rounded-md text-white px-6 py-2 font-medium transition-colors">Proceed to Payment</button>
+                <div
+                    *ngIf="paymentForm.get('paymentMethod')?.value === 'card'"
+                    class="animate-fadeIn rounded-md border p-4 text-center"
+                >
+                    <p class="text-gray-700">
+                        You will be redirected to our secure payment partner to
+                        complete your payment.
+                    </p>
+                    <div class="mt-6 flex justify-end gap-4">
+                        <button
+                            type="button"
+                            (click)="closePaymentModal()"
+                            class="rounded-md border border-gray-300 px-4 py-2"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            (click)="onProcessCardPayment()"
+                            class="btn-primary rounded-md px-6 py-2 font-medium text-white transition-colors"
+                        >
+                            Proceed to Payment
+                        </button>
                     </div>
                 </div>
 
                 <!-- Cancel button for M-Pesa -->
-                <div *ngIf="paymentForm.get('paymentMethod')?.value === 'mpesa'" class="mt-8 flex justify-end">
-                    <button type="button" (click)="closePaymentModal()" class="rounded-md border border-gray-300 px-4 py-2">Cancel</button>
+                <div
+                    *ngIf="paymentForm.get('paymentMethod')?.value === 'mpesa'"
+                    class="mt-8 flex justify-end"
+                >
+                    <button
+                        type="button"
+                        (click)="closePaymentModal()"
+                        class="rounded-md border border-gray-300 px-4 py-2"
+                    >
+                        Cancel
+                    </button>
                 </div>
             </form>
         </div>
     </div>
-    
+
     <!-- Universal Toast Message -->
-    <div *ngIf="toastMessage" class="fixed bottom-5 right-5 text-white py-3 px-6 rounded-lg shadow-lg" 
-         [ngClass]="{'bg-green-500': toastType === 'success', 'toast-info': toastType === 'info', 'bg-red-500': toastType === 'error'}">
+    <div
+        *ngIf="toastMessage"
+        class="fixed bottom-5 right-5 rounded-lg px-6 py-3 text-white shadow-lg"
+        [ngClass]="{
+            'bg-green-500': toastType === 'success',
+            'toast-info': toastType === 'info',
+            'bg-red-500': toastType === 'error',
+        }"
+    >
         {{ toastMessage }}
     </div>
 </div>
