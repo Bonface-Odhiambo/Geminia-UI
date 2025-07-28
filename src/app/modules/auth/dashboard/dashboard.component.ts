@@ -21,40 +21,10 @@ import { MatTabsModule } from '@angular/material/tabs';
 type UserRole = 'individual' | 'corporate' | 'intermediary';
 interface User { id: string; name: string; email: string; phoneNumber: string; role: UserRole; }
 interface Quote { id: string; type: 'marine' | 'travel'; title: string; amount: number; status: 'draft' | 'pending' | 'completed' | 'expired'; createdDate: Date; expiryDate: Date; description: string; }
-
-// UPDATED: Policy interface now includes a detailed structure for marine insurance
 interface Policy {
-  id: string;
-  type: 'marine' | 'travel';
-  title: string;
-  policyNumber: string;
-  status: 'active' | 'completed';
-  premium: number;
-  startDate: Date;
-  endDate: Date;
-  certificateUrl?: string;
-  marineDetails?: {
-    cargoType: 'containerized' | 'non-containerized';
-    tradeType: 'import' | 'export';
-    modeOfShipment: 'sea' | 'air';
-    marineProduct: string;
-    marineCargoType: string;
-    origin: string;
-    destination: string;
-    sumInsured: number;
-    descriptionOfGoods: string;
-    ucrNumber: string;
-    idfNumber: string;
-    clientInfo: {
-      name: string;
-      idNumber: string;
-      kraPin: string;
-      email: string;
-      phoneNumber: string;
-    }
-  }
+  id: string; type: 'marine' | 'travel'; title: string; policyNumber: string; status: 'active' | 'completed'; premium: number; startDate: Date; endDate: Date; certificateUrl?: string;
+  marineDetails?: { cargoType: 'containerized' | 'non-containerized'; tradeType: 'import' | 'export'; modeOfShipment: 'sea' | 'air'; marineProduct: string; marineCargoType: string; origin: string; destination: string; sumInsured: number; descriptionOfGoods: string; ucrNumber: string; idfNumber: string; clientInfo: { name: string; idNumber: string; kraPin: string; email: string; phoneNumber: string; } }
 }
-
 interface DashboardStats { marinePolicies: number; travelPolicies: number; pendingQuotes: number; totalPremium: number; }
 interface MpesaPayment { amount: number; phoneNumber: string; reference: string; description: string; }
 interface NavigationItem { label: string; icon: string; route?: string; children?: NavigationItem[]; badge?: number; isExpanded?: boolean; }
@@ -62,7 +32,7 @@ interface Notification { id: string; title: string; message: string; timestamp: 
 interface Activity { id: string; title: string; description: string; timestamp: Date; icon: string; iconColor: string; amount?: number; relatedId?: string; }
 export interface PaymentResult { success: boolean; method: 'stk' | 'paybill' | 'card'; reference: string; mpesaReceipt?: string; }
 
-// --- EMBEDDED PAYMENT MODAL COMPONENT (Unchanged from last version) ---
+// --- EMBEDDED PAYMENT MODAL COMPONENT ---
 @Component({
   selector: 'app-mpesa-payment-modal',
   standalone: true,
@@ -72,10 +42,6 @@ export interface PaymentResult { success: boolean; method: 'stk' | 'paybill' | '
 })
 export class MpesaPaymentModalComponent implements OnInit { stkForm: FormGroup; selectedPaymentMethod: 'mpesa' | 'card' = 'mpesa'; mpesaSubMethod: 'stk' | 'paybill' = 'stk'; isProcessingStk = false; isVerifyingPaybill = false; isRedirectingToCard = false; constructor(private fb: FormBuilder, public dialogRef: MatDialogRef<MpesaPaymentModalComponent>, @Inject(MAT_DIALOG_DATA) public data: MpesaPayment) { this.stkForm = this.fb.group({ phoneNumber: [data.phoneNumber || '', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]], }); } ngOnInit(): void {} closeDialog(result: PaymentResult | null = null): void { this.dialogRef.close(result); } processStkPush(): void { if (this.stkForm.invalid) return; this.isProcessingStk = true; setTimeout(() => { this.isProcessingStk = false; this.closeDialog({ success: true, method: 'stk', reference: this.data.reference, mpesaReceipt: 'S' + Math.random().toString(36).substring(2, 12).toUpperCase() }); }, 3000); } verifyPaybillPayment(): void { this.isVerifyingPaybill = true; setTimeout(() => { this.isVerifyingPaybill = false; this.closeDialog({ success: true, method: 'paybill', reference: this.data.reference }); }, 3500); } redirectToCardGateway(): void { this.isRedirectingToCard = true; setTimeout(() => { this.isRedirectingToCard = false; console.log('Redirecting to I&M Bank payment gateway...'); this.closeDialog({ success: true, method: 'card', reference: this.data.reference }); }, 2000); } }
 
-
-// =========================================================================================
-// DASHBOARD COMPONENT
-// =========================================================================================
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -90,38 +56,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   dashboardStats: DashboardStats = { marinePolicies: 0, travelPolicies: 0, pendingQuotes: 0, totalPremium: 0 };
   notifications: Notification[] = [ { id: 'N001', title: 'Quotes Awaiting Payment', message: 'You have quotes that need payment to activate your policy.', timestamp: new Date(), read: false, actionUrl: '#pending-quotes' }, { id: 'N002', title: 'Certificates Ready', message: 'Your new policy certificates are ready for download.', timestamp: new Date(), read: false, actionUrl: '#active-policies' } ];
   savedQuotes: Quote[] = [ { id: 'Q001', type: 'marine', title: 'Marine Cargo Insurance - Machinery', amount: 18500, status: 'pending', createdDate: new Date(new Date().setDate(new Date().getDate() - 5)), expiryDate: new Date(new Date().setDate(new Date().getDate() + 9)), description: 'For heavy machinery shipment from Germany.' }, { id: 'Q003', type: 'travel', title: 'Schengen Visa Travel Insurance', amount: 4800, status: 'pending', createdDate: new Date(new Date().setDate(new Date().getDate() - 2)), expiryDate: new Date(new Date().setDate(new Date().getDate() + 12)), description: 'Annual multi-trip coverage for Europe.' }];
-  
-  // UPDATED: Active policies now include one with detailed marine data
-  activePolicies: Policy[] = [
-    { 
-      id: 'P001', type: 'marine', title: 'Machinery Import', policyNumber: 'MAR/2024/7531', status: 'active', premium: 18500,
-      startDate: new Date('2024-08-01'), endDate: new Date('2024-09-30'), certificateUrl: '/simulated/MAR-2024-7531.pdf',
-      marineDetails: {
-        cargoType: 'containerized', tradeType: 'import', modeOfShipment: 'sea',
-        marineProduct: 'Institute Cargo Clauses (A) - All Risks',
-        marineCargoType: 'Machinery',
-        origin: 'Germany',
-        destination: 'Mombasa, Kenya',
-        sumInsured: 3500000,
-        descriptionOfGoods: 'Industrial-grade printing press machine, packed in a 40ft container.',
-        ucrNumber: 'UCR202408153',
-        idfNumber: 'E2300012345',
-        clientInfo: {
-          name: 'Bonface Odhiambo', idNumber: '30123456', kraPin: 'A001234567Z',
-          email: 'bonface@example.com', phoneNumber: '0712345678'
-        }
-      }
-    },
-    { 
-      id: 'P002', type: 'travel', title: 'Schengen Visa Travel Insurance', policyNumber: 'TRV/2024/9102', 
-      status: 'active', premium: 4800, startDate: new Date('2024-09-01'), endDate: new Date('2025-08-31'),
-      certificateUrl: '/simulated/TRV-2024-9102.pdf' 
-    }
-  ];
-
+  activePolicies: Policy[] = [ { id: 'P001', type: 'marine', title: 'Machinery Import', policyNumber: 'MAR/2024/7531', status: 'active', premium: 18500, startDate: new Date('2024-08-01'), endDate: new Date('2024-09-30'), certificateUrl: '/simulated/MAR-2024-7531.pdf', marineDetails: { cargoType: 'containerized', tradeType: 'import', modeOfShipment: 'sea', marineProduct: 'Institute Cargo Clauses (A) - All Risks', marineCargoType: 'Machinery', origin: 'Germany', destination: 'Mombasa, Kenya', sumInsured: 3500000, descriptionOfGoods: 'Industrial-grade printing press machine, packed in a 40ft container.', ucrNumber: 'UCR202408153', idfNumber: 'E2300012345', clientInfo: { name: 'Bonface Odhiambo', idNumber: '30123456', kraPin: 'A001234567Z', email: 'bonface@example.com', phoneNumber: '0712345678' } } }, { id: 'P002', type: 'travel', title: 'Schengen Visa Travel Insurance', policyNumber: 'TRV/2024/9102', status: 'active', premium: 4800, startDate: new Date('2024-09-01'), endDate: new Date('2025-08-31'), certificateUrl: '/simulated/TRV-2024-9102.pdf' } ];
   recentActivities: Activity[] = [ { id: 'A001', title: 'Payment Successful', description: 'Travel Insurance for Europe', timestamp: new Date(Date.now() - 3600000), icon: 'payment', iconColor: '#04b2e1', relatedId: 'P003' }, { id: 'A002', title: 'Certificate Downloaded', description: 'Marine Cargo Policy MAR-2025-002', timestamp: new Date(Date.now() - 14400000), icon: 'download', iconColor: '#04b2e1', relatedId: 'P002' }, { id: 'A003', title: 'Profile Updated', description: 'Contact information updated', timestamp: new Date(Date.now() - 86400000), icon: 'person', iconColor: '#21275c' }];
-  isMobileSidebarOpen = false;
-  expandedPolicyId: string | null = null;
+  isMobileSidebarOpen = false; expandedPolicyId: string | null = null;
   constructor(private dialog: MatDialog, public router: Router, private snackBar: MatSnackBar) {}
   ngOnInit(): void { this.loadDashboardData(); this.setupNavigationBasedOnRole(); }
   ngOnDestroy(): void { this.destroy$.next(); this.destroy$.complete(); }
@@ -140,7 +77,30 @@ export class DashboardComponent implements OnInit, OnDestroy {
   editQuoteByType(quoteId: string, type: 'marine' | 'travel'): void { const route = type === 'marine' ? '/sign-up/marine-quote' : '/sign-up/travel-quote'; this.router.navigate([route], { queryParams: { editId: quoteId } }); }
   downloadCertificate(policyId: string): void { const policy = this.activePolicies.find((p) => p.id === policyId); if (policy?.certificateUrl) { const link = document.createElement('a'); link.href = policy.certificateUrl; link.download = `${policy.policyNumber}-certificate.pdf`; link.click(); } }
   markNotificationAsRead(notification: Notification): void { notification.read = true; if (notification.actionUrl) { document.querySelector(notification.actionUrl)?.scrollIntoView({ behavior: 'smooth' }); } }
-  setupNavigationBasedOnRole(): void { this.navigationItems = [ { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' }, { label: 'Marine Insurance', icon: 'directions_boat', children: [ { label: 'New Quote', route: '/sign-up/marine-quote', icon: 'add_circle' }, ] }, { label: 'Travel Insurance', icon: 'flight', children: [ { label: 'New Quote', route: '/sign-up/travel-quote', icon: 'add_circle' }, ] }, { label: 'My Quotes', icon: 'description', badge: this.getPendingQuotes().length, children: [ { label: 'Pending', route: '/quotes/pending', icon: 'pending' }, { label: 'Completed', route: '/quotes/completed', icon: 'check' } ] } ]; }
+  
+  // UPDATED: Navigation structure now includes Receipt link
+  setupNavigationBasedOnRole(): void {
+    this.navigationItems = [
+      { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
+      {
+        label: 'Marine Insurance', icon: 'directions_boat',
+        children: [
+          { label: 'New Quote', route: '/sign-up/marine-quote', icon: 'add_circle' },
+          { label: 'Pending Quotes', route: '/marine/pending', icon: 'pending' }
+        ]
+      },
+      {
+        label: 'Travel Insurance', icon: 'flight',
+        children: [
+          { label: 'New Quote', route: '/sign-up/travel-quote', icon: 'add_circle' },
+          { label: 'Pending Quotes', route: '/travel/pending', icon: 'pending' }
+        ]
+      },
+      // "My Quotes" is replaced with "Receipt"
+      { label: 'Receipt', icon: 'receipt_long', route: '/receipts' }
+    ];
+  }
+
   loadDashboardData(): void { this.dashboardStats = { marinePolicies: this.activePolicies.filter((p) => p.type === 'marine').length, travelPolicies: this.activePolicies.filter((p) => p.type === 'travel').length, pendingQuotes: this.getPendingQuotes().length, totalPremium: this.activePolicies.reduce((sum, p) => sum + p.premium, 0) }; }
   logout(): void { if (confirm('Are you sure you want to logout?')) { this.router.navigate(['/']); } }
 }

@@ -5,9 +5,9 @@
       <div class="flex items-center space-x-3">
         <div class="w-16 h-16 flex items-center justify-center bg-white/10 rounded-xl p-2">
           <img 
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROTKn0j9cVpA67LPdjPeYBR3KnWiwP1gsM3cS27rca-7m8BgvgUylY4uhBnOnVnXFx8Is&usqp=CAU" 
+            src="https://geminia.co.ke/wp-content/uploads/2023/08/Blue-logo.jpg" 
             alt="Geminia Insurance Logo" 
-            class="w-full h-full object-contain" 
+            class="w-full h-full object-contain filter brightness-0 invert"
             (error)="onLogoError($event)"
           />
         </div>
@@ -64,78 +64,19 @@
                     <div class="flex items-center space-x-4"><div class="w-12 h-12 bg-pantone-light-blue/10 rounded-xl flex items-center justify-center"><mat-icon class="text-pantone-light-blue">{{ policy.type === 'marine' ? 'directions_boat' : 'flight' }}</mat-icon></div><div><h4 class="font-bold text-pantone-dark-blue text-lg">{{ policy.title }}</h4><p class="text-sm text-gray-600">{{ policy.policyNumber }}</p></div></div>
                     <mat-icon class="text-gray-400 transition-transform" [class.rotate-180]="expandedPolicyId === policy.id">expand_more</mat-icon>
                   </div>
-
-                  <!-- UPDATED: Collapsible section with detailed view -->
-                  <div class="policy-details-collapsible" [class.expanded]="expandedPolicyId === policy.id">
-                    <div class="px-6 pb-4 pt-2">
-                      <!-- Conditionally render details only for Marine policies -->
-                      <div *ngIf="policy.type === 'marine' && policy.marineDetails as details">
-                        <!-- Shipment Details -->
-                        <h4 class="detail-section-title">Shipment Details</h4>
-                        <div class="policy-detail-grid">
-                          <div class="detail-item"><span class="detail-label">Mode of Shipment</span><span class="detail-value">{{ details.modeOfShipment | titlecase }}</span></div>
-                          <div class="detail-item"><span class="detail-label">Trade Type</span><span class="detail-value">{{ details.tradeType | titlecase }}</span></div>
-                          <div class="detail-item"><span class="detail-label">Country of Origin</span><span class="detail-value">{{ details.origin }}</span></div>
-                          <div class="detail-item"><span class="detail-label">Destination</span><span class="detail-value">{{ details.destination }}</span></div>
-                          <div class="detail-item"><span class="detail-label">UCR Number</span><span class="detail-value">{{ details.ucrNumber }}</span></div>
-                          <div class="detail-item"><span class="detail-label">IDF Number</span><span class="detail-value">{{ details.idfNumber }}</span></div>
-                        </div>
-
-                        <!-- Cargo Details -->
-                        <h4 class="detail-section-title">Cargo Details</h4>
-                        <div class="policy-detail-grid">
-                          <div class="detail-item"><span class="detail-label">Insured Product</span><span class="detail-value">{{ details.marineProduct }}</span></div>
-                          <div class="detail-item"><span class="detail-label">Cargo Type</span><span class="detail-value">{{ details.marineCargoType }}</span></div>
-                          <div class="detail-item"><span class="detail-label">Sum Insured</span><span class="detail-value">KES {{ details.sumInsured | number:'1.2-2' }}</span></div>
-                        </div>
-                        <div class="detail-item-full"><span class="detail-label">Goods Description</span><p class="detail-value mt-1">{{ details.descriptionOfGoods }}</p></div>
-
-                         <!-- Assured/Client Details -->
-                         <h4 class="detail-section-title">Assured Details</h4>
-                         <div class="policy-detail-grid">
-                           <div class="detail-item"><span class="detail-label">Name</span><span class="detail-value">{{ details.clientInfo.name }}</span></div>
-                           <div class="detail-item"><span class="detail-label">KRA PIN</span><span class="detail-value">{{ details.clientInfo.kraPin }}</span></div>
-                           <div class="detail-item"><span class="detail-label">Email</span><span class="detail-value">{{ details.clientInfo.email }}</span></div>
-                           <div class="detail-item"><span class="detail-label">Phone</span><span class="detail-value">{{ details.clientInfo.phoneNumber }}</span></div>
-                         </div>
-                      </div>
-                      
-                      <div class="mt-6 border-t pt-4 flex justify-end">
-                        <button mat-raised-button (click)="downloadCertificate(policy.id)" class="bg-pantone-dark-blue text-white rounded-xl px-6 py-2 text-sm font-semibold">Download Certificate</button>
-                      </div>
-                    </div>
-                  </div>
-
+                  <div class="policy-details-collapsible" [class.expanded]="expandedPolicyId === policy.id"><div class="px-6 pb-4 pt-2"><div *ngIf="policy.type === 'marine' && policy.marineDetails as details"><h4 class="detail-section-title">Shipment Details</h4><div class="policy-detail-grid"><div class="detail-item"><span class="detail-label">Mode of Shipment</span><span class="detail-value">{{ details.modeOfShipment | titlecase }}</span></div><div class="detail-item"><span class="detail-label">Trade Type</span><span class="detail-value">{{ details.tradeType | titlecase }}</span></div><div class="detail-item"><span class="detail-label">Country of Origin</span><span class="detail-value">{{ details.origin }}</span></div><div class="detail-item"><span class="detail-label">Destination</span><span class="detail-value">{{ details.destination }}</span></div><div class="detail-item"><span class="detail-label">UCR Number</span><span class="detail-value">{{ details.ucrNumber }}</span></div><div class="detail-item"><span class="detail-label">IDF Number</span><span class="detail-value">{{ details.idfNumber }}</span></div></div><h4 class="detail-section-title">Cargo Details</h4><div class="policy-detail-grid"><div class="detail-item"><span class="detail-label">Insured Product</span><span class="detail-value">{{ details.marineProduct }}</span></div><div class="detail-item"><span class="detail-label">Cargo Type</span><span class="detail-value">{{ details.marineCargoType }}</span></div><div class="detail-item"><span class="detail-label">Sum Insured</span><span class="detail-value">KES {{ details.sumInsured | number:'1.2-2' }}</span></div></div><div class="detail-item-full"><span class="detail-label">Goods Description</span><p class="detail-value mt-1">{{ details.descriptionOfGoods }}</p></div><h4 class="detail-section-title">Assured Details</h4><div class="policy-detail-grid"><div class="detail-item"><span class="detail-label">Name</span><span class="detail-value">{{ details.clientInfo.name }}</span></div><div class="detail-item"><span class="detail-label">KRA PIN</span><span class="detail-value">{{ details.clientInfo.kraPin }}</span></div><div class="detail-item"><span class="detail-label">Email</span><span class="detail-value">{{ details.clientInfo.email }}</span></div><div class="detail-item"><span class="detail-label">Phone</span><span class="detail-value">{{ details.clientInfo.phoneNumber }}</span></div></div></div><div class="mt-6 border-t pt-4 flex justify-end"><button mat-raised-button (click)="downloadCertificate(policy.id)" class="bg-pantone-dark-blue text-white rounded-xl px-6 py-2 text-sm font-semibold">Download Certificate</button></div></div></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
         <div class="space-y-6">
-          <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 bg-pantone-light-blue text-white"><h3 class="text-lg font-bold">Quick Actions</h3></div>
-            <div class="p-6 space-y-4">
-              <button mat-raised-button (click)="router.navigate(['/sign-up/marine-quote'])" class="w-full bg-pantone-dark-blue text-white rounded-xl p-4 text-sm font-semibold">New Marine Quote</button>
-              <button mat-raised-button (click)="router.navigate(['/sign-up/travel-quote'])" class="w-full bg-pantone-dark-blue text-white rounded-xl p-4 text-sm font-semibold">New Travel Quote</button>
-            </div>
-          </div>
-          <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 bg-pantone-dark-blue text-white"><h3 class="text-lg font-bold">Recent Activity</h3></div>
-            <div class="p-6">
-              <div class="space-y-4 max-h-80 overflow-y-auto">
-                <div *ngFor="let activity of recentActivities" class="activity-item group flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
-                  <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" [style.background-color]="activity.iconColor + '20'"><mat-icon class="!text-base" [style.color]="activity.iconColor">{{ activity.icon }}</mat-icon></div>
-                  <div class="flex-1 min-w-0"><p class="text-sm font-semibold text-pantone-dark-blue truncate">{{ activity.title }}</p><p class="text-xs text-gray-500 truncate">{{ activity.description }}</p><p class="text-xs text-gray-400 mt-1">{{ activity.timestamp | date:'short' }}</p></div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"><div class="px-6 py-4 bg-pantone-light-blue text-white"><h3 class="text-lg font-bold">Quick Actions</h3></div><div class="p-6 space-y-4"><button mat-raised-button (click)="router.navigate(['/sign-up/marine-quote'])" class="w-full bg-pantone-dark-blue text-white rounded-xl p-4 text-sm font-semibold">New Marine Quote</button><button mat-raised-button (click)="router.navigate(['/sign-up/travel-quote'])" class="w-full bg-pantone-dark-blue text-white rounded-xl p-4 text-sm font-semibold">New Travel Quote</button></div></div>
+          <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"><div class="px-6 py-4 bg-pantone-dark-blue text-white"><h3 class="text-lg font-bold">Recent Activity</h3></div><div class="p-6"><div class="space-y-4 max-h-80 overflow-y-auto"><div *ngFor="let activity of recentActivities" class="activity-item group flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer"><div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" [style.background-color]="activity.iconColor + '20'"><mat-icon class="!text-base" [style.color]="activity.iconColor">{{ activity.icon }}</mat-icon></div><div class="flex-1 min-w-0"><p class="text-sm font-semibold text-pantone-dark-blue truncate">{{ activity.title }}</p><p class="text-xs text-gray-500 truncate">{{ activity.description }}</p><p class="text-xs text-gray-400 mt-1">{{ activity.timestamp | date:'short' }}</p></div></div></div></div></div>
         </div>
       </div>
     </main>
   </div>
 </div>
-
 <mat-menu #notificationMenu="matMenu"> <div class="px-4 py-3 border-b border-gray-100"><h3 class="font-semibold text-pantone-dark-blue">Notifications</h3></div> <button mat-menu-item *ngFor="let notification of notifications" class="!min-w-[350px] !whitespace-normal px-4 py-3 hover:bg-gray-50"> <div class="flex items-start space-x-3"> <div class="w-2 h-2 rounded-full mt-2 flex-shrink-0" [ngClass]="{'bg-pantone-dark-blue': !notification.read, 'bg-gray-300': notification.read}"></div> <div class="flex-1 min-w-0"> <p class="font-semibold text-pantone-dark-blue text-sm">{{ notification.title }}</p> <p class="text-sm text-gray-600 break-words">{{ notification.message }}</p> <p class="text-xs text-gray-500 mt-1">{{ notification.timestamp | date:'short' }}</p> </div> </div> </button> </mat-menu>
 <mat-menu #userMenu="matMenu"> <div class="px-4 py-3 border-b border-gray-100"><p class="font-semibold text-pantone-dark-blue">{{ user.name }}</p><p class="text-sm text-gray-500">{{ user.email }}</p></div> <button mat-menu-item (click)="router.navigate(['/profile'])" class="px-4 py-3 hover:bg-gray-50"><mat-icon class="mr-3 text-gray-600">person</mat-icon><span>Profile</span></button> <button mat-menu-item (click)="logout()" class="px-4 py-3 hover:bg-gray-50"><mat-icon class="mr-3 text-gray-600">logout</mat-icon><span>Logout</span></button> </mat-menu>
