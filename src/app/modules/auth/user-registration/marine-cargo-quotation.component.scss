@@ -51,23 +51,20 @@ input, select, textarea {
     @apply outline-none ring-2 ring-blue-500 ring-offset-2 border-transparent;
   }
   
-  // Ensures disabled fields in modals look consistent and are not greyed out
   &:disabled {
-    background-color: #ffffff; // White background
-    color: #111827; // Strong black text
+    background-color: #ffffff;
+    color: #111827;
     opacity: 1; 
     cursor: not-allowed;
   }
 }
 
-// Styles the readonly 'Destination' field to look like a normal input
 input[readonly] {
-  background-color: #ffffff; // White background
-  color: #111827; // Strong black text
+  background-color: #ffffff;
+  color: #111827;
   cursor: not-allowed;
 }
 
-/* "Freezes" the main form when a modal is active */
 fieldset:disabled {
     opacity: 0.6;
     pointer-events: none;
