@@ -115,17 +115,6 @@ $white: #ffffff;
   word-break: break-word;
 }
 
-// Mobile sidebar responsiveness
-@media (max-width: 1024px) {
-  .sidebar-bg {
-    position: fixed;
-    z-index: 50;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease-in-out;
-    &.mobile-open { transform: translateX(0); }
-  }
-}
-
 // Styles for the custom Geminia Toast Message
 ::ng-deep .geminia-toast-panel {
   --mdc-snackbar-container-color: #{$pantone-dark-blue};
