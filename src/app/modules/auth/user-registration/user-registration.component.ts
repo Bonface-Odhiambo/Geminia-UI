@@ -62,7 +62,8 @@ export class MarineCargoQuotationComponent implements OnInit {
     readonly marineCargoTypes: string[] = ['Pharmaceuticals', 'Electronics', 'Apparel', 'Vehicles', 'Machinery', 'General Goods'];
     readonly blacklistedCountries: string[] = ['Russia', 'Ukraine', 'North Korea', 'Syria', 'Iran', 'Yemen', 'Sudan', 'Somalia'];
     readonly allCountriesList: string[] = [ 'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Australia', 'Austria', 'Bangladesh', 'Belgium', 'Brazil', 'Canada', 'China', 'Denmark', 'Egypt', 'Finland', 'France', 'Germany', 'Ghana', 'Greece', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Japan', 'Kenya', 'Mexico', 'Netherlands', 'New Zealand', 'Nigeria', 'North Korea', 'Norway', 'Pakistan', 'Russia', 'Saudi Arabia', 'Somalia', 'South Africa', 'Spain', 'Sudan', 'Sweden', 'Switzerland', 'Syria', 'Tanzania', 'Turkey', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States of America', 'Yemen', 'Zambia', 'Zimbabwe'];
-    private readonly TAX_RATES = { PHCF: 0.00525, TRAINING_LEVY: 0.0025, STAMP_DUTY: 40, COMMISSION_RATE: 0.10 };
+    // CORRECTED: Removed PHCF from this constant as its calculation is now different.
+    private readonly TAX_RATES = { TRAINING_LEVY: 0.0025, STAMP_DUTY: 40, COMMISSION_RATE: 0.10 };
 
     constructor(private fb: FormBuilder, private router: Router, private dialog: MatDialog) {
         this.quotationForm = this.createQuotationForm(); this.clientDetailsForm = this.createClientDetailsForm();
@@ -76,7 +77,20 @@ export class MarineCargoQuotationComponent implements OnInit {
     private createHighRiskRequestForm(): FormGroup { return this.createModalForm(); }
     private setDefaultDate(): void { this.quotationForm.patchValue({ coverStartDate: this.getToday() }); }
     private setupFormSubscriptions(): void { this.quotationForm.get('modeOfShipment')?.valueChanges.subscribe(mode => { const destControl = this.quotationForm.get('destination'); if (mode === 'sea') { destControl?.setValue('Mombasa, Kenya'); } else if (mode === 'air') { destControl?.setValue('JKIA, Nairobi, Kenya'); } else { destControl?.setValue(''); } }); this.quotationForm.get('tradeType')?.valueChanges.subscribe(type => { if (type === 'export') { this.showExportModal = true; }}); this.quotationForm.get('origin')?.valueChanges.subscribe(country => { if (this.blacklistedCountries.includes(country)) { this.highRiskRequestForm.patchValue({ originCountry: country }); this.showHighRiskModal = true; } }); this.quotationForm.get('ucrNumber')?.valueChanges.subscribe(ucr => { if (this.quotationForm.get('ucrNumber')?.valid) { this.importerDetails = { name: 'Global Imports Ltd.', kraPin: 'P051234567X' }; } else { this.importerDetails = { name: '', kraPin: '' }; } }); }
-    private calculatePremium(): void { const sumInsured = this.quotationForm.get('sumInsured')?.value || 0; const productValue = this.quotationForm.get('marineProduct')?.value; const selectedProduct = this.marineProducts.find(p => p.name === productValue); const rate = selectedProduct ? selectedProduct.rate : 0; const basePremium = sumInsured * rate; const { PHCF, TRAINING_LEVY, STAMP_DUTY, COMMISSION_RATE } = this.TAX_RATES; const phcf = basePremium * PHCF; const trainingLevy = basePremium * TRAINING_LEVY; const commission = this.currentUser.type === 'intermediary' ? basePremium * COMMISSION_RATE : 0; const totalPayable = basePremium + phcf + trainingLevy + STAMP_DUTY; this.premiumCalculation = { basePremium, phcf, trainingLevy, stampDuty: STAMP_DUTY, commission, totalPayable, currency: 'KES' }; }
+    private calculatePremium(): void {
+        const sumInsured = this.quotationForm.get('sumInsured')?.value || 0;
+        const productValue = this.quotationForm.get('marineProduct')?.value;
+        const selectedProduct = this.marineProducts.find(p => p.name === productValue);
+        const rate = selectedProduct ? selectedProduct.rate : 0;
+        const basePremium = sumInsured * rate;
+        const { TRAINING_LEVY, STAMP_DUTY, COMMISSION_RATE } = this.TAX_RATES;
+        // CORRECTED: PHCF is now 5% of the total value of marine cargo (sumInsured).
+        const phcf = sumInsured * 0.05;
+        const trainingLevy = basePremium * TRAINING_LEVY;
+        const commission = this.currentUser.type === 'intermediary' ? basePremium * COMMISSION_RATE : 0;
+        const totalPayable = basePremium + phcf + trainingLevy + STAMP_DUTY;
+        this.premiumCalculation = { basePremium, phcf, trainingLevy, stampDuty: STAMP_DUTY, commission, totalPayable, currency: 'KES' };
+    }
     private resetPremiumCalculation(): PremiumCalculation { return { basePremium: 0, phcf: 0, trainingLevy: 0, stampDuty: 0, commission: 0, totalPayable: 0, currency: 'KES' }; }
     onExportRequestSubmit(): void { if (this.exportRequestForm.valid) { this.closeAllModals(); this.showToast("Export request submitted. Our underwriter will contact you.", 'info'); } }
     onHighRiskRequestSubmit(): void { if (this.highRiskRequestForm.valid) { this.closeAllModals(); this.showToast("High-risk shipment request submitted for review.", 'info'); } }
