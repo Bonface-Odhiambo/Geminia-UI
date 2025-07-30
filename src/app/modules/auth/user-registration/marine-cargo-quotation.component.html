@@ -1,19 +1,23 @@
 <div class="min-h-screen w-screen bg-gray-50">
     <!-- Header -->
     <header class="sticky top-0 z-10 bg-white shadow-sm">
-        <div class="mx-auto max-w-7xl px-6">
-            <div class="flex items-center justify-between py-3">
-                <div class="flex items-center gap-4">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6">
+            <div
+                class="flex flex-col items-center justify-between gap-4 py-3 sm:flex-row sm:gap-0 sm:py-4"
+            >
+                <div class="flex items-center gap-3 sm:gap-4">
                     <img
                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROTKn0j9cVpA67LPdjPeYBR3KnWiwP1gsM3cS27rca-7m8BgvgUylY4uhBnOnVnXFx8Is&usqp=CAU"
                         alt="Geminia Logo"
-                        class="h-10 w-auto"
+                        class="h-8 w-auto sm:h-10"
                     />
-                    <h1 class="text-xl font-semibold text-slate-800">
+                    <h1 class="text-lg font-semibold text-slate-800 sm:text-xl">
                         Geminia Marine
                     </h1>
                 </div>
-                <div class="flex items-center gap-4">
+                <div
+                    class="flex flex-wrap items-center justify-center gap-3 sm:flex-nowrap sm:gap-4"
+                >
                     <span class="text-sm font-medium">Demo User:</span>
                     <select
                         (change)="switchUser($event)"
@@ -60,11 +64,22 @@
     </header>
 
     <!-- Main Content -->
-    <div class="p-6">
+    <div class="p-4 sm:p-6 lg:p-8">
         <div class="mx-auto max-w-7xl">
+            <!-- Close button -->
+            <div class="mb-4 flex justify-end">
+                <button
+                    (click)="closeAllModals()"
+                    class="rounded-md bg-gray-100 px-4 py-2 text-gray-600 hover:bg-gray-200"
+                >
+                    Close
+                </button>
+            </div>
             <!-- Progress Steps -->
-            <div class="mb-8">
-                <div class="flex items-center space-x-4">
+            <div class="mb-6 sm:mb-8">
+                <div
+                    class="flex flex-col items-center space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0"
+                >
                     <div class="flex items-center">
                         <div
                             [class]="
@@ -523,27 +538,31 @@
                                     </div>
                                 </form>
                             </div>
-                            <div class="mt-8 flex items-center justify-between">
+                            <div
+                                class="mt-6 flex flex-col items-center gap-4 sm:mt-8 sm:flex-row sm:justify-between"
+                            >
                                 <button
                                     (click)="goToStep(1)"
-                                    class="rounded-md border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50"
+                                    class="w-full rounded-md border border-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-50 sm:w-auto"
                                 >
                                     Back to Edit
                                 </button>
-                                <div class="flex gap-4">
+                                <div
+                                    class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:gap-4"
+                                >
                                     <button
                                         (click)="downloadQuote()"
                                         [disabled]="clientDetailsForm.invalid"
-                                        class="btn-primary rounded-md px-6 py-2 font-medium text-white transition-colors"
+                                        class="btn-primary w-full sm:w-auto"
                                     >
                                         Download Quote
                                     </button>
-                                    
+
                                     <!-- Conditional "Proceed to Payment" button -->
                                     <button
                                         (click)="handlePayment()"
                                         [disabled]="clientDetailsForm.invalid"
-                                        class="btn-primary rounded-md px-6 py-2 font-medium text-white transition-colors"
+                                        class="btn-primary w-full sm:w-auto"
                                     >
                                         Proceed to Payment
                                     </button>
@@ -673,7 +692,7 @@
                                         class="flex items-center justify-between"
                                     >
                                         <!-- CORRECTED: Changed label to be more descriptive of the new calculation -->
-                                        <span>PHCF (5% of Cargo Value)</span
+                                        <span>PHCF (0.25%)</span
                                         ><span
                                             >{{ premiumCalculation.currency }}
                                             {{
@@ -993,7 +1012,7 @@
         [ngClass]="{
             'bg-green-500': toastType === 'success',
             'toast-info': toastType === 'info',
-            'bg-red-500': toastType === 'error'
+            'bg-red-500': toastType === 'error',
         }"
     >
         {{ toastMessage }}
