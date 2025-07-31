@@ -208,3 +208,25 @@ fieldset:disabled {
     gap: 0.5rem;
   }
 }
+
+/* --- NEW STYLES ADDED --- */
+
+/* Style for Radio Buttons to use custom color */
+.custom-radio {
+  accent-color: #04b2e1; /* Pantone 306C */
+}
+
+/* Style for Checkboxes to use custom color */
+.custom-checkbox {
+  accent-color: #04b2e1; /* Pantone 306C */
+}
+
+/* Global style to remove padding from the MatDialog panel for our custom modal */
+::ng-deep .payment-modal-panel .mdc-dialog__content {
+  padding: 0 !important;
+}
+
+::ng-deep .payment-modal-panel {
+  border-radius: 16px !important;
+  max-width: 450px !important;
+}
