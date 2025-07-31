@@ -322,14 +322,9 @@
     </div>
 
     <!-- Universal Toast Message with updated Pantone color class -->
-    <div *ngIf="toastMessage" class="fixed bottom-5 right-5 z-50 rounded-lg px-6 py-3 text-white shadow-lg" 
-        [ngClass]="{ 
-            'bg-green-500': toastType === 'success', 
-            'bg-pantone-2758c': toastType === 'info', 
-            'bg-red-500': toastType === 'error' 
-        }">
-        {{ toastMessage }}
-    </div>
+    <div *ngIf="toastMessage" class="toast-container">
+  {{ toastMessage }}
+</div>
 
     <style>
         .bg-pantone-2758c {

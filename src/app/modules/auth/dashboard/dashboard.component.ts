@@ -57,7 +57,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   navigationItems: NavigationItem[] = [];
   dashboardStats: DashboardStats = { marinePolicies: 0, travelPolicies: 0, pendingQuotes: 0, totalPremium: 0 };
   
-  // Static data can remain as placeholders or be replaced by API calls
   activePolicies: Policy[] = [ { id: 'P001', type: 'marine', title: 'Machinery Import', policyNumber: 'MAR/2024/7531', status: 'active', premium: 18500, startDate: new Date('2024-08-01'), endDate: new Date('2024-09-30'), certificateUrl: '/simulated/MAR-2024-7531.pdf', marineDetails: { cargoType: 'containerized', tradeType: 'import', modeOfShipment: 'sea', marineProduct: 'Institute Cargo Clauses (A) - All Risks', marineCargoType: 'Machinery', origin: 'Germany', destination: 'Mombasa, Kenya', sumInsured: 3500000, descriptionOfGoods: 'Industrial-grade printing press machine, packed in a 40ft container.', ucrNumber: 'UCR202408153', idfNumber: 'E2300012345', clientInfo: { name: 'Bonface Odhiambo', idNumber: '30123456', kraPin: 'A001234567Z', email: 'bonface@example.com', phoneNumber: '0712345678' } } }, { id: 'P002', type: 'travel', title: 'Schengen Visa Travel Insurance', policyNumber: 'TRV/2024/9102', status: 'active', premium: 4800, startDate: new Date('2024-09-01'), endDate: new Date('2025-08-31'), certificateUrl: '/simulated/TRV-2024-9102.pdf' } ];
   recentActivities: Activity[] = [ { id: 'A001', title: 'Payment Successful', description: 'Travel Insurance for Europe', timestamp: new Date(Date.now() - 3600000), icon: 'payment', iconColor: '#04b2e1', relatedId: 'P003' }, { id: 'A002', title: 'Certificate Downloaded', description: 'Marine Cargo Policy MAR-2025-002', timestamp: new Date(Date.now() - 14400000), icon: 'download', iconColor: '#04b2e1', relatedId: 'P002' }, { id: 'A003', title: 'Profile Updated', description: 'Contact information updated', timestamp: new Date(Date.now() - 86400000), icon: 'person', iconColor: '#21275c' }];
   notifications: Notification[] = [ { id: 'N001', title: 'Quotes Awaiting Payment', message: 'You have quotes that need payment to activate your policy.', timestamp: new Date(), read: false, actionUrl: '#pending-quotes' }, { id: 'N002', title: 'Certificates Ready', message: 'Your new policy certificates are ready for download.', timestamp: new Date(), read: false, actionUrl: '#active-policies' } ];
@@ -81,8 +80,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.loadDashboardData();
           this.setupNavigationBasedOnRole(user.type);
         } else {
-          // If the user logs out, they will be redirected by the auth guard or other logic.
-          // Or we can force it here:
           this.router.navigate(['/']);
         }
       });
@@ -115,16 +112,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (quote && this.user) {
       const paymentData: MpesaPayment = {
         amount: quote.premium.totalPayable,
-        phoneNumber: this.user.phoneNumber || '', // Ensure user has a phone number
+        phoneNumber: this.user.phoneNumber || '',
         reference: quote.id,
         description: quote.title
       };
       const dialogRef = this.dialog.open(MpesaPaymentModalComponent, { data: paymentData, panelClass: 'payment-modal-panel', autoFocus: false });
       dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((result: PaymentResult | null) => {
         if (result?.success) {
-          this.snackBar.open(`Payment for "${quote.title}" was successful.`, 'OK', { duration: 7000 });
+          this.snackBar.open(`Payment for "${quote.title}" was successful.`, 'OK', { 
+            duration: 7000,
+            panelClass: ['geminia-toast-panel'] // Apply custom style
+          });
           this.authService.removePendingQuote(quoteId);
-          this.loadDashboardData(); // Refresh dashboard
+          this.loadDashboardData();
         }
       });
     }
@@ -134,7 +134,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (confirm('Are you sure you want to delete this saved quote?')) {
         this.authService.removePendingQuote(quoteId);
         this.loadDashboardData();
-        this.snackBar.open('Quote deleted.', 'OK', { duration: 3000 });
+        this.snackBar.open('Quote deleted.', 'OK', { 
+          duration: 3000,
+          panelClass: ['geminia-toast-panel'] // Apply custom style
+        });
     }
   }
   

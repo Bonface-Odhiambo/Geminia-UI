@@ -1,7 +1,10 @@
+/* src/app/modules/auth/marine-cargo-quotation/marine-cargo-quotation.component.scss */
+
 /* --- COLOR VARIABLES --- */
 :host {
   --primary-color: #04b2e1;    /* Pantone 306C */
   --hover-color: #21275c;      /* Pantone 2758C */
+  --brand-color: #21275c;      /* Explicit brand color for toast */
   --disabled-bg: #d1d5db;      /* A neutral gray for disabled states */
   --disabled-text: #f9fafb;    /* A very light text for a "ghosted" look */
   --danger-color: #ef4444;     /* A standard red for validation errors */
@@ -76,7 +79,6 @@ input, select, textarea {
     cursor: not-allowed;
   }
 
-  // Explicit class for invalid fields, driven by [ngClass] in the HTML
   &.is-invalid {
     border-color: var(--danger-color);
     &:focus {
@@ -97,12 +99,10 @@ select {
   padding-right: 2.5rem;
 }
 
-/* Disables interactions on sections that should be blocked */
 fieldset:disabled {
   opacity: 0.7;
   pointer-events: none;
 }
-
 
 /* --- LAYOUT HELPERS --- */
 .grid {
@@ -138,32 +138,27 @@ fieldset:disabled {
   }
 }
 
-/* --- TOAST NOTIFICATIONS --- */
-.toast-notification-container {
+/* --- FINAL BRANDED TOAST NOTIFICATION STYLE --- */
+.toast-container {
   position: fixed;
-  bottom: 1.25rem;
-  right: 1.25rem;
+  top: 20px;
+  right: 20px;
   padding: 1rem 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 100;
+  border-radius: 8px;
+  z-index: 1050;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+  animation: fadeInToast 0.3s ease-out, fadeOutToast 0.3s ease-in 4.5s forwards;
+
+  // This is now the ONLY background color used for toasts in this component.
+  background-color: var(--brand-color);
   color: white;
-  animation: slideInUp 0.5s ease-in-out;
 
   @media (max-width: 640px) {
-    left: 1.25rem;
-    right: 1.25rem;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
     text-align: center;
-  }
-
-  &.toast-info {
-    background-color: var(--hover-color); // Pantone 2758C
-  }
-  &.toast-success {
-    background-color: #22c55e; // green-500
-  }
-  &.toast-error {
-    background-color: var(--danger-color); // red-500
   }
 }
 
@@ -179,14 +174,26 @@ fieldset:disabled {
 }
 
 /* --- ANIMATIONS --- */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes fadeInToast {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@keyframes slideInUp {
-  from { opacity: 0; transform: translateY(100%); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes fadeOutToast {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
 }
 
 .animate-fade-in {

@@ -54,7 +54,6 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     showExportModal: boolean = false;
     showHighRiskModal: boolean = false;
     toastMessage: string = '';
-    toastType: 'success' | 'info' | 'error' = 'success';
     importerDetails: ImporterDetails = { name: '', kraPin: '' };
     premiumCalculation: PremiumCalculation = this.resetPremiumCalculation();
     
@@ -82,7 +81,6 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        // Reactively update the component's state based on authentication status
         this.authService.currentUser$
             .pipe(takeUntil(this.destroy$))
             .subscribe(user => {
@@ -93,7 +91,6 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
                 }
             });
 
-        // Check for an edit ID in the URL to load a saved quote
         this.route.queryParams
             .pipe(takeUntil(this.destroy$))
             .subscribe(params => {
@@ -116,7 +113,6 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     private prefillClientDetails(): void {
         if (!this.currentUser) return;
         const registrationData = this.authService.getRegistrationData();
-        // Use registration data if available, as it might be more complete
         if (registrationData) {
             const nameParts = registrationData.fullName?.split(' ') || [this.currentUser.name];
             this.clientDetailsForm.patchValue({
@@ -134,46 +130,31 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             this.quotationForm.patchValue(quoteToEdit.quoteDetails);
             this.premiumCalculation = quoteToEdit.premium;
             this.goToStep(2);
-            this.showToast(`Editing your saved quote: ${quoteToEdit.title}.`, 'info');
+            this.showToast(`Editing your saved quote: ${quoteToEdit.title}.`);
         } else {
-            this.showToast('Could not find the quote you want to edit.', 'error');
+            this.showToast('Could not find the quote you want to edit.');
             this.router.navigate(['/dashboard']);
         }
     }
 
-    /**
-     * Handles the "Proceed to Payment" button click based on login status.
-     */
     handlePayment(): void {
-        // --- LOGIC FOR LOGGED-IN USERS ---
         if (this.isLoggedIn) {
             if (!this.clientDetailsForm.valid) {
                 this.clientDetailsForm.markAllAsTouched();
-                this.showToast('Please fill in all required client details to proceed.', 'error');
+                this.showToast('Please fill in all required client details to proceed.');
                 return;
             }
             this.openPaymentModal();
-        } 
-        // --- LOGIC FOR LOGGED-OUT (GUEST) USERS ---
-        else {
-            this.showToast('Please log in or register to complete your purchase.', 'info');
-            // Redirect to the home/login page after a short delay for the user to read the message.
-            setTimeout(() => {
-                this.router.navigate(['/']);
-            }, 2500);
+        } else {
+            this.showToast('Please log in or register to complete your purchase.');
+            setTimeout(() => { this.router.navigate(['/']); }, 2500);
         }
     }
     
-    /**
-     * Handles the "Close" button click based on login status.
-     */
     closeForm(): void {
-        // --- LOGIC FOR LOGGED-IN USERS ---
         if (this.isLoggedIn) {
             this.router.navigate(['/dashboard']);
-        } 
-        // --- LOGIC FOR LOGGED-OUT (GUEST) USERS ---
-        else {
+        } else {
             this.router.navigate(['/']);
         }
     }
@@ -192,7 +173,7 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
                     premium: this.premiumCalculation
                 };
                 this.authService.savePendingQuote(newQuote);
-                this.showToast('Your quote has been saved to your dashboard!', 'success');
+                this.showToast('Your quote has been saved to your dashboard!');
                 this.goToStep(2);
             }
         } else {
@@ -202,14 +183,18 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
 
     private openPaymentModal(): void { 
         const dialogRef = this.dialog.open(PaymentModalComponent, { data: { amount: this.premiumCalculation.totalPayable, phoneNumber: this.clientDetailsForm.get('phoneNumber')?.value, reference: `GEM${Date.now()}`, description: 'Marine Cargo Insurance' }, panelClass: 'payment-dialog-container', autoFocus: false }); 
-        dialogRef.afterClosed().subscribe((result: PaymentResult | null) => { 
+        
+        dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((result: PaymentResult | null) => { 
             if (result?.success) {
-                // If this was an existing quote, remove it from pending list after payment
                 if (this.editModeQuoteId) {
                     this.authService.removePendingQuote(this.editModeQuoteId);
                 }
-                this.showToast('Payment successful! Your certificate is being prepared.', 'success'); 
-                setTimeout(() => this.downloadCertificate(), 2000); 
+                
+                this.showToast('Payment successful! Redirecting to your dashboard.');
+                
+                setTimeout(() => {
+                  this.router.navigate(['/dashboard']);
+                }, 2000); 
             } 
         }); 
     }
@@ -223,16 +208,21 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     private setupFormSubscriptions(): void { this.quotationForm.get('modeOfShipment')?.valueChanges.subscribe((mode) => { this.quotationForm.get('destination')?.setValue(mode === 'sea' ? 'Mombasa, Kenya' : mode === 'air' ? 'JKIA, Nairobi, Kenya' : ''); }); this.quotationForm.get('tradeType')?.valueChanges.subscribe((type) => { if (type === 'export') this.showExportModal = true; }); this.quotationForm.get('origin')?.valueChanges.subscribe((country) => { if (this.blacklistedCountries.includes(country)) { this.highRiskRequestForm.patchValue({ originCountry: country }); this.showHighRiskModal = true; } }); this.quotationForm.get('ucrNumber')?.valueChanges.subscribe(() => { this.importerDetails = this.quotationForm.get('ucrNumber')?.valid ? { name: 'Global Imports Ltd.', kraPin: 'P051234567X' } : { name: '', kraPin: '' }; }); }
     private calculatePremium(): void { const sumInsured = this.quotationForm.get('sumInsured')?.value || 0; const productValue = this.quotationForm.get('marineProduct')?.value; const selectedProduct = this.marineProducts.find((p) => p.name === productValue); const rate = selectedProduct ? selectedProduct.rate : 0; const { PHCF_RATE, TRAINING_LEVY, COMMISSION_RATE, STAMP_DUTY_RATE } = this.TAX_RATES; const basePremium = sumInsured * rate; const phcf = basePremium * PHCF_RATE; const trainingLevy = basePremium * TRAINING_LEVY; const commission = this.currentUser?.type === 'intermediary' ? basePremium * COMMISSION_RATE : 0; const stampDuty = sumInsured * STAMP_DUTY_RATE; const totalPayable = basePremium + phcf + trainingLevy + stampDuty; this.premiumCalculation = { basePremium, phcf, trainingLevy, stampDuty, commission, totalPayable, currency: 'KES' }; }
     private resetPremiumCalculation(): PremiumCalculation { return { basePremium: 0, phcf: 0, trainingLevy: 0, stampDuty: 0, commission: 0, totalPayable: 0, currency: 'KES' }; }
-    onExportRequestSubmit(): void { if (this.exportRequestForm.valid) { this.closeAllModals(); this.showToast('Export request submitted. Our underwriter will contact you.', 'info'); }}
-    onHighRiskRequestSubmit(): void { if (this.highRiskRequestForm.valid) { this.closeAllModals(); this.showToast('High-risk shipment request submitted for review.', 'info'); }}
+    onExportRequestSubmit(): void { if (this.exportRequestForm.valid) { this.closeAllModals(); this.showToast('Export request submitted. Our underwriter will contact you.'); }}
+    onHighRiskRequestSubmit(): void { if (this.highRiskRequestForm.valid) { this.closeAllModals(); this.showToast('High-risk shipment request submitted for review.'); }}
     closeAllModals(): void { this.showExportModal = false; this.showHighRiskModal = false; this.quotationForm.get('tradeType')?.setValue('import', { emitEvent: false }); this.quotationForm.get('origin')?.setValue('', { emitEvent: false }); this.exportRequestForm.reset({ marineProduct: 'Institute Cargo Clauses (A) - All Risks', originCountry: 'Kenya' }); this.highRiskRequestForm.reset({ marineProduct: 'Institute Cargo Clauses (A) - All Risks' }); }
-    private showToast( message: string, type: 'success' | 'info' | 'error' = 'success' ): void { this.toastMessage = message; this.toastType = type; setTimeout(() => (this.toastMessage = ''), 5000); }
-    downloadQuote(): void { if (this.clientDetailsForm.valid) { this.showToast('Quote download initiated successfully.', 'info'); }}
-    downloadCertificate(): void { this.showToast('Your policy certificate has been downloaded.', 'success'); console.log('Certificate download process initiated.'); setTimeout(() => this.closeForm(), 2000); }
+    
+    private showToast(message: string): void {
+        this.toastMessage = message;
+        setTimeout(() => (this.toastMessage = ''), 5000);
+    }
+
+    downloadQuote(): void { if (this.clientDetailsForm.valid) { this.showToast('Quote download initiated successfully.'); }}
+    downloadCertificate(): void { this.showToast('Your policy certificate has been downloaded.'); console.log('Certificate download process initiated.'); setTimeout(() => this.closeForm(), 2000); }
     getToday(): string { return new Date().toISOString().split('T')[0]; }
     noPastDatesValidator(control: AbstractControl): { [key: string]: boolean } | null { if (!control.value) return null; return control.value < new Date().toISOString().split('T')[0] ? { pastDate: true } : null; }
     goToStep(step: number): void { this.currentStep = step; }
-    switchUser(event: any): void { if(this.currentUser) { const userType = event.target.value as 'individual' | 'intermediary'; this.currentUser.type = userType; this.showToast(`Switched to ${userType} view.`, 'info'); if (this.currentStep === 2) this.calculatePremium(); }}
+    switchUser(event: any): void { if(this.currentUser) { const userType = event.target.value as 'individual' | 'intermediary'; this.currentUser.type = userType; this.showToast(`Switched to ${userType} view.`); if (this.currentStep === 2) this.calculatePremium(); }}
     isFieldInvalid(form: FormGroup, field: string): boolean { const control = form.get(field); return !!control && control.invalid && (control.dirty || control.touched); }
     getErrorMessage(form: FormGroup, field: string): string { const control = form.get(field); if (!control || !control.errors) return ''; if (control.hasError('required')) return 'This field is required.'; if (control.hasError('email')) return 'Please enter a valid email address.'; if (control.hasError('min')) return `The minimum value is ${control.errors['min'].min}.`; if (control.hasError('minLength')) return `Must be at least ${control.errors['minLength'].requiredLength} characters.`; if (control.hasError('pattern')) { switch (field) { case 'idNumber': return 'Please enter a valid 7 or 8 digit ID number.'; case 'kraPin': return 'Invalid KRA PIN format (e.g., A123456789Z).'; case 'phoneNumber': return 'Invalid phone number format (e.g., 0712345678).'; case 'ucrNumber': return 'Invalid UCR format (e.g., UCR2024123).'; case 'idfNumber': return 'Invalid IDF format (e.g., E202412345).'; case 'firstName': case 'lastName': return 'Please enter a valid name (letters and spaces only).'; default: return 'Invalid format. Please check your entry.'; }} if (control.hasError('maxWords')) return `Exceeds the maximum word count of ${control.errors['maxWords'].maxWords}.`; if (control.hasError('pastDate')) return 'Date cannot be in the past.'; if (control.hasError('requiredTrue')) return 'You must agree to proceed.'; return 'Invalid input.'; }
 }
