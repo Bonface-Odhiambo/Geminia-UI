@@ -1,232 +1,90 @@
-/* Responsive container styles */
-.min-h-screen {
-  padding: 1rem;
-  
-  @media (min-width: 768px) {
-    padding: 2rem;
-  }
-}
-
-/* Custom button styling with specified Pantone colors */
+/* --- Main Component Styles --- */
 .btn-primary {
   background-color: #04b2e1; /* Pantone 306C */
-  color: white;
   transition: all 0.3s ease-in-out;
-  width: auto;
-  white-space: nowrap;
-  border-radius: 0.375rem;
-  padding: 0.75rem 1.5rem;
-  font-weight: 500;
-
-  @media (max-width: 640px) {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-
-  &:hover {
-    background-color: #21275c; /* Pantone 2758C */
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  &:disabled {
-    background-color: #9ca3af;
-    cursor: not-allowed;
-    opacity: 0.8;
-    transform: none;
-    box-shadow: none;
-  }
 }
 
-/* Custom styling for payment option radio buttons */
-.payment-option {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  width: 100%;
-  
-  &:has(input:checked) {
-    background-color: #eff6ff;
-    border-color: #3b82f6;
-  }
-
-  &:hover {
-    background-color: #f9fafb;
-  }
+.btn-primary:hover {
+  background-color: #21275c; /* Pantone 2758C */
 }
 
-/* Form group spacing and responsiveness */
-.form-group {
-  margin-bottom: 1.5rem;
-
-  @media (max-width: 640px) {
-    margin-bottom: 1rem;
-  }
+.btn-primary:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.8;
 }
 
-/* Grid layout improvements */
-.grid {
-  gap: 1.5rem;
-  
-  @media (max-width: 640px) {
-    gap: 1rem;
-  }
-}
-
-/* Premium summary card responsiveness */
-.premium-summary {
-  position: sticky;
-  top: 1.5rem;
-  background: white;
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-
-  @media (max-width: 1024px) {
-    position: static;
-    margin-top: 1.5rem;
-  }
-}
-
-/* Form inputs and selects styling */
-input, select, textarea {
-  width: 100%;
-  padding: 0.625rem 0.75rem;
+/* Custom styling for form inputs and selects */
+input[type="text"], 
+input[type="number"], 
+input[type="date"], 
+input[type="email"], 
+input[type="tel"], 
+select, 
+textarea {
   border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
   transition: all 0.2s;
-
-  &:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
-  }
-  
-  &:disabled, &[readonly] {
-    background-color: #f9fafb;
-    color: #374151;
-    cursor: not-allowed;
-  }
 }
 
-/* Custom select styling */
-select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 0.5rem center;
-  background-repeat: no-repeat;
-  background-size: 1.5em 1.5em;
-  padding-right: 2.5rem;
+input[type="text"]:focus, 
+input[type="number"]:focus, 
+input[type="date"]:focus, 
+input[type="email"]:focus, 
+input[type="tel"]:focus, 
+select:focus, 
+textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-/* Form validation styling */
+/* Form validation error styling */
 .ng-invalid.ng-touched:not(form) {
-  border-color: #ef4444;
+  border-color: #ef4444 !important;
 }
 
-/* Disabled fieldset styling */
-fieldset:disabled {
-  opacity: 0.7;
-  pointer-events: none;
+.ng-invalid.ng-touched:not(form):focus {
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
 }
 
-/* Toast notifications */
-.toast-notification {
-  position: fixed;
-  bottom: 1.25rem;
-  right: 1.25rem;
-  padding: 1rem 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 50;
-  animation: slideInUp 0.5s ease-in-out;
-
-  @media (max-width: 640px) {
-    left: 1.25rem;
-    right: 1.25rem;
-    text-align: center;
-  }
-}
-
-.toast-info {
-  background-color: #21275c;
-}
-
-/* Modal responsiveness */
-.modal-content {
-  max-height: 85vh;
-  overflow-y: auto;
-  width: 90%;
-  max-width: 48rem;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  
-  @media (max-width: 640px) {
-    width: 95%;
-    padding: 1rem;
-    margin: 1rem auto;
-  }
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideInUp {
-  from { opacity: 0; transform: translateY(100%); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.4s ease-in-out;
-}
-
-.slide-in-up {
-  animation: slideInUp 0.5s ease-in-out;
-}
-
-/* Button group responsiveness */
-.button-group {
-  display: flex;
-  gap: 1rem;
-  
-  @media (max-width: 640px) {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-}
-
-/* --- NEW STYLES ADDED --- */
-
-/* Style for Radio Buttons to use custom color */
-.custom-radio {
-  accent-color: #04b2e1; /* Pantone 306C */
-}
-
-/* Style for Checkboxes to use custom color */
+/* --- Radio & Checkbox Styles --- */
+.custom-radio, 
 .custom-checkbox {
   accent-color: #04b2e1; /* Pantone 306C */
 }
 
-/* Global style to remove padding from the MatDialog panel for our custom modal */
-::ng-deep .payment-modal-panel .mdc-dialog__content {
+/* --- Animation for Step Content & Toast --- */
+.step-content, 
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Toast Notification Styles --- */
+.toast-info {
+  background-color: #21275c; /* Pantone 2758C */
+}
+
+/* --- Overrides for Angular Material Payment Modal --- */
+/*
+  ::ng-deep is used here to pierce the style encapsulation of Angular Material components.
+  This allows us to apply our custom branding and layout to the dialog.
+*/
+:host ::ng-deep .payment-modal-panel .mdc-dialog__surface {
+  border-radius: 16px !important;
+  box-shadow: none !important;
+}
+
+:host ::ng-deep .payment-modal-panel .mat-mdc-dialog-container .mdc-dialog__content {
   padding: 0 !important;
 }
 
-::ng-deep .payment-modal-panel {
-  border-radius: 16px !important;
+:host ::ng-deep .payment-modal-panel {
   max-width: 450px !important;
+  border-radius: 16px !important;
+  overflow: hidden;
 }

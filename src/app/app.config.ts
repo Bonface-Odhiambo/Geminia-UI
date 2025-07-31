@@ -18,6 +18,7 @@ import { MockApiService } from 'app/mock-api';
 import { firstValueFrom } from 'rxjs';
 import { TranslocoHttpLoader } from './core/transloco/transloco.http-loader';
 
+
 export const appConfig: ApplicationConfig = {
     providers: [
         provideAnimations(),

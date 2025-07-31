@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, Injectable, OnInit } from '@angular/core';
 import {
     AbstractControl,
     FormBuilder,
@@ -25,8 +25,107 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 
-// Import the new shared AuthService
-import { AuthService } from '../../../../auth.service'; // Adjust path if needed
+// AuthService with proper user management
+@Injectable({
+    providedIn: 'root'
+})
+export class AuthService {
+    private currentUser: string | null = null;
+    private readonly validUsers = [
+        {
+            username: 'individual@geminia.com',
+            password: 'password123',
+            type: 'individual',
+        },
+        {
+            username: 'intermediary@geminia.com',
+            password: 'password456',
+            type: 'intermediary',
+        },
+    ];
+
+    constructor() {
+        // Check if user is stored in localStorage on service initialization
+        this.currentUser = localStorage.getItem('currentUser');
+    }
+
+    isLoggedIn(): boolean {
+        return this.currentUser !== null && this.validUsers.some(user => user.username === this.currentUser);
+    }
+
+    getCurrentUser(): string | null {
+        return this.currentUser;
+    }
+
+    getUserType(): 'individual' | 'intermediary' | null {
+        if (!this.currentUser) return null;
+        const user = this.validUsers.find(u => u.username === this.currentUser);
+        return user ? user.type as 'individual' | 'intermediary' : null;
+    }
+
+    login(email: string, password: string): boolean {
+        const user = this.validUsers.find(u => u.username === email && u.password === password);
+        if (user) {
+            this.currentUser = email;
+            localStorage.setItem('currentUser', email);
+            return true;
+        }
+        return false;
+    }
+
+    logout(): void {
+        this.currentUser = null;
+        localStorage.removeItem('currentUser');
+    }
+
+    setLoginStatus(status: boolean, userType?: 'individual' | 'intermediary'): void {
+        if (status && userType) {
+            const user = this.validUsers.find(u => u.type === userType);
+            if (user) {
+                this.currentUser = user.username;
+                localStorage.setItem('currentUser', user.username);
+            }
+        } else {
+            this.logout();
+        }
+    }
+}
+
+// Enhanced IDF Number Validator
+export function idfNumberValidator(control: AbstractControl): { [key: string]: any } | null {
+    if (!control.value) return null;
+
+    const idfPattern = /^E\d{10}$/; // E followed by exactly 10 digits
+    const value = control.value.toString().trim().toUpperCase();
+
+    if (!idfPattern.test(value)) {
+        return {
+            idfNumber: {
+                message: 'IDF number must start with "E" followed by exactly 10 digits (e.g., E1234567890)'
+            }
+        };
+    }
+
+    return null;
+}
+
+// Enhanced UCR Number Validator
+export function ucrNumberValidator(control: AbstractControl): { [key: string]: any } | null {
+    if (!control.value) return null;
+
+    const ucrPattern = /^UCR\d{7,}$/; // UCR followed by at least 7 digits
+    const value = control.value.toString().trim().toUpperCase();
+
+    if (!ucrPattern.test(value)) {
+        return {
+            ucrNumber: {
+                message: 'UCR number must start with "UCR" followed by at least 7 digits (e.g., UCR1234567)'
+            }
+        };
+    }
+
+    return null;
+}
 
 // Validator Function
 export function maxWords(max: number) {
@@ -57,6 +156,7 @@ interface MarineProduct {
 interface User {
     type: 'individual' | 'intermediary';
     name: string;
+    email: string;
 }
 interface ImporterDetails {
     name: string;
@@ -198,14 +298,20 @@ export interface PaymentResult {
             flex-shrink: 0;
         }
         .header-icon-wrapper mat-icon { font-size: 28px; width: 28px; height: 28px; color: var(--pantone-306c); }
-        .modal-title { 
-            font-size: 22px; 
-            font-weight: 700; 
-            margin: 0; 
-            color: var(--white-color); /* Explicitly set to opaque white */
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+            color: var(--white-color) !important;
         }
-        .modal-subtitle { font-size: 14px; opacity: 0.9; margin-top: 4px; max-width: 250px; }
-        .close-button { position: absolute; top: 12px; right: 12px; color: var(--white-color); opacity: 0.7; }
+        .modal-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 4px;
+            max-width: 250px;
+            color: var(--white-color) !important;
+        }
+        .close-button { position: absolute; top: 12px; right: 12px; color: var(--white-color) !important; opacity: 0.7; }
         .modal-content { padding: 0 !important; }
         .payment-tabs .tab-label-content { display: flex; align-items: center; gap: 8px; height: 60px; justify-content: center; }
         .tab-panel-content { padding: 24px; }
@@ -238,6 +344,7 @@ export class MpesaPaymentModalComponent implements OnInit {
     isProcessingStk = false;
     isVerifyingPaybill = false;
     isRedirectingToCard = false;
+
     constructor(
         private fb: FormBuilder,
         public dialogRef: MatDialogRef<MpesaPaymentModalComponent>,
@@ -250,11 +357,55 @@ export class MpesaPaymentModalComponent implements OnInit {
             ],
         });
     }
+
     ngOnInit(): void {}
-    closeDialog(result: PaymentResult | null = null): void { this.dialogRef.close(result); }
-    processStkPush(): void { /* Logic unchanged */ }
-    verifyPaybillPayment(): void { /* Logic unchanged */ }
-    redirectToCardGateway(): void { /* Logic unchanged */ }
+
+    closeDialog(result: PaymentResult | null = null): void {
+        this.dialogRef.close(result);
+    }
+
+    processStkPush(): void {
+        if (this.stkForm.valid) {
+            this.isProcessingStk = true;
+            // Simulate STK push process
+            setTimeout(() => {
+                this.isProcessingStk = false;
+                this.closeDialog({
+                    success: true,
+                    method: 'stk',
+                    reference: this.data.reference,
+                    mpesaReceipt: 'STK' + Date.now()
+                });
+            }, 3000);
+        }
+    }
+
+    verifyPaybillPayment(): void {
+        this.isVerifyingPaybill = true;
+        // Simulate payment verification
+        setTimeout(() => {
+            this.isVerifyingPaybill = false;
+            this.closeDialog({
+                success: true,
+                method: 'paybill',
+                reference: this.data.reference,
+                mpesaReceipt: 'PB' + Date.now()
+            });
+        }, 2000);
+    }
+
+    redirectToCardGateway(): void {
+        this.isRedirectingToCard = true;
+        // Simulate redirect to card gateway
+        setTimeout(() => {
+            this.isRedirectingToCard = false;
+            this.closeDialog({
+                success: true,
+                method: 'card',
+                reference: this.data.reference
+            });
+        }, 1500);
+    }
 }
 
 @Component({
@@ -264,6 +415,8 @@ export class MpesaPaymentModalComponent implements OnInit {
         CommonModule, ReactiveFormsModule, RouterLink, CurrencyPipe, DecimalPipe, MatDialogModule,
         MpesaPaymentModalComponent,
     ],
+    providers: [AuthService],
+    // These paths are assumed to be correct for your project structure
     templateUrl: './marine-cargo-quotation.component.html',
     styleUrls: ['./marine-cargo-quotation.component.scss'],
 })
@@ -277,11 +430,11 @@ export class MarineCargoQuotationComponent implements OnInit {
     showHighRiskModal: boolean = false;
     toastMessage: string = '';
     toastType: 'success' | 'info' | 'error' = 'success';
-    currentUser: User = { type: 'individual', name: 'Individual User' };
+    currentUser: User = { type: 'individual', name: 'Individual User', email: 'individual@geminia.com' };
     importerDetails: ImporterDetails = { name: '', kraPin: '' };
     premiumCalculation: PremiumCalculation;
     isLoggedIn: boolean = false;
-    
+
     readonly marineProducts: MarineProduct[] = [
         { code: 'ICC_A', name: 'Institute Cargo Clauses (A) - All Risks', rate: 0.005 },
         { code: 'ICC_B', name: 'Institute Cargo Clauses (B) - Named Perils', rate: 0.0035 },
@@ -304,13 +457,33 @@ export class MarineCargoQuotationComponent implements OnInit {
         this.exportRequestForm = this.createExportRequestForm();
         this.highRiskRequestForm = this.createHighRiskRequestForm();
     }
-    
+
     ngOnInit(): void {
-        this.isLoggedIn = this.authService.isLoggedIn();
+        this.checkLoginStatus();
         this.setupFormSubscriptions();
         this.setDefaultDate();
+        this.prefillUserData();
     }
-    
+
+    private checkLoginStatus(): void {
+        this.isLoggedIn = this.authService.isLoggedIn();
+        if (this.isLoggedIn) {
+            const userType = this.authService.getUserType();
+            const currentUserEmail = this.authService.getCurrentUser();
+
+            if (userType && currentUserEmail) {
+                this.currentUser = {
+                    type: userType,
+                    name: userType === 'individual' ? 'Individual User' : 'Intermediary User',
+                    email: currentUserEmail
+                };
+            }
+        } else {
+            // Reset to guest mode
+            this.currentUser = { type: 'individual', name: 'Individual User (Guest)', email: '' };
+        }
+    }
+
     private createQuotationForm(): FormGroup {
         return this.fb.group({
             cargoType: ['', Validators.required],
@@ -323,8 +496,8 @@ export class MarineCargoQuotationComponent implements OnInit {
             coverStartDate: ['', [Validators.required, this.noPastDatesValidator]],
             sumInsured: ['', [Validators.required, Validators.min(10000)]],
             descriptionOfGoods: ['', Validators.required],
-            ucrNumber: ['', [Validators.required, Validators.pattern('^UCR\\d{7,}$')]],
-            idfNumber: ['', [Validators.required, Validators.pattern('^E\\d{9,}$')]],
+            ucrNumber: ['', [Validators.required, ucrNumberValidator]],
+            idfNumber: ['', [Validators.required, idfNumberValidator]],
         });
     }
 
@@ -349,8 +522,8 @@ export class MarineCargoQuotationComponent implements OnInit {
             phoneNumber: ['', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]],
             marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required],
             marineCargoType: ['', Validators.required],
-            idfNumber: ['', [Validators.required, Validators.pattern('^E\\d{9,}$')]],
-            ucrNumber: ['', [Validators.required, Validators.pattern('^UCR\\d{7,}$')]],
+            idfNumber: ['', [Validators.required, idfNumberValidator]],
+            ucrNumber: ['', [Validators.required, ucrNumberValidator]],
             originCountry: ['', Validators.required],
             destinationCountry: ['', Validators.required],
             shipmentDate: ['', [Validators.required, this.noPastDatesValidator]],
@@ -365,15 +538,15 @@ export class MarineCargoQuotationComponent implements OnInit {
         form.get('originCountry')?.disable();
         return form;
     }
-    
+
     private createHighRiskRequestForm(): FormGroup {
         return this.createModalForm();
     }
-    
+
     private setDefaultDate(): void {
         this.quotationForm.patchValue({ coverStartDate: this.getToday() });
     }
-    
+
     private setupFormSubscriptions(): void {
         this.quotationForm.get('modeOfShipment')?.valueChanges.subscribe((mode) => {
             const destControl = this.quotationForm.get('destination');
@@ -398,7 +571,7 @@ export class MarineCargoQuotationComponent implements OnInit {
             }
         });
     }
-    
+
     private calculatePremium(): void {
         const sumInsured = this.quotationForm.get('sumInsured')?.value || 0;
         const productValue = this.quotationForm.get('marineProduct')?.value;
@@ -420,7 +593,7 @@ export class MarineCargoQuotationComponent implements OnInit {
             commission: 0, totalPayable: 0, currency: 'KES',
         };
     }
-    
+
     onExportRequestSubmit(): void {
         if (this.exportRequestForm.valid) {
             this.closeAllModals();
@@ -429,7 +602,7 @@ export class MarineCargoQuotationComponent implements OnInit {
             this.exportRequestForm.markAllAsTouched();
         }
     }
-    
+
     onHighRiskRequestSubmit(): void {
         if (this.highRiskRequestForm.valid) {
             this.closeAllModals();
@@ -438,7 +611,7 @@ export class MarineCargoQuotationComponent implements OnInit {
             this.highRiskRequestForm.markAllAsTouched();
         }
     }
-    
+
     closeAllModals(): void {
         this.showExportModal = false;
         this.showHighRiskModal = false;
@@ -447,13 +620,13 @@ export class MarineCargoQuotationComponent implements OnInit {
         this.exportRequestForm.reset({ marineProduct: 'Institute Cargo Clauses (A) - All Risks', originCountry: 'Kenya' });
         this.highRiskRequestForm.reset({ marineProduct: 'Institute Cargo Clauses (A) - All Risks' });
     }
-    
+
     private showToast(message: string, type: 'success' | 'info' | 'error' = 'success'): void {
         this.toastMessage = message;
         this.toastType = type;
         setTimeout(() => (this.toastMessage = ''), 5000);
     }
-    
+
     onSubmit(): void {
         if (this.quotationForm.valid) {
             if (!this.showHighRiskModal && !this.showExportModal) {
@@ -464,7 +637,7 @@ export class MarineCargoQuotationComponent implements OnInit {
             this.quotationForm.markAllAsTouched();
         }
     }
-    
+
     downloadQuote(): void {
         if (this.clientDetailsForm.valid) {
             this.showToast('Quote download initiated successfully.');
@@ -472,20 +645,40 @@ export class MarineCargoQuotationComponent implements OnInit {
             this.clientDetailsForm.markAllAsTouched();
         }
     }
-    
+
     handlePayment(): void {
+        console.log('handlePayment called - isLoggedIn:', this.isLoggedIn);
+        console.log('clientDetailsForm valid:', this.clientDetailsForm.valid);
+
         if (!this.clientDetailsForm.valid) {
             this.clientDetailsForm.markAllAsTouched();
+            this.showToast('Please fill in all required fields correctly.', 'error');
             return;
         }
+
+        // Check if user is logged in
         if (this.isLoggedIn) {
+            console.log('User is logged in, opening payment modal');
+            // User is logged in, show MPESA modal
             this.openPaymentModal();
         } else {
-            this.router.navigate(['/']);
+            console.log('User is not logged in, redirecting to login');
+            // User is not logged in, redirect to login page
+            this.showToast('Please log in to proceed with payment.', 'info');
+            setTimeout(() => {
+                this.router.navigate(['/']);
+            }, 1500);
         }
     }
-    
+
     private openPaymentModal(): void {
+        console.log('Opening payment modal with data:', {
+            amount: this.premiumCalculation.totalPayable,
+            phoneNumber: this.clientDetailsForm.get('phoneNumber')?.value,
+            reference: `GEM${Date.now()}`,
+            description: 'Marine Cargo Insurance',
+        });
+
         const dialogRef = this.dialog.open(MpesaPaymentModalComponent, {
             data: {
                 amount: this.premiumCalculation.totalPayable,
@@ -493,22 +686,32 @@ export class MarineCargoQuotationComponent implements OnInit {
                 reference: `GEM${Date.now()}`,
                 description: 'Marine Cargo Insurance',
             },
-            panelClass: 'payment-modal-panel'
+            panelClass: 'payment-modal-panel',
+            disableClose: false,
+            width: '450px',
+            maxWidth: '95vw',
+            hasBackdrop: true,
+            backdropClass: 'payment-modal-backdrop'
         });
+
         dialogRef.afterClosed().subscribe((result: PaymentResult | null) => {
+            console.log('Payment modal closed with result:', result);
             if (result?.success) {
                 this.showToast('Payment successful! Your certificate is ready.', 'success');
                 setTimeout(() => this.downloadCertificate(), 1500);
+            } else if (result === null) {
+                // User closed the modal without completing payment
+                this.showToast('Payment cancelled.', 'info');
             }
         });
     }
-    
+
     downloadCertificate(): void {
         this.showToast('Your policy certificate has been downloaded.', 'success');
         console.log('Certificate download process initiated.');
         setTimeout(() => this.closeForm(), 2000);
     }
-    
+
     closeForm(): void {
         if (this.isLoggedIn) {
             this.router.navigate(['/sign-up/dashboard']);
@@ -516,28 +719,69 @@ export class MarineCargoQuotationComponent implements OnInit {
             this.router.navigate(['/']);
         }
     }
-    
+
     getToday(): string {
         return new Date().toISOString().split('T')[0];
     }
-    
+
     noPastDatesValidator(control: AbstractControl): { [key: string]: boolean } | null {
         if (!control.value) return null;
         return control.value < new Date().toISOString().split('T')[0] ? { pastDate: true } : null;
     }
-    
+
     goToStep(step: number): void {
         this.currentStep = step;
     }
-    
+
     switchUser(event: any): void {
         const userType = event.target.value as 'individual' | 'intermediary';
-        this.currentUser = { type: userType, name: userType === 'intermediary' ? 'Intermediary User' : 'Individual User' };
-        if (userType === 'individual') this.authService.setLoginStatus(false);
-        else this.authService.setLoginStatus(true);
+        console.log('Switching user to:', userType);
+
+        // Update authentication status based on selection
+        this.authService.setLoginStatus(true, userType);
+
+        // Update current user
+        this.currentUser = {
+            type: userType,
+            name: userType === 'intermediary' ? 'Intermediary User' : 'Individual User',
+            email: userType === 'intermediary' ? 'intermediary@geminia.com' : 'individual@geminia.com'
+        };
+
+        // Update login status
         this.isLoggedIn = this.authService.isLoggedIn();
-        this.showToast(`Switched to ${this.currentUser.name} view.`, 'info');
-        if (this.currentStep === 2) this.calculatePremium();
+        console.log('After switch - isLoggedIn:', this.isLoggedIn);
+
+        this.showToast(`Switched to ${this.currentUser.name} view. You are now logged in.`, 'info');
+
+        // Pre-fill form data for logged in user
+        this.prefillUserData();
+
+        // Recalculate premium if on step 2 (as commission rates may differ)
+        if (this.currentStep === 2) {
+            this.calculatePremium();
+        }
+    }
+
+    // Method to handle manual logout (if needed)
+    logout(): void {
+        this.authService.logout();
+        this.isLoggedIn = false;
+        this.currentUser = { type: 'individual', name: 'Individual User (Guest)', email: '' };
+        this.showToast('Logged out successfully.', 'info');
+        this.router.navigate(['/']);
+    }
+
+    // Method to simulate login (for testing purposes)
+    simulateLogin(email: string, password: string = 'password123'): boolean {
+        const success = this.authService.login(email, password);
+        if (success) {
+            this.checkLoginStatus();
+            this.showToast(`Logged in as ${email}`, 'success');
+            this.prefillUserData();
+        } else {
+            this.showToast('Invalid login credentials.', 'error');
+        }
+        return success;
     }
 
     isFieldValid(form: FormGroup, field: string): boolean {
@@ -556,11 +800,44 @@ export class MarineCargoQuotationComponent implements OnInit {
             if (control.errors?.['pattern']) {
                 if (field === 'kraPin') return 'Invalid KRA PIN format (e.g., A123456789X).';
                 if (field === 'phoneNumber') return 'Invalid phone number format (e.g., 0712345678).';
-                if (field === 'idfNumber') return 'Invalid IDF number format (e.g., E123456789).';
-                if (field === 'ucrNumber') return 'Invalid UCR number format (e.g., UCR1234567).';
                 return 'The format is invalid.';
             }
+            if (control.errors?.['min']) return `Value must be at least ${control.errors['min'].min}.`;
+            if (control.errors?.['pastDate']) return 'Date cannot be in the past.';
+            if (control.errors?.['maxWords']) return `Maximum ${control.errors['maxWords'].maxWords} words allowed.`;
+            if (control.errors?.['idfNumber']) return control.errors['idfNumber'].message;
+            if (control.errors?.['ucrNumber']) return control.errors['ucrNumber'].message;
         }
         return '';
+    }
+
+    // Helper method to get display text for payment button
+    getPaymentButtonText(): string {
+        if (this.isLoggedIn) {
+            return 'Proceed to Payment';
+        } else {
+            return 'Login to Pay';
+        }
+    }
+
+    // Helper method to check if user should be redirected vs shown modal
+    shouldShowPaymentModal(): boolean {
+        return this.isLoggedIn && this.clientDetailsForm.valid;
+    }
+
+    // Method to pre-fill form based on logged in user
+    private prefillUserData(): void {
+        if (this.isLoggedIn && this.currentUser.email) {
+            this.clientDetailsForm.patchValue({
+                email: this.currentUser.email
+            });
+        }
+    }
+
+    // Method to test payment modal (for debugging)
+    testPaymentModal(): void {
+        console.log('Testing payment modal...');
+        this.calculatePremium();
+        this.openPaymentModal();
     }
 }
