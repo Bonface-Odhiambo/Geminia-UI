@@ -433,11 +433,19 @@
                                                 <span class="text-red-500"
                                                     >*</span
                                                 ></label
-                                            ><input
+                                            >
+                                            <input
                                                 type="text"
                                                 formControlName="idNumber"
-                                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                                [ngClass]="{
+                                                    'border-red-500': !isFieldValid(clientDetailsForm, 'idNumber'),
+                                                    'border-gray-300': isFieldValid(clientDetailsForm, 'idNumber')
+                                                }"
+                                                class="w-full rounded-md border bg-white px-3 py-2"
                                             />
+                                            <div *ngIf="!isFieldValid(clientDetailsForm, 'idNumber')" class="mt-1 text-sm text-red-500">
+                                                {{ getErrorMessage(clientDetailsForm, 'idNumber') }}
+                                            </div>
                                         </div>
                                         <div>
                                             <label
@@ -446,11 +454,20 @@
                                                 <span class="text-red-500"
                                                     >*</span
                                                 ></label
-                                            ><input
+                                            >
+                                            <input
                                                 type="text"
                                                 formControlName="kraPin"
-                                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                                                [ngClass]="{
+                                                    'border-red-500': !isFieldValid(clientDetailsForm, 'kraPin'),
+                                                    'border-gray-300': isFieldValid(clientDetailsForm, 'kraPin')
+                                                }"
+                                                class="w-full rounded-md border bg-white px-3 py-2"
+                                                placeholder="Format: A123456789X"
                                             />
+                                            <div *ngIf="!isFieldValid(clientDetailsForm, 'kraPin')" class="mt-1 text-sm text-red-500">
+                                                {{ getErrorMessage(clientDetailsForm, 'kraPin') }}
+                                            </div>
                                         </div>
                                         <div>
                                             <label
