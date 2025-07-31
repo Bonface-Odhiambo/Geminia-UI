@@ -4,3 +4,12 @@
 /* ----------------------------------------------------------------------------------------------------- */
 
 @import 'components/login-toast';
+// src/styles.scss
+
+// ... other global styles ...
+
+// Custom panel class for Geminia snackbar/toast notifications
+.geminia-toast-panel {
+  background-color: #21275c; // Pantone 2758C
+  color: white; // Ensure text is readable
+}

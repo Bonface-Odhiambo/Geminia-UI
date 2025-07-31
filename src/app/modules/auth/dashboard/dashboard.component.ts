@@ -17,13 +17,13 @@ import { Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { MatTabsModule } from '@angular/material/tabs';
 
+// --- IMPORT THE SHARED AUTH SERVICE AND ITS TYPES ---
+import { AuthService, StoredUser, PendingQuote } from '../shared/services/auth.service';
+
 // --- TYPE DEFINITIONS ---
-type UserRole = 'individual' | 'corporate' | 'intermediary';
-interface User { id: string; name: string; email: string; phoneNumber: string; role: UserRole; }
-interface Quote { id: string; type: 'marine' | 'travel'; title: string; amount: number; status: 'draft' | 'pending' | 'completed' | 'expired'; createdDate: Date; expiryDate: Date; description: string; }
 interface Policy {
   id: string; type: 'marine' | 'travel'; title: string; policyNumber: string; status: 'active' | 'completed'; premium: number; startDate: Date; endDate: Date; certificateUrl?: string;
-  marineDetails?: { cargoType: 'containerized' | 'non-containerized'; tradeType: 'import' | 'export'; modeOfShipment: 'sea' | 'air'; marineProduct: string; marineCargoType: string; origin: string; destination: string; sumInsured: number; descriptionOfGoods: string; ucrNumber: string; idfNumber: string; clientInfo: { name: string; idNumber: string; kraPin: string; email: string; phoneNumber: string; } }
+  marineDetails?: { cargoType: string; tradeType: string; modeOfShipment: string; marineProduct: string; marineCargoType: string; origin: string; destination: string; sumInsured: number; descriptionOfGoods: string; ucrNumber: string; idfNumber: string; clientInfo: { name: string; idNumber: string; kraPin: string; email: string; phoneNumber: string; } }
 }
 interface DashboardStats { marinePolicies: number; travelPolicies: number; pendingQuotes: number; totalPremium: number; }
 interface MpesaPayment { amount: number; phoneNumber: string; reference: string; description: string; }
@@ -51,67 +51,120 @@ export class MpesaPaymentModalComponent implements OnInit { stkForm: FormGroup; 
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+  
+  user: StoredUser | null = null;
+  pendingQuotes: PendingQuote[] = [];
   navigationItems: NavigationItem[] = [];
-  user: User = { id: 'U001', name: 'Bonface Odhiambo', email: 'bonface@example.com', phoneNumber: '0712345678', role: 'individual' };
   dashboardStats: DashboardStats = { marinePolicies: 0, travelPolicies: 0, pendingQuotes: 0, totalPremium: 0 };
-  notifications: Notification[] = [ { id: 'N001', title: 'Quotes Awaiting Payment', message: 'You have quotes that need payment to activate your policy.', timestamp: new Date(), read: false, actionUrl: '#pending-quotes' }, { id: 'N002', title: 'Certificates Ready', message: 'Your new policy certificates are ready for download.', timestamp: new Date(), read: false, actionUrl: '#active-policies' } ];
-  savedQuotes: Quote[] = [ { id: 'Q001', type: 'marine', title: 'Marine Cargo Insurance - Machinery', amount: 18500, status: 'pending', createdDate: new Date(new Date().setDate(new Date().getDate() - 5)), expiryDate: new Date(new Date().setDate(new Date().getDate() + 9)), description: 'For heavy machinery shipment from Germany.' }, { id: 'Q003', type: 'travel', title: 'Schengen Visa Travel Insurance', amount: 4800, status: 'pending', createdDate: new Date(new Date().setDate(new Date().getDate() - 2)), expiryDate: new Date(new Date().setDate(new Date().getDate() + 12)), description: 'Annual multi-trip coverage for Europe.' }];
+  
+  // Static data can remain as placeholders or be replaced by API calls
   activePolicies: Policy[] = [ { id: 'P001', type: 'marine', title: 'Machinery Import', policyNumber: 'MAR/2024/7531', status: 'active', premium: 18500, startDate: new Date('2024-08-01'), endDate: new Date('2024-09-30'), certificateUrl: '/simulated/MAR-2024-7531.pdf', marineDetails: { cargoType: 'containerized', tradeType: 'import', modeOfShipment: 'sea', marineProduct: 'Institute Cargo Clauses (A) - All Risks', marineCargoType: 'Machinery', origin: 'Germany', destination: 'Mombasa, Kenya', sumInsured: 3500000, descriptionOfGoods: 'Industrial-grade printing press machine, packed in a 40ft container.', ucrNumber: 'UCR202408153', idfNumber: 'E2300012345', clientInfo: { name: 'Bonface Odhiambo', idNumber: '30123456', kraPin: 'A001234567Z', email: 'bonface@example.com', phoneNumber: '0712345678' } } }, { id: 'P002', type: 'travel', title: 'Schengen Visa Travel Insurance', policyNumber: 'TRV/2024/9102', status: 'active', premium: 4800, startDate: new Date('2024-09-01'), endDate: new Date('2025-08-31'), certificateUrl: '/simulated/TRV-2024-9102.pdf' } ];
   recentActivities: Activity[] = [ { id: 'A001', title: 'Payment Successful', description: 'Travel Insurance for Europe', timestamp: new Date(Date.now() - 3600000), icon: 'payment', iconColor: '#04b2e1', relatedId: 'P003' }, { id: 'A002', title: 'Certificate Downloaded', description: 'Marine Cargo Policy MAR-2025-002', timestamp: new Date(Date.now() - 14400000), icon: 'download', iconColor: '#04b2e1', relatedId: 'P002' }, { id: 'A003', title: 'Profile Updated', description: 'Contact information updated', timestamp: new Date(Date.now() - 86400000), icon: 'person', iconColor: '#21275c' }];
-  isMobileSidebarOpen = false; expandedPolicyId: string | null = null;
+  notifications: Notification[] = [ { id: 'N001', title: 'Quotes Awaiting Payment', message: 'You have quotes that need payment to activate your policy.', timestamp: new Date(), read: false, actionUrl: '#pending-quotes' }, { id: 'N002', title: 'Certificates Ready', message: 'Your new policy certificates are ready for download.', timestamp: new Date(), read: false, actionUrl: '#active-policies' } ];
+
+  isMobileSidebarOpen = false;
+  expandedPolicyId: string | null = null;
   
-  constructor(private dialog: MatDialog, public router: Router, private snackBar: MatSnackBar) {}
+  constructor(
+    private dialog: MatDialog, 
+    public router: Router, 
+    private snackBar: MatSnackBar,
+    private authService: AuthService
+  ) {}
   
-  ngOnInit(): void { 
-    this.loadDashboardData(); 
-    this.setupNavigationBasedOnRole(); 
+  ngOnInit(): void {
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        this.user = user;
+        if (user) {
+          this.loadDashboardData();
+          this.setupNavigationBasedOnRole(user.type);
+        } else {
+          // If the user logs out, they will be redirected by the auth guard or other logic.
+          // Or we can force it here:
+          this.router.navigate(['/']);
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadDashboardData(): void {
+    this.pendingQuotes = this.authService.getPendingQuotes();
+    this.dashboardStats = {
+      marinePolicies: this.activePolicies.filter(p => p.type === 'marine').length,
+      travelPolicies: this.activePolicies.filter(p => p.type === 'travel').length,
+      pendingQuotes: this.pendingQuotes.length,
+      totalPremium: this.activePolicies.reduce((sum, p) => sum + p.premium, 0),
+    };
   }
   
-  @HostListener('window:resize', ['$event'])
-  onResize(event: Event) {
-    if ((event.target as Window).innerWidth >= 1024) {
-      this.isMobileSidebarOpen = false;
+  logout(): void { 
+    if (confirm('Are you sure you want to logout?')) { 
+      this.authService.logout();
+      this.router.navigate(['/']); 
+    } 
+  }
+
+  initiatePayment(quoteId: string): void {
+    const quote = this.pendingQuotes.find((q) => q.id === quoteId);
+    if (quote && this.user) {
+      const paymentData: MpesaPayment = {
+        amount: quote.premium.totalPayable,
+        phoneNumber: this.user.phoneNumber || '', // Ensure user has a phone number
+        reference: quote.id,
+        description: quote.title
+      };
+      const dialogRef = this.dialog.open(MpesaPaymentModalComponent, { data: paymentData, panelClass: 'payment-modal-panel', autoFocus: false });
+      dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((result: PaymentResult | null) => {
+        if (result?.success) {
+          this.snackBar.open(`Payment for "${quote.title}" was successful.`, 'OK', { duration: 7000 });
+          this.authService.removePendingQuote(quoteId);
+          this.loadDashboardData(); // Refresh dashboard
+        }
+      });
+    }
+  }
+
+  deleteQuote(quoteId: string): void {
+    if (confirm('Are you sure you want to delete this saved quote?')) {
+        this.authService.removePendingQuote(quoteId);
+        this.loadDashboardData();
+        this.snackBar.open('Quote deleted.', 'OK', { duration: 3000 });
     }
   }
   
-  ngOnDestroy(): void { this.destroy$.next(); this.destroy$.complete(); }
-  initiatePayment(quoteId: string): void { const quote = this.savedQuotes.find((q) => q.id === quoteId); if (quote) { const paymentReference = `GEM${new Date().getFullYear()}${quote.id}`; const paymentData: MpesaPayment = { amount: quote.amount, phoneNumber: this.user.phoneNumber, reference: paymentReference, description: quote.title }; this.openPaymentModal(paymentData); } }
-  private openPaymentModal(paymentData: MpesaPayment): void { const dialogRef = this.dialog.open(MpesaPaymentModalComponent, { data: paymentData, panelClass: 'payment-modal-panel', autoFocus: false }); dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((result: PaymentResult | null) => { if (result?.success) { const quote = this.savedQuotes.find((q) => result.reference.includes(q.id)); if (!quote) return; quote.status = 'completed'; this.loadDashboardData(); if (result.method === 'paybill') { this.showDownloadToast(); setTimeout(() => this.activateAndDownloadPolicy(quote.id), 1000); } else { this.snackBar.open(`Payment for "${quote.title}" was successful.`, 'OK', { duration: 7000, panelClass: 'geminia-toast-panel' }); } } }); }
-  private showDownloadToast(): void { this.snackBar.open('Your insurance policy is being downloaded...', 'OK', { duration: 5000, panelClass: ['geminia-toast-panel'] }); }
-  private activateAndDownloadPolicy(quoteId: string): void { const policy = this.activePolicies[0]; this.downloadCertificate(policy.id); }
-  onLogoError(event: any): void { console.error('Logo failed to load:', event); }
-  togglePolicyDetails(policyId: string): void { this.expandedPolicyId = this.expandedPolicyId === policyId ? null : policyId; }
-  getInitials(name: string): string { return name.split(' ').map((n) => n[0]).join('').substring(0, 2); }
-  getRoleDisplayName(): string { return 'Individual Client'; }
-  getUnreadNotificationCount(): number { return this.notifications.filter((n) => !n.read).length; }
-  toggleNavItem(item: NavigationItem): void { if (item.children) item.isExpanded = !item.isExpanded; }
-  toggleMobileSidebar(): void { this.isMobileSidebarOpen = !this.isMobileSidebarOpen; }
-  getPendingQuotes(): Quote[] { return this.savedQuotes.filter(q => q.status === 'pending'); }
-  editQuoteByType(quoteId: string, type: 'marine' | 'travel'): void { const route = type === 'marine' ? '/sign-up/marine-quote' : '/sign-up/travel-quote'; this.router.navigate([route], { queryParams: { editId: quoteId } }); }
-  downloadCertificate(policyId: string): void { const policy = this.activePolicies.find((p) => p.id === policyId); if (policy?.certificateUrl) { const link = document.createElement('a'); link.href = policy.certificateUrl; link.download = `${policy.policyNumber}-certificate.pdf`; link.click(); } }
-  markNotificationAsRead(notification: Notification): void { notification.read = true; if (notification.actionUrl) { document.querySelector(notification.actionUrl)?.scrollIntoView({ behavior: 'smooth' }); } }
-  
-  setupNavigationBasedOnRole(): void {
+  setupNavigationBasedOnRole(role: 'individual' | 'intermediary'): void {
     this.navigationItems = [
       { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
       {
-        label: 'Marine Insurance', icon: 'directions_boat',
-        children: [
-          { label: 'New Quote', route: '/sign-up/marine-quote', icon: 'add_circle' },
-          { label: 'Pending Quotes', route: '/marine/pending', icon: 'pending' }
-        ]
+        label: 'Marine Insurance', icon: 'directions_boat', isExpanded: true,
+        children: [ { label: 'New Quote', route: '/sign-up/marine-quote', icon: 'add_circle' } ]
       },
       {
-        label: 'Travel Insurance', icon: 'flight',
-        children: [
-          { label: 'New Quote', route: '/sign-up/travel-quote', icon: 'add_circle' },
-          { label: 'Pending Quotes', route: '/travel/pending', icon: 'pending' }
-        ]
+        label: 'Travel Insurance', icon: 'flight', isExpanded: true,
+        children: [ { label: 'New Quote', route: '/sign-up/travel-quote', icon: 'add_circle' } ]
       },
-      { label: 'Receipt', icon: 'receipt_long', route: '/receipts' }
+      { label: 'My Policies', icon: 'shield', route: '/policies' },
+      { label: 'Receipts', icon: 'receipt_long', route: '/receipts' }
     ];
   }
 
-  loadDashboardData(): void { this.dashboardStats = { marinePolicies: this.activePolicies.filter((p) => p.type === 'marine').length, travelPolicies: this.activePolicies.filter((p) => p.type === 'travel').length, pendingQuotes: this.getPendingQuotes().length, totalPremium: this.activePolicies.reduce((sum, p) => sum + p.premium, 0) }; }
-  logout(): void { if (confirm('Are you sure you want to logout?')) { this.router.navigate(['/']); } }
+  // --- Utility and Display Methods ---
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    if ((event.target as Window).innerWidth >= 1024) { this.isMobileSidebarOpen = false; }
+  }
+  togglePolicyDetails(policyId: string): void { this.expandedPolicyId = this.expandedPolicyId === policyId ? null : policyId; }
+  getInitials(name: string): string { return name?.split(' ').map((n) => n[0]).join('').substring(0, 2) || ''; }
+  getRoleDisplayName(): string { return this.user?.type === 'intermediary' ? 'Intermediary' : 'Individual Client'; }
+  getUnreadNotificationCount(): number { return this.notifications.filter((n) => !n.read).length; }
+  toggleNavItem(item: NavigationItem): void { if (item.children) item.isExpanded = !item.isExpanded; }
+  toggleMobileSidebar(): void { this.isMobileSidebarOpen = !this.isMobileSidebarOpen; }
+  downloadCertificate(policyId: string): void { const policy = this.activePolicies.find((p) => p.id === policyId); if (policy?.certificateUrl) { const link = document.createElement('a'); link.href = policy.certificateUrl; link.download = `${policy.policyNumber}-certificate.pdf`; link.click(); } }
+  markNotificationAsRead(notification: Notification): void { notification.read = true; if (notification.actionUrl) { document.querySelector(notification.actionUrl)?.scrollIntoView({ behavior: 'smooth' }); } }
 }

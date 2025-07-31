@@ -1,7 +1,7 @@
 import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
-import { Component, Inject, Injectable, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,21 +9,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
+import { Subject, takeUntil } from 'rxjs';
 
-// --- AUTHENTICATION SERVICE ---
-@Injectable({ providedIn: 'root' })
-export class AuthService {
-  private readonly VALID_USERS = [ { username: 'individual@geminia.com', password: 'password123', type: 'individual' }, { username: 'intermediary@geminia.com', password: 'password456', type: 'intermediary' } ];
-  login(username: string, password: string): boolean { const user = this.VALID_USERS.find(u => u.username === username && u.password === password); if (user) { sessionStorage.setItem('isLoggedIn', 'true'); sessionStorage.setItem('userType', user.type); return true; } this.logout(); return false; }
-  logout(): void { sessionStorage.removeItem('isLoggedIn'); sessionStorage.removeItem('userType'); }
-  isLoggedIn(): boolean { return sessionStorage.getItem('isLoggedIn') === 'true'; }
-}
+// --- IMPORTING THE SHARED AUTH SERVICE AND ITS TYPES ---
+import { AuthService, StoredUser, PendingQuote } from '../shared/services/auth.service';
 
 // --- INTERFACES & VALIDATORS ---
 export function maxWords(max: number) { return (control: AbstractControl): { [key: string]: any } | null => { if (!control.value) return null; const words = control.value.trim().split(/\s+/).length; return words > max ? { maxWords: { maxWords: max, actualWords: words } } : null; }; }
 interface PremiumCalculation { basePremium: number; phcf: number; trainingLevy: number; stampDuty: number; commission: number; totalPayable: number; currency: string; }
 interface MarineProduct { code: string; name: string; rate: number; }
-interface User { type: 'individual' | 'intermediary'; name: string; }
 interface ImporterDetails { name: string; kraPin: string; }
 interface MpesaPayment { amount: number; phoneNumber: string; reference: string; description: string; }
 export interface PaymentResult { success: boolean; method: 'stk' | 'paybill' | 'card'; reference: string; mpesaReceipt?: string; }
@@ -49,7 +43,9 @@ export class PaymentModalComponent implements OnInit {
     templateUrl: './marine-cargo-quotation.component.html',
     styleUrls: ['./marine-cargo-quotation.component.scss'],
 })
-export class MarineCargoQuotationComponent implements OnInit {
+export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
+    private destroy$ = new Subject<void>();
+
     quotationForm: FormGroup;
     clientDetailsForm: FormGroup;
     exportRequestForm: FormGroup;
@@ -59,19 +55,14 @@ export class MarineCargoQuotationComponent implements OnInit {
     showHighRiskModal: boolean = false;
     toastMessage: string = '';
     toastType: 'success' | 'info' | 'error' = 'success';
-    currentUser: User = { type: 'individual', name: 'Individual User' };
     importerDetails: ImporterDetails = { name: '', kraPin: '' };
     premiumCalculation: PremiumCalculation = this.resetPremiumCalculation();
-    isLoggedIn: boolean = false;
-
-    // --- CORRECTED TAX CONSTANTS ---
-    private readonly TAX_RATES = {
-        PHCF_RATE: 0.0025,       // 0.25% of Base Premium
-        TRAINING_LEVY: 0.0025,   // 0.25% of Base Premium
-        COMMISSION_RATE: 0.1,    // 10% of Base Premium
-        STAMP_DUTY_RATE: 0.05,   // 5% of Sum Insured
-    };
     
+    currentUser: StoredUser | null = null;
+    isLoggedIn: boolean = false;
+    private editModeQuoteId: string | null = null;
+
+    private readonly TAX_RATES = { PHCF_RATE: 0.0025, TRAINING_LEVY: 0.0025, COMMISSION_RATE: 0.1, STAMP_DUTY_RATE: 0.05, };
     readonly marineProducts: MarineProduct[] = [ { code: 'ICC_A', name: 'Institute Cargo Clauses (A) - All Risks', rate: 0.005 }, { code: 'ICC_B', name: 'Institute Cargo Clauses (B) - Named Perils', rate: 0.0035 }, { code: 'ICC_C', name: 'Institute Cargo Clauses (C) - Limited Perils', rate: 0.0025 } ];
     readonly marineCargoTypes: string[] = [ 'Pharmaceuticals', 'Electronics', 'Apparel', 'Vehicles', 'Machinery', 'General Goods' ];
     readonly blacklistedCountries: string[] = [ 'Russia', 'Ukraine', 'North Korea', 'Syria', 'Iran', 'Yemen', 'Sudan', 'Somalia' ];
@@ -81,7 +72,8 @@ export class MarineCargoQuotationComponent implements OnInit {
         private fb: FormBuilder,
         private router: Router,
         public dialog: MatDialog,
-        private authService: AuthService
+        private authService: AuthService,
+        private route: ActivatedRoute
     ) {
         this.quotationForm = this.createQuotationForm();
         this.clientDetailsForm = this.createClientDetailsForm();
@@ -90,9 +82,136 @@ export class MarineCargoQuotationComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.isLoggedIn = this.authService.isLoggedIn();
+        // Reactively update the component's state based on authentication status
+        this.authService.currentUser$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(user => {
+                this.isLoggedIn = !!user;
+                this.currentUser = user;
+                if (user) {
+                    this.prefillClientDetails();
+                }
+            });
+
+        // Check for an edit ID in the URL to load a saved quote
+        this.route.queryParams
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(params => {
+                const quoteId = params['editId'];
+                if (quoteId) {
+                    this.editModeQuoteId = quoteId;
+                    this.loadQuoteForEditing(quoteId);
+                }
+            });
+            
         this.setupFormSubscriptions();
         this.setDefaultDate();
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
+    private prefillClientDetails(): void {
+        if (!this.currentUser) return;
+        const registrationData = this.authService.getRegistrationData();
+        // Use registration data if available, as it might be more complete
+        if (registrationData) {
+            const nameParts = registrationData.fullName?.split(' ') || [this.currentUser.name];
+            this.clientDetailsForm.patchValue({
+                firstName: nameParts[0] || '',
+                lastName: nameParts.slice(1).join(' ') || '',
+                email: this.currentUser.email,
+                phoneNumber: registrationData.phoneNumber || this.currentUser.phoneNumber || '',
+            });
+        }
+    }
+
+    private loadQuoteForEditing(quoteId: string): void {
+        const quoteToEdit = this.authService.getPendingQuotes().find(q => q.id === quoteId);
+        if (quoteToEdit) {
+            this.quotationForm.patchValue(quoteToEdit.quoteDetails);
+            this.premiumCalculation = quoteToEdit.premium;
+            this.goToStep(2);
+            this.showToast(`Editing your saved quote: ${quoteToEdit.title}.`, 'info');
+        } else {
+            this.showToast('Could not find the quote you want to edit.', 'error');
+            this.router.navigate(['/dashboard']);
+        }
+    }
+
+    /**
+     * Handles the "Proceed to Payment" button click based on login status.
+     */
+    handlePayment(): void {
+        // --- LOGIC FOR LOGGED-IN USERS ---
+        if (this.isLoggedIn) {
+            if (!this.clientDetailsForm.valid) {
+                this.clientDetailsForm.markAllAsTouched();
+                this.showToast('Please fill in all required client details to proceed.', 'error');
+                return;
+            }
+            this.openPaymentModal();
+        } 
+        // --- LOGIC FOR LOGGED-OUT (GUEST) USERS ---
+        else {
+            this.showToast('Please log in or register to complete your purchase.', 'info');
+            // Redirect to the home/login page after a short delay for the user to read the message.
+            setTimeout(() => {
+                this.router.navigate(['/']);
+            }, 2500);
+        }
+    }
+    
+    /**
+     * Handles the "Close" button click based on login status.
+     */
+    closeForm(): void {
+        // --- LOGIC FOR LOGGED-IN USERS ---
+        if (this.isLoggedIn) {
+            this.router.navigate(['/dashboard']);
+        } 
+        // --- LOGIC FOR LOGGED-OUT (GUEST) USERS ---
+        else {
+            this.router.navigate(['/']);
+        }
+    }
+
+    onSubmit(): void {
+        if (this.quotationForm.valid) {
+            if (!this.showHighRiskModal && !this.showExportModal) {
+                this.calculatePremium();
+                const newQuote: PendingQuote = {
+                    id: this.editModeQuoteId || `GEM-Q-${Date.now()}`,
+                    title: `Marine - ${this.quotationForm.value.marineCargoType || 'Quote'}`,
+                    type: 'marine',
+                    status: 'pending',
+                    createdDate: new Date().toISOString(),
+                    quoteDetails: this.quotationForm.value,
+                    premium: this.premiumCalculation
+                };
+                this.authService.savePendingQuote(newQuote);
+                this.showToast('Your quote has been saved to your dashboard!', 'success');
+                this.goToStep(2);
+            }
+        } else {
+            this.quotationForm.markAllAsTouched();
+        }
+    }
+
+    private openPaymentModal(): void { 
+        const dialogRef = this.dialog.open(PaymentModalComponent, { data: { amount: this.premiumCalculation.totalPayable, phoneNumber: this.clientDetailsForm.get('phoneNumber')?.value, reference: `GEM${Date.now()}`, description: 'Marine Cargo Insurance' }, panelClass: 'payment-dialog-container', autoFocus: false }); 
+        dialogRef.afterClosed().subscribe((result: PaymentResult | null) => { 
+            if (result?.success) {
+                // If this was an existing quote, remove it from pending list after payment
+                if (this.editModeQuoteId) {
+                    this.authService.removePendingQuote(this.editModeQuoteId);
+                }
+                this.showToast('Payment successful! Your certificate is being prepared.', 'success'); 
+                setTimeout(() => this.downloadCertificate(), 2000); 
+            } 
+        }); 
     }
 
     private createQuotationForm(): FormGroup { return this.fb.group({ cargoType: ['', Validators.required], tradeType: ['import', Validators.required], modeOfShipment: ['', Validators.required], marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required], marineCargoType: ['', Validators.required], origin: ['', Validators.required], destination: [''], coverStartDate: ['', [Validators.required, this.noPastDatesValidator]], sumInsured: ['', [Validators.required, Validators.min(10000)]], descriptionOfGoods: ['', [Validators.required, Validators.minLength(20)]], ucrNumber: ['', [Validators.required, Validators.pattern(/^UCR\d{7,}$/)]], idfNumber: ['', [Validators.required, Validators.pattern(/^E\d{9,}$/)]], }); }
@@ -100,51 +219,20 @@ export class MarineCargoQuotationComponent implements OnInit {
     private createModalForm(): FormGroup { return this.fb.group({ kraPin: ['', [Validators.required, Validators.pattern(/^[A-Z]\d{9}[A-Z]$/i)]], firstName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]], lastName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]], email: ['', [Validators.required, Validators.email]], phoneNumber: ['', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]], marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required], marineCargoType: ['', Validators.required], idfNumber: ['', [Validators.required, Validators.pattern(/^E\d{9,}$/)]], ucrNumber: ['', [Validators.required, Validators.pattern(/^UCR\d{7,}$/)]], originCountry: ['', Validators.required], destinationCountry: ['', Validators.required], shipmentDate: ['', [Validators.required, this.noPastDatesValidator]], goodsDescription: ['', [Validators.required, Validators.minLength(20), maxWords(100)]], termsAndPolicyConsent: [false, Validators.requiredTrue], }); }
     private createExportRequestForm(): FormGroup { const form = this.createModalForm(); form.get('originCountry')?.patchValue('Kenya'); form.get('originCountry')?.disable(); return form; }
     private createHighRiskRequestForm(): FormGroup { return this.createModalForm(); }
-    
     private setDefaultDate(): void { this.quotationForm.patchValue({ coverStartDate: this.getToday() }); }
-    
     private setupFormSubscriptions(): void { this.quotationForm.get('modeOfShipment')?.valueChanges.subscribe((mode) => { this.quotationForm.get('destination')?.setValue(mode === 'sea' ? 'Mombasa, Kenya' : mode === 'air' ? 'JKIA, Nairobi, Kenya' : ''); }); this.quotationForm.get('tradeType')?.valueChanges.subscribe((type) => { if (type === 'export') this.showExportModal = true; }); this.quotationForm.get('origin')?.valueChanges.subscribe((country) => { if (this.blacklistedCountries.includes(country)) { this.highRiskRequestForm.patchValue({ originCountry: country }); this.showHighRiskModal = true; } }); this.quotationForm.get('ucrNumber')?.valueChanges.subscribe(() => { this.importerDetails = this.quotationForm.get('ucrNumber')?.valid ? { name: 'Global Imports Ltd.', kraPin: 'P051234567X' } : { name: '', kraPin: '' }; }); }
-
-    /**
-     * CORRECTED PREMIUM CALCULATION
-     * Stamp Duty is now correctly calculated as 5% of the Sum Insured.
-     */
-    private calculatePremium(): void {
-        const sumInsured = this.quotationForm.get('sumInsured')?.value || 0;
-        const productValue = this.quotationForm.get('marineProduct')?.value;
-        const selectedProduct = this.marineProducts.find((p) => p.name === productValue);
-        const rate = selectedProduct ? selectedProduct.rate : 0;
-        
-        const { PHCF_RATE, TRAINING_LEVY, COMMISSION_RATE, STAMP_DUTY_RATE } = this.TAX_RATES;
-
-        const basePremium = sumInsured * rate;
-        const phcf = basePremium * PHCF_RATE;
-        const trainingLevy = basePremium * TRAINING_LEVY;
-        const commission = this.currentUser.type === 'intermediary' ? basePremium * COMMISSION_RATE : 0;
-        
-        // Corrected calculation for Stamp Duty: 5% of Sum Insured
-        const stampDuty = sumInsured * STAMP_DUTY_RATE; 
-
-        const totalPayable = basePremium + phcf + trainingLevy + stampDuty;
-        
-        this.premiumCalculation = { basePremium, phcf, trainingLevy, stampDuty, commission, totalPayable, currency: 'KES' };
-    }
-    
+    private calculatePremium(): void { const sumInsured = this.quotationForm.get('sumInsured')?.value || 0; const productValue = this.quotationForm.get('marineProduct')?.value; const selectedProduct = this.marineProducts.find((p) => p.name === productValue); const rate = selectedProduct ? selectedProduct.rate : 0; const { PHCF_RATE, TRAINING_LEVY, COMMISSION_RATE, STAMP_DUTY_RATE } = this.TAX_RATES; const basePremium = sumInsured * rate; const phcf = basePremium * PHCF_RATE; const trainingLevy = basePremium * TRAINING_LEVY; const commission = this.currentUser?.type === 'intermediary' ? basePremium * COMMISSION_RATE : 0; const stampDuty = sumInsured * STAMP_DUTY_RATE; const totalPayable = basePremium + phcf + trainingLevy + stampDuty; this.premiumCalculation = { basePremium, phcf, trainingLevy, stampDuty, commission, totalPayable, currency: 'KES' }; }
     private resetPremiumCalculation(): PremiumCalculation { return { basePremium: 0, phcf: 0, trainingLevy: 0, stampDuty: 0, commission: 0, totalPayable: 0, currency: 'KES' }; }
     onExportRequestSubmit(): void { if (this.exportRequestForm.valid) { this.closeAllModals(); this.showToast('Export request submitted. Our underwriter will contact you.', 'info'); }}
     onHighRiskRequestSubmit(): void { if (this.highRiskRequestForm.valid) { this.closeAllModals(); this.showToast('High-risk shipment request submitted for review.', 'info'); }}
     closeAllModals(): void { this.showExportModal = false; this.showHighRiskModal = false; this.quotationForm.get('tradeType')?.setValue('import', { emitEvent: false }); this.quotationForm.get('origin')?.setValue('', { emitEvent: false }); this.exportRequestForm.reset({ marineProduct: 'Institute Cargo Clauses (A) - All Risks', originCountry: 'Kenya' }); this.highRiskRequestForm.reset({ marineProduct: 'Institute Cargo Clauses (A) - All Risks' }); }
     private showToast( message: string, type: 'success' | 'info' | 'error' = 'success' ): void { this.toastMessage = message; this.toastType = type; setTimeout(() => (this.toastMessage = ''), 5000); }
-    onSubmit(): void { if (this.quotationForm.valid) { if (!this.showHighRiskModal && !this.showExportModal) { this.calculatePremium(); this.goToStep(2); }} else { this.quotationForm.markAllAsTouched(); }}
     downloadQuote(): void { if (this.clientDetailsForm.valid) { this.showToast('Quote download initiated successfully.', 'info'); }}
-    handlePayment(): void { if (!this.clientDetailsForm.valid) { this.clientDetailsForm.markAllAsTouched(); return; } this.openPaymentModal(); }
-    private openPaymentModal(): void { const dialogRef = this.dialog.open(PaymentModalComponent, { data: { amount: this.premiumCalculation.totalPayable, phoneNumber: this.clientDetailsForm.get('phoneNumber')?.value, reference: `GEM${Date.now()}`, description: 'Marine Cargo Insurance' }, panelClass: 'payment-dialog-container', autoFocus: false }); dialogRef.afterClosed().subscribe((result: PaymentResult | null) => { if (result?.success) { this.showToast('Payment successful! Your certificate is being prepared.', 'info'); setTimeout(() => this.downloadCertificate(), 2000); } }); }
-    downloadCertificate(): void { this.showToast('Your policy certificate has been downloaded.', 'info'); console.log('Certificate download process initiated.'); setTimeout(() => this.closeForm(), 2000); }
-    closeForm(): void { if (this.isLoggedIn) { this.router.navigate(['/sign-up/dashboard']); } else { this.router.navigate(['/']); } }
+    downloadCertificate(): void { this.showToast('Your policy certificate has been downloaded.', 'success'); console.log('Certificate download process initiated.'); setTimeout(() => this.closeForm(), 2000); }
     getToday(): string { return new Date().toISOString().split('T')[0]; }
     noPastDatesValidator(control: AbstractControl): { [key: string]: boolean } | null { if (!control.value) return null; return control.value < new Date().toISOString().split('T')[0] ? { pastDate: true } : null; }
     goToStep(step: number): void { this.currentStep = step; }
-    switchUser(event: any): void { const userType = event.target.value as 'individual' | 'intermediary'; this.currentUser = { type: userType, name: userType === 'intermediary' ? 'Intermediary User' : 'Individual User' }; this.showToast(`Switched to ${this.currentUser.name} view.`, 'info'); if (this.currentStep === 2) this.calculatePremium(); }
+    switchUser(event: any): void { if(this.currentUser) { const userType = event.target.value as 'individual' | 'intermediary'; this.currentUser.type = userType; this.showToast(`Switched to ${userType} view.`, 'info'); if (this.currentStep === 2) this.calculatePremium(); }}
     isFieldInvalid(form: FormGroup, field: string): boolean { const control = form.get(field); return !!control && control.invalid && (control.dirty || control.touched); }
     getErrorMessage(form: FormGroup, field: string): string { const control = form.get(field); if (!control || !control.errors) return ''; if (control.hasError('required')) return 'This field is required.'; if (control.hasError('email')) return 'Please enter a valid email address.'; if (control.hasError('min')) return `The minimum value is ${control.errors['min'].min}.`; if (control.hasError('minLength')) return `Must be at least ${control.errors['minLength'].requiredLength} characters.`; if (control.hasError('pattern')) { switch (field) { case 'idNumber': return 'Please enter a valid 7 or 8 digit ID number.'; case 'kraPin': return 'Invalid KRA PIN format (e.g., A123456789Z).'; case 'phoneNumber': return 'Invalid phone number format (e.g., 0712345678).'; case 'ucrNumber': return 'Invalid UCR format (e.g., UCR2024123).'; case 'idfNumber': return 'Invalid IDF format (e.g., E202412345).'; case 'firstName': case 'lastName': return 'Please enter a valid name (letters and spaces only).'; default: return 'Invalid format. Please check your entry.'; }} if (control.hasError('maxWords')) return `Exceeds the maximum word count of ${control.errors['maxWords'].maxWords}.`; if (control.hasError('pastDate')) return 'Date cannot be in the past.'; if (control.hasError('requiredTrue')) return 'You must agree to proceed.'; return 'Invalid input.'; }
 }
