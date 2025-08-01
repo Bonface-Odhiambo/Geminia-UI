@@ -5,7 +5,7 @@ import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon'; // <--- IMPORT THE ICON MODULE
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -40,23 +40,13 @@ export class PaymentModalComponent implements OnInit {
 @Component({
     selector: 'app-marine-cargo-quotation',
     standalone: true,
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        RouterLink,
-        CurrencyPipe,
-        DecimalPipe,
-        MatDialogModule,
-        PaymentModalComponent,
-        MatIconModule // <--- FIX: Added MatIconModule to the imports array
-    ],
+    imports: [ CommonModule, ReactiveFormsModule, RouterLink, CurrencyPipe, DecimalPipe, MatDialogModule, PaymentModalComponent, MatIconModule ],
     templateUrl: './marine-cargo-quotation.component.html',
     styleUrls: ['./marine-cargo-quotation.component.scss'],
 })
 export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
 
-    // --- FORM & STATE PROPERTIES ---
     quotationForm: FormGroup;
     clientDetailsForm: FormGroup;
     exportRequestForm: FormGroup;
@@ -68,13 +58,11 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     importerDetails: ImporterDetails = { name: '', kraPin: '' };
     premiumCalculation: PremiumCalculation = this.resetPremiumCalculation();
     private editModeQuoteId: string | null = null;
-
-    // --- AUTH & DISPLAY PROPERTIES ---
+    
     isLoggedIn: boolean = false;
     currentUser: StoredUser | null = null;
     displayUser: DisplayUser = { type: 'individual', name: 'Individual User' };
 
-    // --- CONSTANTS ---
     private readonly TAX_RATES = { PHCF_RATE: 0.0025, TRAINING_LEVY: 0.0025, COMMISSION_RATE: 0.1, STAMP_DUTY_RATE: 0.05, };
     readonly marineProducts: MarineProduct[] = [ { code: 'ICC_A', name: 'Institute Cargo Clauses (A) - All Risks', rate: 0.005 }, { code: 'ICC_B', name: 'Institute Cargo Clauses (B) - Named Perils', rate: 0.0035 }, { code: 'ICC_C', name: 'Institute Cargo Clauses (C) - Limited Perils', rate: 0.0025 } ];
     readonly marineCargoTypes: string[] = [ 'Pharmaceuticals', 'Electronics', 'Apparel', 'Vehicles', 'Machinery', 'General Goods' ];
@@ -128,6 +116,39 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
+    handlePayment(): void {
+        if (this.isLoggedIn) {
+            if (!this.clientDetailsForm.valid) {
+                this.clientDetailsForm.markAllAsTouched();
+                this.showToast('Please fill in all required client details to proceed.');
+                return;
+            }
+            this.openPaymentModal();
+        } else {
+            this.showToast('Please log in or register to complete your purchase.');
+            // CORRECTED: Redirect guest users to the '/home' landing page.
+            setTimeout(() => { this.router.navigate(['/home']); }, 2500);
+        }
+    }
+    
+    closeForm(): void {
+        if (this.isLoggedIn) {
+            this.router.navigate(['/dashboard']);
+        } else {
+            // CORRECTED: Redirect guest users to the '/home' landing page.
+            this.router.navigate(['/home']);
+        }
+    }
+
+    switchUser(event: any): void { 
+        const userType = event.target.value as 'individual' | 'intermediary';
+        this.displayUser.type = userType;
+        this.showToast(`Switched to ${userType} view.`); 
+        if (this.currentStep === 2) {
+            this.calculatePremium(); 
+        }
+    }
+
     private prefillClientDetails(): void {
         if (!this.currentUser) return;
         const registrationData = this.authService.getRegistrationData();
@@ -155,28 +176,6 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         }
     }
 
-    handlePayment(): void {
-        if (this.isLoggedIn) {
-            if (!this.clientDetailsForm.valid) {
-                this.clientDetailsForm.markAllAsTouched();
-                this.showToast('Please fill in all required client details to proceed.');
-                return;
-            }
-            this.openPaymentModal();
-        } else {
-            this.showToast('Please log in or register to complete your purchase.');
-            setTimeout(() => { this.router.navigate(['/']); }, 2500);
-        }
-    }
-    
-    closeForm(): void {
-        if (this.isLoggedIn) {
-            this.router.navigate(['/dashboard']);
-        } else {
-            this.router.navigate(['/']);
-        }
-    }
-
     onSubmit(): void {
         if (this.quotationForm.valid) {
             if (!this.showHighRiskModal && !this.showExportModal) {
@@ -198,10 +197,9 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             this.quotationForm.markAllAsTouched();
         }
     }
-    
+
     private openPaymentModal(): void { 
         const dialogRef = this.dialog.open(PaymentModalComponent, { data: { amount: this.premiumCalculation.totalPayable, phoneNumber: this.clientDetailsForm.get('phoneNumber')?.value, reference: `GEM${Date.now()}`, description: 'Marine Cargo Insurance' }, panelClass: 'payment-dialog-container', autoFocus: false }); 
-        
         dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((result: PaymentResult | null) => { 
             if (result?.success) {
                 if (this.editModeQuoteId) {
@@ -230,14 +228,6 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     getToday(): string { return new Date().toISOString().split('T')[0]; }
     noPastDatesValidator(control: AbstractControl): { [key: string]: boolean } | null { if (!control.value) return null; return control.value < new Date().toISOString().split('T')[0] ? { pastDate: true } : null; }
     goToStep(step: number): void { this.currentStep = step; }
-    switchUser(event: any): void { 
-        const userType = event.target.value as 'individual' | 'intermediary';
-        this.displayUser.type = userType;
-        this.showToast(`Switched to ${userType} view.`); 
-        if (this.currentStep === 2) {
-            this.calculatePremium(); 
-        }
-    }
     isFieldInvalid(form: FormGroup, field: string): boolean { const control = form.get(field); return !!control && control.invalid && (control.dirty || control.touched); }
     getErrorMessage(form: FormGroup, field: string): string { const control = form.get(field); if (!control || !control.errors) return ''; if (control.hasError('required')) return 'This field is required.'; if (control.hasError('email')) return 'Please enter a valid email address.'; if (control.hasError('min')) return `The minimum value is ${control.errors['min'].min}.`; if (control.hasError('minLength')) return `Must be at least ${control.errors['minLength'].requiredLength} characters.`; if (control.hasError('pattern')) { switch (field) { case 'idNumber': return 'Please enter a valid 7 or 8 digit ID number.'; case 'kraPin': return 'Invalid KRA PIN format (e.g., A123456789Z).'; case 'phoneNumber': return 'Invalid phone number format (e.g., 0712345678).'; case 'ucrNumber': return 'Invalid UCR format (e.g., UCR2024123).'; case 'idfNumber': return 'Invalid IDF format (e.g., E202412345).'; case 'firstName': case 'lastName': return 'Please enter a valid name (letters and spaces only).'; default: return 'Invalid format. Please check your entry.'; }} if (control.hasError('maxWords')) return `Exceeds the maximum word count of ${control.errors['maxWords'].maxWords}.`; if (control.hasError('pastDate')) return 'Date cannot be in the past.'; if (control.hasError('requiredTrue')) return 'You must agree to proceed.'; return 'Invalid input.'; }
 }

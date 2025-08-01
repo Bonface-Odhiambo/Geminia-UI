@@ -1,162 +1,126 @@
-import { CommonModule } from '@angular/common';
-import {
-  Component,
-  OnInit,
-  ChangeDetectionStrategy,
-  inject,
-  ChangeDetectorRef,
-} from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import {
-  animate,
-  style,
-  transition,
-  trigger,
-} from '@angular/animations';
-
-// Angular Material Modules
+import { AuthService } from 'app/modules/auth/shared/services/auth.service'; // Correct path to your custom service
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCheckboxModule } from '@angular/material/checkbox'; // Import for checkbox
+import { MatRadioModule } from '@angular/material/radio'; // Import for radio buttons
+
+// Assuming Fuse alert is shared. Adjust path if needed.
+import { FuseAlertComponent } from '@fuse/components/alert'; 
+
+// Define an interface for the alert object for type safety
+export interface Alert {
+    type: 'success' | 'error' | 'warning' | 'info';
+    message: string;
+    position?: 'inline' | 'bottom';
+}
 
 @Component({
-  selector: 'app-sign-in',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule,
-    MatIconModule,
-    MatTooltipModule,
-    MatProgressSpinnerModule,
-  ],
-  templateUrl: './sign-in.component.html',
-  styleUrl: './sign-in.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('shake', [
-      transition('void => *', []), // Prevent animation on initial load
-      transition('* => *', [
-        style({ transform: 'translateX(0)' }),
-        animate('100ms ease-out', style({ transform: 'translateX(-10px)' })),
-        animate('100ms ease-in', style({ transform: 'translateX(10px)' })),
-        animate('100ms ease-out', style({ transform: 'translateX(-5px)' })),
-        animate('100ms ease-in', style({ transform: 'translateX(5px)' })),
-        animate('100ms ease-out', style({ transform: 'translateX(0)' })),
-      ]),
-    ]),
-  ],
+    selector: 'auth-sign-in',
+    templateUrl: './sign-in.component.html',
+    styleUrls: ['./sign-in.component.scss'],
+    standalone: true,
+    imports: [
+        CommonModule,
+        RouterModule,
+        ReactiveFormsModule,
+        MatButtonModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        MatCheckboxModule, // Add module
+        MatRadioModule,    // Add module
+        FuseAlertComponent // Add FuseAlertComponent
+    ],
 })
 export class AuthSignInComponent implements OnInit {
-  private _formBuilder = inject(FormBuilder);
-  private _router = inject(Router);
-  private _cd = inject(ChangeDetectorRef);
+    // --- PROPERTIES FOR THE TEMPLATE ---
+    showAlert: boolean = false;
+    alert: Alert = { type: 'error', message: '' };
+    signInForm: FormGroup;
+    registerForm: FormGroup;
+    formType: 'login' | 'register' = 'login';
+    showPassword = false;
 
-  // Hardcoded credentials
-  private readonly VALID_CREDENTIALS = {
-    username: 'principalresearcher138@gmail.com',
-    password: '1234567',
-  };
+    constructor(
+        private fb: FormBuilder,
+        private authService: AuthService,
+        private router: Router
+    ) {}
 
-  signInForm!: FormGroup;
-  showPassword: boolean = false;
-  showAlert: boolean = false;
-  alert: { type: 'success' | 'error'; message: string } = {
-    type: 'error',
-    message: '',
-  };
+    ngOnInit(): void {
+        // Initialize Sign-In Form
+        this.signInForm = this.fb.group({
+            username: ['individual@geminia.com', [Validators.required, Validators.email]],
+            password: ['password123', Validators.required],
+        });
 
-  ngOnInit(): void {
-    this.signInForm = this._formBuilder.group({
-      username: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
-    });
-  }
-
-  /**
-   * Check if the form is valid
-   */
-  isFormValid(): boolean {
-    const usernameControl = this.signInForm.get('username');
-    const passwordControl = this.signInForm.get('password');
-    return (
-      (usernameControl?.valid && passwordControl?.valid) ?? false
-    );
-  }
-
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
-  }
-
-  signIn(): void {
-    // If the form is invalid, trigger the alert and do nothing else
-    if (this.signInForm.invalid) {
-      this.alert = {
-        type: 'error',
-        message: 'Please fill in both email and password.',
-      };
-      this.showAlert = true;
-      // Trigger shake animation
-      this._cd.markForCheck();
-      return;
+        // Initialize Register Form
+        this.registerForm = this.fb.group({
+            accountType: ['individual', Validators.required],
+            fullName: ['', Validators.required],
+            email: ['', [Validators.required, Validators.email]],
+            kraPin: [''],
+            phoneNumber: [''],
+            iraNumber: [''],
+            pinNumber: [''],
+            password: ['', Validators.required],
+            agreementAccepted: [false, Validators.requiredTrue]
+        });
     }
 
-    this.signInForm.disable();
-    this.showAlert = false;
+    // --- METHODS FOR THE TEMPLATE ---
+    signIn(): void {
+        if (this.signInForm.invalid) {
+            return;
+        }
 
-    // Simulate authentication delay
-    setTimeout(() => {
-      this.handleCredentialAuthentication();
-    }, 1500);
-  }
+        this.signInForm.disable(); // Disable form during submission
+        this.showAlert = false;
 
-  private handleCredentialAuthentication(): void {
-    const formValue = this.signInForm.getRawValue(); // Use getRawValue to get values from disabled form
-    const enteredUsername = formValue.username?.toLowerCase().trim();
-    const enteredPassword = formValue.password;
+        const { username, password } = this.signInForm.value;
 
-    // Check against hardcoded credentials
-    if (
-      enteredUsername === this.VALID_CREDENTIALS.username.toLowerCase() &&
-      enteredPassword === this.VALID_CREDENTIALS.password
-    ) {
-      // Successful authentication
-      this.alert = {
-        type: 'success',
-        message: 'Sign in successful! Redirecting...',
-      };
-      this.showAlert = true;
-      this._cd.markForCheck();
+        setTimeout(() => {
+            const success = this.authService.login(username, password);
 
-      // Redirect to dashboard after showing success message
-      setTimeout(() => {
-        this._router.navigate(['/sign-up/dashboard']);
-      }, 1500);
-    } else {
-      // Failed authentication
-      this.alert = {
-        type: 'error',
-        message: 'Invalid credentials. Please try again.',
-      };
-      this.showAlert = true;
-      this.signInForm.enable();
-      this._cd.markForCheck();
+            if (success) {
+                this.router.navigate(['/dashboard']);
+            } else {
+                // Show inline error alert
+                this.alert = { type: 'error', message: 'Wrong email or password. Please try again.', position: 'inline' };
+                this.showAlert = true;
+                this.signInForm.enable(); // Re-enable form
+            }
+        }, 1000);
     }
-  }
 
-  getMarineQuote(): void {
-    console.log('Navigating to marine quick quote page...');
-    // this._router.navigate(['/sign-up/marine-quote']);
-  }
+    register(): void {
+        if (this.registerForm.invalid) {
+            return;
+        }
+        this.registerForm.disable();
+        console.log('Registering user...', this.registerForm.value);
+        // Implement registration logic here
+        
+        // On success, show a bottom toast and switch to login
+        setTimeout(() => {
+            this.alert = { type: 'success', message: 'Registration successful! Please sign in.', position: 'bottom' };
+            this.showAlert = true;
+            this.formType = 'login';
+            this.registerForm.enable();
+            // Hide the toast after a few seconds
+            setTimeout(() => this.showAlert = false, 5000);
+        }, 1500);
+    }
 
-  getTravelQuote(): void {
-    console.log('Navigating to travel quick quote page...');
-    // this._router.navigate(['/sign-up/travel-quote']);
-  }
+    togglePasswordVisibility(): void {
+        this.showPassword = !this.showPassword;
+    }
 }
