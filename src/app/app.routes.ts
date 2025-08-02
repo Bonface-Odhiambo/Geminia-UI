@@ -49,6 +49,11 @@ export const appRoutes: Route[] = [
             {
                 path: 'sign-up',
                 children: [
+                    // Dashboard route added here to match 'sign-up/dashboard'
+                    {
+                        path: 'dashboard',
+                        loadChildren: () => import('app/modules/auth/dashboard/dashboard.routes'),
+                    },
                     // You will create this component later for the actual sign-up form
                     // {
                     //     path: '', // This will match '/sign-up'
@@ -63,7 +68,7 @@ export const appRoutes: Route[] = [
                     {
                         path: 'marine-quote', // This will correctly match '/sign-up/marine-quote'
                         loadChildren: () => import('app/modules/auth/marine-cargo-quotation/marine-cargo-quotation.routes'),
-                    }
+                    },
                 ]
             }
             // --- END OF FIX ---

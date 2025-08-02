@@ -11,6 +11,7 @@ export class AuthService {
     private _httpClient = inject(HttpClient);
     private _userService = inject(UserService);
     private baseUrl = environment.apiUrl;
+    
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
     // -----------------------------------------------------------------------------------------------------
@@ -178,3 +179,6 @@ export class AuthService {
         return this.signInUsingToken();
     }
 }
+
+// Make sure to export the AuthService as default as well if needed
+export default AuthService;
