@@ -91,7 +91,8 @@ export class AuthSignInComponent implements OnInit {
             const success = this.authService.login(username, password);
 
             if (success) {
-                this.router.navigate(['/dashboard']);
+                // CORRECTED: Navigate to the correct dashboard path
+                this.router.navigate(['/sign-up/dashboard']);
             } else {
                 // Show inline error alert
                 this.alert = { type: 'error', message: 'Wrong email or password. Please try again.', position: 'inline' };
