@@ -103,9 +103,15 @@
 
         <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50">
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="stats-card"
-                    *ngFor="let stat of [{ title: 'Marine Policies', value: dashboardStats.marinePolicies, prefix: '' }, { title: 'Travel Policies', value: dashboardStats.travelPolicies, prefix: '' }, { title: 'Pending Quotes', value: dashboardStats.pendingQuotes, prefix: '' }, { title: 'Total Premium', value: (dashboardStats.totalPremium | number: '1.0-0'), prefix: 'KES' }]">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                <!-- Updated to 5 columns -->
+                <div class="stats-card" *ngFor="let stat of [
+                    { title: 'Active Claims', value: dashboardStats.activeClaims, prefix: '' },
+                    { title: 'Marine Policies', value: dashboardStats.marinePolicies, prefix: '' }, 
+                    { title: 'Travel Policies', value: dashboardStats.travelPolicies, prefix: '' }, 
+                    { title: 'Pending Quotes', value: dashboardStats.pendingQuotes, prefix: '' }, 
+                    { title: 'Total Premium', value: (dashboardStats.totalPremium | number: '1.0-0'), prefix: 'KES' }
+                ]">
                     <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">{{ stat.title }}</h3>
                     <p class="text-3xl font-bold text-pantone-dark-blue">{{ stat.prefix }} {{ stat.value }}</p>
                     <div class="w-12 h-1 bg-pantone-light-blue rounded-full mt-3"></div>
@@ -114,7 +120,59 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2 space-y-8">
-                    <!-- Pending Quotes Section (Fully Reactive) -->
+                    <!-- My Claims Section -->
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden" *ngIf="claims.length > 0">
+                        <div class="px-6 py-4 bg-pantone-dark-blue text-white">
+                            <h2 class="text-xl font-bold flex items-center">
+                                <mat-icon class="mr-2">assignment_late</mat-icon>My Claims
+                            </h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                <div *ngFor="let claim of claims" class="policy-card group border border-gray-200 rounded-xl overflow-hidden">
+                                    <div class="flex items-center justify-between p-4 cursor-pointer" (click)="toggleClaimDetails(claim.id)">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="w-12 h-12 bg-pantone-light-blue/10 rounded-xl flex items-center justify-center">
+                                                <mat-icon class="text-pantone-light-blue">assignment_late</mat-icon>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold text-pantone-dark-blue text-lg">{{ claim.claimNumber }}</h4>
+                                                <p class="text-sm text-gray-600">Policy: {{ claim.policyNumber }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-4">
+                                            <div class="claim-status-chip" [ngClass]="getClaimStatusClass(claim.status)">{{ claim.status }}</div>
+                                            <mat-icon class="text-gray-400 transition-transform" [class.rotate-180]="expandedClaimId === claim.id">expand_more</mat-icon>
+                                        </div>
+                                    </div>
+                                    <div class="policy-details-collapsible" [class.expanded]="expandedClaimId === claim.id">
+                                        <div class="px-6 pb-4 pt-2">
+                                            <h4 class="detail-section-title">Claim Details</h4>
+                                            <div class="policy-detail-grid">
+                                                <div class="detail-item"><span class="detail-label">Date of Loss</span><span class="detail-value">{{ claim.dateOfLoss | date:'mediumDate' }}</span></div>
+                                                <div class="detail-item"><span class="detail-label">Type of Loss</span><span class="detail-value">{{ claim.typeOfLoss }}</span></div>
+                                                <div class="detail-item"><span class="detail-label">Estimated Loss</span><span class="detail-value">KES {{ claim.estimatedLoss | number:'1.2-2' }}</span></div>
+                                                <div class="detail-item"><span class="detail-label">Date Submitted</span><span class="detail-value">{{ claim.submittedDate | date:'mediumDate' }}</span></div>
+                                            </div>
+                                            <div class="detail-item-full"><span class="detail-label">Description of Incident</span><span class="detail-value">{{ claim.description }}</span></div>
+                                            
+                                            <h4 class="detail-section-title">Submitted Documents</h4>
+                                            <div *ngIf="claim.documents.length > 0; else noDocuments" class="space-y-2">
+                                                <div *ngFor="let doc of claim.documents" class="flex items-center p-2 bg-gray-100 rounded-md">
+                                                    <mat-icon class="text-gray-500 mr-2">description</mat-icon>
+                                                    <span class="text-sm text-pantone-dark-blue font-medium">{{ doc.name }}</span>
+                                                    <span class="text-xs text-gray-500 ml-auto">({{ doc.size / 1024 | number:'1.0-0' }} KB)</span>
+                                                </div>
+                                            </div>
+                                            <ng-template #noDocuments><p class="text-sm text-gray-500">No documents were submitted with this claim.</p></ng-template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pending Quotes Section -->
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                         <div class="px-6 py-4 bg-pantone-dark-blue text-white">
                             <h3 class="text-xl font-bold flex items-center">
@@ -167,7 +225,10 @@
                                                 <p class="text-sm text-gray-600">{{ policy.policyNumber }}</p>
                                             </div>
                                         </div>
-                                        <mat-icon class="text-gray-400 transition-transform" [class.rotate-180]="expandedPolicyId === policy.id">expand_more</mat-icon>
+                                        <div class="flex items-center space-x-4">
+                                           <span *ngIf="policy.hasClaim" class="claim-filed-chip">Claim Filed</span>
+                                           <mat-icon class="text-gray-400 transition-transform" [class.rotate-180]="expandedPolicyId === policy.id">expand_more</mat-icon>
+                                        </div>
                                     </div>
                                     <div class="policy-details-collapsible" [class.expanded]="expandedPolicyId === policy.id">
                                         <div class="px-6 pb-4 pt-2">
@@ -182,7 +243,10 @@
                                                     <div class="detail-item"><span class="detail-label">IDF Number</span><span class="detail-value">{{ details.idfNumber }}</span></div>
                                                 </div>
                                             </div>
-                                            <div class="mt-6 border-t pt-4 flex justify-end">
+                                            <div class="mt-6 border-t pt-4 flex justify-between items-center">
+                                                <button mat-stroked-button (click)="openClaimModal(policy)" class="file-claim-button">
+                                                    <mat-icon>assignment_late</mat-icon> File a Claim
+                                                </button>
                                                 <button mat-raised-button (click)="downloadCertificate(policy.id)" class="bg-pantone-dark-blue text-white rounded-xl px-6 py-2 text-sm font-semibold">Download Certificate</button>
                                             </div>
                                         </div>
@@ -193,7 +257,7 @@
                     </div>
                 </div>
 
-                <!-- Right Column (Quick Actions & Recent Activity) -->
+                <!-- Right Column -->
                 <div class="space-y-6">
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                         <div class="px-6 py-4 bg-pantone-light-blue text-white"><h3 class="text-lg font-bold">Quick Actions</h3></div>

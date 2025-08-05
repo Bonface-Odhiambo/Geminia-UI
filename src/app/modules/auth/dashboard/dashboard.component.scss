@@ -115,6 +115,45 @@ $white: #ffffff;
   word-break: break-word;
 }
 
+// --- NEW/UPDATED CLAIM STYLES ---
+.claim-filed-chip {
+  background-color: rgba($pantone-dark-blue, 0.1);
+  color: $pantone-dark-blue;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.file-claim-button {
+  border-color: $pantone-light-blue !important;
+  color: $pantone-light-blue !important;
+
+  &:hover {
+    background-color: rgba($pantone-light-blue, 0.05);
+  }
+
+  mat-icon {
+    color: $pantone-light-blue;
+  }
+}
+
+.claim-status-chip {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  min-width: 110px;
+
+  &.status-submitted { background-color: #e0f2fe; color: #0ea5e9; }
+  &.status-review { background-color: #fef3c7; color: #d97706; }
+  &.status-info-required { background-color: #ffedd5; color: #f97316; }
+  &.status-approved { background-color: #dcfce7; color: #16a34a; }
+  &.status-settled { background-color: #e0e7ff; color: #4f46e5; }
+  &.status-rejected { background-color: #fee2e2; color: #dc2626; }
+}
+
 // Styles for the custom Geminia Toast Message
 ::ng-deep .geminia-toast-panel {
   --mdc-snackbar-container-color: #{$pantone-dark-blue};

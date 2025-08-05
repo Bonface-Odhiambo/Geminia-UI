@@ -16,16 +16,28 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+
 
 // --- IMPORT THE SHARED AUTH SERVICE AND ITS TYPES ---
 import { AuthService, StoredUser, PendingQuote } from '../shared/services/auth.service';
 
 // --- TYPE DEFINITIONS ---
+// Added 'hasClaim' to Policy interface
 interface Policy {
-  id: string; type: 'marine' | 'travel'; title: string; policyNumber: string; status: 'active' | 'completed'; premium: number; startDate: Date; endDate: Date; certificateUrl?: string;
+  id: string; type: 'marine' | 'travel'; title: string; policyNumber: string; status: 'active' | 'completed'; premium: number; startDate: Date; endDate: Date; certificateUrl?: string; hasClaim?: boolean;
   marineDetails?: { cargoType: string; tradeType: string; modeOfShipment: string; marineProduct: string; marineCargoType: string; origin: string; destination: string; sumInsured: number; descriptionOfGoods: string; ucrNumber: string; idfNumber: string; clientInfo: { name: string; idNumber: string; kraPin: string; email: string; phoneNumber: string; } }
 }
-interface DashboardStats { marinePolicies: number; travelPolicies: number; pendingQuotes: number; totalPremium: number; }
+// New interfaces for Claims
+type ClaimStatus = 'Submitted' | 'Under Review' | 'More Information Required' | 'Approved' | 'Settled' | 'Rejected';
+interface ClaimDocument { name: string; size: number; type: string; }
+interface Claim {
+  id: string; policyId: string; policyNumber: string; claimNumber: string; dateOfLoss: Date; typeOfLoss: string; description: string; estimatedLoss: number; status: ClaimStatus; submittedDate: Date; documents: ClaimDocument[];
+}
+
+interface DashboardStats { marinePolicies: number; travelPolicies: number; pendingQuotes: number; totalPremium: number; activeClaims: number; }
 interface MpesaPayment { amount: number; phoneNumber: string; reference: string; description: string; }
 interface NavigationItem { label: string; icon: string; route?: string; children?: NavigationItem[]; badge?: number; isExpanded?: boolean; }
 interface Notification { id: string; title: string; message: string; timestamp: Date; read: boolean; actionUrl?: string; }
@@ -42,10 +54,171 @@ export interface PaymentResult { success: boolean; method: 'stk' | 'paybill' | '
 })
 export class MpesaPaymentModalComponent implements OnInit { stkForm: FormGroup; selectedPaymentMethod: 'mpesa' | 'card' = 'mpesa'; mpesaSubMethod: 'stk' | 'paybill' = 'stk'; isProcessingStk = false; isVerifyingPaybill = false; isRedirectingToCard = false; constructor(private fb: FormBuilder, public dialogRef: MatDialogRef<MpesaPaymentModalComponent>, @Inject(MAT_DIALOG_DATA) public data: MpesaPayment) { this.stkForm = this.fb.group({ phoneNumber: [data.phoneNumber || '', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]], }); } ngOnInit(): void {} closeDialog(result: PaymentResult | null = null): void { this.dialogRef.close(result); } processStkPush(): void { if (this.stkForm.invalid) return; this.isProcessingStk = true; setTimeout(() => { this.isProcessingStk = false; this.closeDialog({ success: true, method: 'stk', reference: this.data.reference, mpesaReceipt: 'S' + Math.random().toString(36).substring(2, 12).toUpperCase() }); }, 3000); } verifyPaybillPayment(): void { this.isVerifyingPaybill = true; setTimeout(() => { this.isVerifyingPaybill = false; this.closeDialog({ success: true, method: 'paybill', reference: this.data.reference }); }, 3500); } redirectToCardGateway(): void { this.isRedirectingToCard = true; setTimeout(() => { this.isRedirectingToCard = false; console.log('Redirecting to I&M Bank payment gateway...'); this.closeDialog({ success: true, method: 'card', reference: this.data.reference }); }, 2000); } }
 
+
+// --- NEW CLAIM REGISTRATION MODAL COMPONENT ---
+@Component({
+  selector: 'app-claim-registration-modal',
+  standalone: true,
+  imports: [ CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatProgressSpinnerModule, MatSelectModule, MatDatepickerModule, MatNativeDateModule, MatDividerModule ],
+  template: `
+    <div class="claim-modal-container">
+      <div class="modal-header">
+        <div class="header-icon-wrapper"><mat-icon>assignment_late</mat-icon></div>
+        <div>
+          <h1 mat-dialog-title class="modal-title">Register a New Claim</h1>
+          <p class="modal-subtitle">For Policy: {{ data.policy.policyNumber }}</p>
+        </div>
+        <button mat-icon-button (click)="dialogRef.close()" class="close-button" aria-label="Close dialog"><mat-icon>close</mat-icon></button>
+      </div>
+      <mat-dialog-content class="modal-content">
+        <form [formGroup]="claimForm" (ngSubmit)="submitClaim()">
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Date of Loss / Incident</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="dateOfLoss" readonly>
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Type of Loss</mat-label>
+              <mat-select formControlName="typeOfLoss">
+                <mat-option value="Damage">Damage to Goods</mat-option>
+                <mat-option value="Theft">Theft or Pilferage</mat-option>
+                <mat-option value="Loss">Total Loss of Cargo</mat-option>
+                <mat-option value="Other">Other</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Estimated Loss Amount (KES)</mat-label>
+            <input matInput type="number" formControlName="estimatedLoss" placeholder="e.g., 50000">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Detailed Description of Incident</mat-label>
+            <textarea matInput formControlName="description" rows="4" placeholder="Describe what happened, the items affected, and any other relevant details..."></textarea>
+          </mat-form-field>
+
+          <div class="file-upload-section">
+            <h4 class="file-upload-title">Supporting Documents</h4>
+            <p class="file-upload-subtitle">Upload photos, shipping documents, police reports, etc.</p>
+            <button type="button" mat-stroked-button color="primary" (click)="fileInput.click()" class="upload-button">
+              <mat-icon>attach_file</mat-icon> Select Files
+            </button>
+            <input hidden (change)="onFileSelected($event)" #fileInput type="file" multiple>
+            
+            <div *ngIf="selectedFiles.length > 0" class="file-list">
+              <div *ngFor="let file of selectedFiles; let i = index" class="file-item">
+                <mat-icon class="file-icon">description</mat-icon>
+                <span class="file-name">{{ file.name }}</span>
+                <span class="file-size">({{ file.size / 1024 | number:'1.0-0' }} KB)</span>
+                <button mat-icon-button (click)="removeFile(i)" type="button" class="remove-file-btn" aria-label="Remove file">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </mat-dialog-content>
+      <mat-dialog-actions align="end">
+        <button mat-button (click)="dialogRef.close()">Cancel</button>
+        <button mat-raised-button color="primary" (click)="submitClaim()" [disabled]="claimForm.invalid || isSubmitting" class="submit-claim-btn">
+            <mat-spinner *ngIf="isSubmitting" diameter="24"></mat-spinner>
+            <span *ngIf="!isSubmitting">Submit Claim</span>
+        </button>
+      </mat-dialog-actions>
+    </div>
+  `,
+  styles: [`
+    :host { --pantone-306c: #04b2e1; --pantone-2758c: #21275c; --white-color: #ffffff; --light-gray: #f8f9fa; --medium-gray: #e9ecef; --dark-gray: #495057; }
+    .claim-modal-container { max-width: 650px; }
+    .modal-header { display: flex; align-items: center; padding: 20px 24px; background-color: var(--pantone-2758c); color: var(--white-color); position: relative; }
+    .header-icon-wrapper { width: 48px; height: 48px; background-color: rgba(255, 255, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 16px; flex-shrink: 0; }
+    .header-icon-wrapper mat-icon { color: var(--pantone-306c); font-size: 28px; width: 28px; height: 28px; }
+    .modal-title { font-size: 22px; font-weight: 700; margin: 0; }
+    .modal-subtitle { font-size: 14px; opacity: 0.8; margin-top: 4px; }
+    .close-button { position: absolute; top: 12px; right: 12px; color: var(--white-color); }
+    .modal-content { padding: 24px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .full-width { width: 100%; margin-bottom: 16px; }
+    .file-upload-section { margin-top: 16px; padding: 16px; border: 1px dashed var(--medium-gray); border-radius: 8px; background-color: var(--light-gray); }
+    .file-upload-title { font-weight: 600; color: var(--pantone-2758c); margin: 0 0 4px 0; }
+    .file-upload-subtitle { font-size: 13px; color: var(--dark-gray); margin: 0 0 16px 0; }
+    .upload-button { width: 100%; }
+    .file-list { margin-top: 16px; }
+    .file-item { display: flex; align-items: center; padding: 8px; background-color: var(--white-color); border-radius: 6px; margin-bottom: 8px; border: 1px solid var(--medium-gray); }
+    .file-icon { color: var(--dark-gray); margin-right: 8px; }
+    .file-name { flex-grow: 1; font-size: 14px; color: var(--pantone-2758c); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .file-size { font-size: 12px; color: var(--dark-gray); margin-left: 8px; }
+    .remove-file-btn { margin-left: auto; }
+    .submit-claim-btn { background-color: var(--pantone-2758c) !important; color: white !important; }
+  `]
+})
+export class ClaimRegistrationModalComponent {
+  claimForm: FormGroup;
+  selectedFiles: File[] = [];
+  isSubmitting = false;
+
+  constructor(
+    private fb: FormBuilder,
+    public dialogRef: MatDialogRef<ClaimRegistrationModalComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { policy: Policy }
+  ) {
+    this.claimForm = this.fb.group({
+      dateOfLoss: ['', Validators.required],
+      typeOfLoss: ['', Validators.required],
+      estimatedLoss: ['', [Validators.required, Validators.min(1)]],
+      description: ['', [Validators.required, Validators.minLength(20)]],
+    });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      this.selectedFiles.push(...Array.from(input.files));
+    }
+  }
+
+  removeFile(index: number): void {
+    this.selectedFiles.splice(index, 1);
+  }
+
+  submitClaim(): void {
+    if (this.claimForm.invalid) {
+      return;
+    }
+    this.isSubmitting = true;
+
+    // Simulate network delay
+    setTimeout(() => {
+      const formValue = this.claimForm.value;
+      const newClaim: Claim = {
+        id: 'CLM' + Date.now(),
+        policyId: this.data.policy.id,
+        policyNumber: this.data.policy.policyNumber,
+        claimNumber: `CLM/${new Date().getFullYear()}/${Math.floor(10000 + Math.random() * 90000)}`,
+        dateOfLoss: formValue.dateOfLoss,
+        typeOfLoss: formValue.typeOfLoss,
+        description: formValue.description,
+        estimatedLoss: formValue.estimatedLoss,
+        status: 'Submitted',
+        submittedDate: new Date(),
+        documents: this.selectedFiles.map(f => ({ name: f.name, size: f.size, type: f.type }))
+      };
+      
+      this.isSubmitting = false;
+      this.dialogRef.close(newClaim);
+    }, 2000);
+  }
+}
+
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [ CommonModule, RouterModule, MatIconModule, MatButtonModule, MatMenuModule, MatDividerModule, MatChipsModule, MatCardModule, MatDialogModule, MatBadgeModule, MatSnackBarModule, MpesaPaymentModalComponent ],
+  imports: [ CommonModule, RouterModule, MatIconModule, MatButtonModule, MatMenuModule, MatDividerModule, MatChipsModule, MatCardModule, MatDialogModule, MatBadgeModule, MatSnackBarModule, MpesaPaymentModalComponent, ClaimRegistrationModalComponent ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
@@ -55,14 +228,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   user: StoredUser | null = null;
   pendingQuotes: PendingQuote[] = [];
   navigationItems: NavigationItem[] = [];
-  dashboardStats: DashboardStats = { marinePolicies: 0, travelPolicies: 0, pendingQuotes: 0, totalPremium: 0 };
+  dashboardStats: DashboardStats = { marinePolicies: 0, travelPolicies: 0, pendingQuotes: 0, totalPremium: 0, activeClaims: 0 };
   
-  activePolicies: Policy[] = [ { id: 'P001', type: 'marine', title: 'Machinery Import', policyNumber: 'MAR/2024/7531', status: 'active', premium: 18500, startDate: new Date('2024-08-01'), endDate: new Date('2024-09-30'), certificateUrl: '/simulated/MAR-2024-7531.pdf', marineDetails: { cargoType: 'containerized', tradeType: 'import', modeOfShipment: 'sea', marineProduct: 'Institute Cargo Clauses (A) - All Risks', marineCargoType: 'Machinery', origin: 'Germany', destination: 'Mombasa, Kenya', sumInsured: 3500000, descriptionOfGoods: 'Industrial-grade printing press machine, packed in a 40ft container.', ucrNumber: 'UCR202408153', idfNumber: 'E2300012345', clientInfo: { name: 'Bonface Odhiambo', idNumber: '30123456', kraPin: 'A001234567Z', email: 'bonface@example.com', phoneNumber: '0712345678' } } }, { id: 'P002', type: 'travel', title: 'Schengen Visa Travel Insurance', policyNumber: 'TRV/2024/9102', status: 'active', premium: 4800, startDate: new Date('2024-09-01'), endDate: new Date('2025-08-31'), certificateUrl: '/simulated/TRV-2024-9102.pdf' } ];
+  activePolicies: Policy[] = [ { id: 'P001', type: 'marine', title: 'Machinery Import', policyNumber: 'MAR/2024/7531', status: 'active', premium: 18500, startDate: new Date('2024-08-01'), endDate: new Date('2024-09-30'), certificateUrl: '/simulated/MAR-2024-7531.pdf', hasClaim: true, marineDetails: { cargoType: 'Containerized', tradeType: 'Import', modeOfShipment: 'Sea', marineProduct: 'Institute Cargo Clauses (A) - All Risks', marineCargoType: 'Machinery', origin: 'Germany', destination: 'Mombasa, Kenya', sumInsured: 3500000, descriptionOfGoods: 'Industrial-grade printing press machine, packed in a 40ft container.', ucrNumber: 'UCR202408153', idfNumber: 'E2300012345', clientInfo: { name: 'Bonface Odhiambo', idNumber: '30123456', kraPin: 'A001234567Z', email: 'bonface@example.com', phoneNumber: '0712345678' } } }, { id: 'P002', type: 'travel', title: 'Schengen Visa Travel Insurance', policyNumber: 'TRV/2024/9102', status: 'active', premium: 4800, startDate: new Date('2024-09-01'), endDate: new Date('2025-08-31'), certificateUrl: '/simulated/TRV-2024-9102.pdf' } ];
+  claims: Claim[] = [ { id: 'CLM1678886400', policyId: 'P001', policyNumber: 'MAR/2024/7531', claimNumber: 'CLM/2024/83145', dateOfLoss: new Date('2024-08-15'), typeOfLoss: 'Damage', description: 'Container was dropped during offloading at the port, causing significant damage to the casing of the printing press.', estimatedLoss: 450000, status: 'Under Review', submittedDate: new Date('2024-08-18'), documents: [ { name: 'Damage_Photos.zip', size: 5242880, type: 'application/zip' }, { name: 'Survey_Report.pdf', size: 122880, type: 'application/pdf' } ] }];
   recentActivities: Activity[] = [ { id: 'A001', title: 'Payment Successful', description: 'Travel Insurance for Europe', timestamp: new Date(Date.now() - 3600000), icon: 'payment', iconColor: '#04b2e1', relatedId: 'P003' }, { id: 'A002', title: 'Certificate Downloaded', description: 'Marine Cargo Policy MAR-2025-002', timestamp: new Date(Date.now() - 14400000), icon: 'download', iconColor: '#04b2e1', relatedId: 'P002' }, { id: 'A003', title: 'Profile Updated', description: 'Contact information updated', timestamp: new Date(Date.now() - 86400000), icon: 'person', iconColor: '#21275c' }];
   notifications: Notification[] = [ { id: 'N001', title: 'Quotes Awaiting Payment', message: 'You have quotes that need payment to activate your policy.', timestamp: new Date(), read: false, actionUrl: '#pending-quotes' }, { id: 'N002', title: 'Certificates Ready', message: 'Your new policy certificates are ready for download.', timestamp: new Date(), read: false, actionUrl: '#active-policies' } ];
 
   isMobileSidebarOpen = false;
   expandedPolicyId: string | null = null;
+  expandedClaimId: string | null = null;
   
   constructor(
     private dialog: MatDialog, 
@@ -97,6 +272,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       travelPolicies: this.activePolicies.filter(p => p.type === 'travel').length,
       pendingQuotes: this.pendingQuotes.length,
       totalPremium: this.activePolicies.reduce((sum, p) => sum + p.premium, 0),
+      activeClaims: this.claims.filter(c => c.status !== 'Settled' && c.status !== 'Rejected').length
     };
   }
   
@@ -119,15 +295,45 @@ export class DashboardComponent implements OnInit, OnDestroy {
       const dialogRef = this.dialog.open(MpesaPaymentModalComponent, { data: paymentData, panelClass: 'payment-modal-panel', autoFocus: false });
       dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((result: PaymentResult | null) => {
         if (result?.success) {
-          this.snackBar.open(`Payment for "${quote.title}" was successful.`, 'OK', { 
+          this.snackBar.open(`Payment for "${quote.title}" was successful. Policy is now active.`, 'OK', {
             duration: 7000,
-            panelClass: ['geminia-toast-panel'] // Apply custom style
+            panelClass: ['geminia-toast-panel']
           });
+
+          if (quote.type === 'marine') { this.activateMarinePolicy(quote); }
+          
           this.authService.removePendingQuote(quoteId);
           this.loadDashboardData();
         }
       });
     }
+  }
+
+  private activateMarinePolicy(quote: PendingQuote): void {
+    if (quote.type !== 'marine' || !quote.quoteDetails) {
+      console.error('Attempted to activate a non-marine quote or a quote with no details.');
+      return;
+    }
+  
+    const details = quote.quoteDetails;
+    const policyNumber = `MAR/${new Date().getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`;
+  
+    const newPolicy: Policy = {
+      id: 'P' + Date.now().toString(36),
+      type: 'marine',
+      title: quote.title,
+      policyNumber: policyNumber,
+      status: 'active',
+      premium: quote.premium.totalPayable,
+      startDate: new Date(details.coverStartDate),
+      endDate: new Date(new Date(details.coverStartDate).setDate(new Date(details.coverStartDate).getDate() + 90)),
+      certificateUrl: `/simulated/${policyNumber}.pdf`,
+      marineDetails: {
+        cargoType: details.cargoType, tradeType: details.tradeType, modeOfShipment: details.modeOfShipment, marineProduct: details.selectProduct, marineCargoType: details.marineCargoType, origin: details.countryOfOrigin, destination: details.destination, sumInsured: details.sumInsured, descriptionOfGoods: details.descriptionOfGoods, ucrNumber: details.ucrNumber, idfNumber: details.idfNumber,
+        clientInfo: { name: `${details.firstName} ${details.lastName}`, idNumber: details.idNumber, kraPin: details.kraPin, email: details.emailAddress, phoneNumber: details.phoneNumber, }
+      }
+    };
+    this.activePolicies.unshift(newPolicy);
   }
 
   deleteQuote(quoteId: string): void {
@@ -136,14 +342,38 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.loadDashboardData();
         this.snackBar.open('Quote deleted.', 'OK', { 
           duration: 3000,
-          panelClass: ['geminia-toast-panel'] // Apply custom style
+          panelClass: ['geminia-toast-panel']
         });
     }
+  }
+  
+  openClaimModal(policy: Policy): void {
+    const dialogRef = this.dialog.open(ClaimRegistrationModalComponent, {
+      data: { policy },
+      panelClass: 'claim-modal-panel',
+      autoFocus: false
+    });
+
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((newClaim: Claim | null) => {
+      if (newClaim) {
+        this.claims.unshift(newClaim);
+        const policyToUpdate = this.activePolicies.find(p => p.id === newClaim.policyId);
+        if (policyToUpdate) {
+          policyToUpdate.hasClaim = true;
+        }
+        this.loadDashboardData();
+        this.snackBar.open(`Claim ${newClaim.claimNumber} has been submitted successfully.`, 'OK', {
+          duration: 7000,
+          panelClass: ['geminia-toast-panel']
+        });
+      }
+    });
   }
   
   setupNavigationBasedOnRole(role: 'individual' | 'intermediary'): void {
     this.navigationItems = [
       { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
+      { label: 'My Claims', icon: 'assignment_late', route: '/claims' }, // Added claims nav
       {
         label: 'Marine Insurance', icon: 'directions_boat', isExpanded: true,
         children: [ { label: 'New Quote', route: '/sign-up/marine-quote', icon: 'add_circle' } ]
@@ -159,10 +389,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // --- Utility and Display Methods ---
   @HostListener('window:resize', ['$event'])
-  onResize(event: Event) {
-    if ((event.target as Window).innerWidth >= 1024) { this.isMobileSidebarOpen = false; }
-  }
+  onResize(event: Event) { if ((event.target as Window).innerWidth >= 1024) { this.isMobileSidebarOpen = false; } }
   togglePolicyDetails(policyId: string): void { this.expandedPolicyId = this.expandedPolicyId === policyId ? null : policyId; }
+  toggleClaimDetails(claimId: string): void { this.expandedClaimId = this.expandedClaimId === claimId ? null : claimId; }
   getInitials(name: string): string { return name?.split(' ').map((n) => n[0]).join('').substring(0, 2) || ''; }
   getRoleDisplayName(): string { return this.user?.type === 'intermediary' ? 'Intermediary' : 'Individual Client'; }
   getUnreadNotificationCount(): number { return this.notifications.filter((n) => !n.read).length; }
@@ -170,4 +399,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   toggleMobileSidebar(): void { this.isMobileSidebarOpen = !this.isMobileSidebarOpen; }
   downloadCertificate(policyId: string): void { const policy = this.activePolicies.find((p) => p.id === policyId); if (policy?.certificateUrl) { const link = document.createElement('a'); link.href = policy.certificateUrl; link.download = `${policy.policyNumber}-certificate.pdf`; link.click(); } }
   markNotificationAsRead(notification: Notification): void { notification.read = true; if (notification.actionUrl) { document.querySelector(notification.actionUrl)?.scrollIntoView({ behavior: 'smooth' }); } }
+  getClaimStatusClass(status: ClaimStatus): string {
+    const statusMap: { [key in ClaimStatus]: string } = {
+      'Submitted': 'status-submitted', 'Under Review': 'status-review', 'More Information Required': 'status-info-required', 'Approved': 'status-approved', 'Settled': 'status-settled', 'Rejected': 'status-rejected'
+    };
+    return statusMap[status] || '';
+  }
 }
