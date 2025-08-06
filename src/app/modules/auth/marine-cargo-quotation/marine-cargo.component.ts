@@ -143,7 +143,6 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     
     closeForm(): void {
         if (this.isLoggedIn) {
-            // CORRECTED PATH
             this.router.navigate(['/sign-up/dashboard']);
         } else {
             this.router.navigate(['/']);
@@ -182,7 +181,6 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             this.showToast(`Editing your saved quote: ${quoteToEdit.title}.`);
         } else {
             this.showToast('Could not find the quote you want to edit.');
-            // CORRECTED PATH
             this.router.navigate(['/sign-up/dashboard']);
         }
     }
@@ -216,7 +214,6 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             if (result?.success) {
                 if (this.editModeQuoteId) { this.authService.removePendingQuote(this.editModeQuoteId); }
                 this.showToast('Payment successful! Redirecting to your dashboard.');
-                // CORRECTED PATH
                 setTimeout(() => { this.router.navigate(['/sign-up/dashboard']); }, 2000); 
             } 
         }); 
@@ -229,7 +226,7 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             lastName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]],
             email: ['', [Validators.required, Validators.email]],
             phoneNumber: ['', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]],
-            idNumber: ['', [Validators.required, Validators.pattern(/^\d{7,8}$/)]],
+            idNumber: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9-]{5,15}$/)]],
             kraPin: ['', [Validators.required, Validators.pattern(/^[A-Z]\d{9}[A-Z]$/i)]],
             termsAndPolicyConsent: [false, Validators.requiredTrue],
             
@@ -245,12 +242,29 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             coverStartDate: ['', [Validators.required, this.noPastDatesValidator]],
             sumInsured: ['', [Validators.required, Validators.min(10000)]],
             descriptionOfGoods: ['', [Validators.required, Validators.minLength(20)]],
-            ucrNumber: ['', [Validators.required, Validators.pattern(/^UCR\d{7,}$/)]],
-            idfNumber: ['', [Validators.required, Validators.pattern(/^E\d{9,}$/)]],
+            ucrNumber: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/), Validators.minLength(15)]],
+            idfNumber: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/), Validators.minLength(15)]],
         });
     }
 
-    private createModalForm(): FormGroup { return this.fb.group({ kraPin: ['', [Validators.required, Validators.pattern(/^[A-Z]\d{9}[A-Z]$/i)]], firstName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]], lastName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]], email: ['', [Validators.required, Validators.email]], phoneNumber: ['', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]], marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required], marineCargoType: ['', Validators.required], idfNumber: ['', [Validators.pattern(/^E\d{9,}$/)]], ucrNumber: ['', [Validators.pattern(/^UCR\d{7,}$/)]], originCountry: ['', Validators.required], destinationCountry: ['', Validators.required], shipmentDate: ['', [Validators.required, this.noPastDatesValidator]], goodsDescription: ['', [Validators.required, Validators.minLength(20), maxWords(100)]], termsAndPolicyConsent: [false, Validators.requiredTrue], }); }
+    private createModalForm(): FormGroup { 
+        return this.fb.group({ 
+            kraPin: ['', [Validators.required, Validators.pattern(/^[A-Z]\d{9}[A-Z]$/i)]], 
+            firstName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]], 
+            lastName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]], 
+            email: ['', [Validators.required, Validators.email]], 
+            phoneNumber: ['', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]], 
+            marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required], 
+            marineCargoType: ['', Validators.required], 
+            idfNumber: ['', [Validators.pattern(/^[a-zA-Z0-9]+$/), Validators.minLength(15)]], 
+            ucrNumber: ['', [Validators.pattern(/^[a-zA-Z0-9]+$/), Validators.minLength(15)]], 
+            originCountry: ['', Validators.required], 
+            destinationCountry: ['', Validators.required], 
+            shipmentDate: ['', [Validators.required, this.noPastDatesValidator]], 
+            goodsDescription: ['', [Validators.required, Validators.minLength(20), maxWords(100)]], 
+            termsAndPolicyConsent: [false, Validators.requiredTrue], 
+        }); 
+    }
     private createExportRequestForm(): FormGroup { const form = this.createModalForm(); form.get('originCountry')?.patchValue('Kenya'); form.get('originCountry')?.disable(); return form; }
     private createHighRiskRequestForm(): FormGroup { return this.createModalForm(); }
     private setDefaultDate(): void { this.quotationForm.patchValue({ coverStartDate: this.getToday() }); }
@@ -289,5 +303,5 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     noPastDatesValidator(control: AbstractControl): { [key: string]: boolean } | null { if (!control.value) return null; return control.value < new Date().toISOString().split('T')[0] ? { pastDate: true } : null; }
     goToStep(step: number): void { this.currentStep = step; }
     isFieldInvalid(form: FormGroup, field: string): boolean { const control = form.get(field); return !!control && control.invalid && (control.dirty || control.touched); }
-    getErrorMessage(form: FormGroup, field: string): string { const control = form.get(field); if (!control || !control.errors) return ''; if (control.hasError('required')) return 'This field is required.'; if (control.hasError('email')) return 'Please enter a valid email address.'; if (control.hasError('min')) return `The minimum value is ${control.errors['min'].min}.`; if (control.hasError('minLength')) return `Must be at least ${control.errors['minLength'].requiredLength} characters.`; if (control.hasError('pattern')) { switch (field) { case 'idNumber': return 'Please enter a valid 7 or 8 digit ID number.'; case 'kraPin': return 'Invalid KRA PIN format (e.g., A123456789Z).'; case 'phoneNumber': return 'Invalid phone number format (e.g., 0712345678).'; case 'ucrNumber': return 'Invalid UCR format (e.g., UCR2024123).'; case 'idfNumber': return 'Invalid IDF format (e.g., E202412345).'; case 'firstName': case 'lastName': return 'Please enter a valid name (letters and spaces only).'; default: return 'Invalid format. Please check your entry.'; }} if (control.hasError('maxWords')) return `Exceeds the maximum word count of ${control.errors['maxWords'].maxWords}.`; if (control.hasError('pastDate')) return 'Date cannot be in the past.'; if (control.hasError('requiredTrue')) return 'You must agree to proceed.'; return 'Invalid input.'; }
+    getErrorMessage(form: FormGroup, field: string): string { const control = form.get(field); if (!control || !control.errors) return ''; if (control.hasError('required')) return 'This field is required.'; if (control.hasError('email')) return 'Please enter a valid email address.'; if (control.hasError('min')) return `The minimum value is ${control.errors['min'].min}.`; if (control.hasError('minLength')) return `Must be at least ${control.errors['minLength'].requiredLength} characters.`; if (control.hasError('pattern')) { switch (field) { case 'idNumber': return 'Invalid format. Can contain letters, numbers, and hyphens.'; case 'kraPin': return 'Invalid KRA PIN format (e.g., A123456789Z).'; case 'phoneNumber': return 'Invalid phone number format (e.g., 0712345678).'; case 'ucrNumber': case 'idfNumber': return 'Invalid format. Must be at least 15 alphanumeric characters.'; case 'firstName': case 'lastName': return 'Please enter a valid name (letters and spaces only).'; default: return 'Invalid format. Please check your entry.'; }} if (control.hasError('maxWords')) return `Exceeds the maximum word count of ${control.errors['maxWords'].maxWords}.`; if (control.hasError('pastDate')) return 'Date cannot be in the past.'; if (control.hasError('requiredTrue')) return 'You must agree to proceed.'; return 'Invalid input.'; }
 }

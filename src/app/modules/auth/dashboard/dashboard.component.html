@@ -6,15 +6,16 @@
     <!-- Sidebar -->
     <div class="fixed inset-y-0 left-0 w-64 sidebar-bg text-white flex flex-col shadow-xl transform -translate-x-full transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:flex-shrink-0 z-50"
         [class.translate-x-0]="isMobileSidebarOpen">
-        <div class="p-6 border-b border-white/20">
-            <!-- Modern, Centered, and Larger Logo Container -->
-            <div class="flex justify-center">
-                <div class="inline-block bg-white/10 p-4 rounded-3xl">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROTKn0j9cVpA67LPdjPeYBR3KnWiwP1gsM3cS27rca-7m8BgvgUylY4uhBnOnVnXFx8Is&usqp=CAU"
-                        alt="Geminia Logo" class="h-20 w-auto" />
-                </div>
+        
+        <!-- Updated Logo and Tagline Section -->
+        <div class="p-6 border-b border-white/20 text-center">
+            <div class="inline-block bg-white/10 p-4 rounded-3xl">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROTKn0j9cVpA67LPdjPeYBR3KnWiwP1gsM3cS27rca-7m8BgvgUylY4uhBnOnVnXFx8Is&usqp=CAU"
+                    alt="Geminia Logo" class="h-20 w-auto" />
             </div>
+            <p class="text-xs italic text-white/70 mt-3 tracking-wide">Think Insurance ... Think Geminia</p>
         </div>
+
         <div class="p-6 border-b border-white/20">
             <div class="flex items-center space-x-3">
                 <div class="relative">
@@ -101,7 +102,6 @@
         <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50">
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-                <!-- Updated to 5 columns -->
                 <div class="stats-card" *ngFor="let stat of [
                     { title: 'Active Claims', value: dashboardStats.activeClaims, prefix: '' },
                     { title: 'Marine Policies', value: dashboardStats.marinePolicies, prefix: '' }, 
@@ -152,7 +152,6 @@
                                                 <div class="detail-item"><span class="detail-label">Date Submitted</span><span class="detail-value">{{ claim.submittedDate | date:'mediumDate' }}</span></div>
                                             </div>
                                             <div class="detail-item-full"><span class="detail-label">Description of Incident</span><span class="detail-value">{{ claim.description }}</span></div>
-                                            
                                             <h4 class="detail-section-title">Submitted Documents</h4>
                                             <div *ngIf="claim.documents.length > 0; else noDocuments" class="space-y-2">
                                                 <div *ngFor="let doc of claim.documents" class="flex items-center p-2 bg-gray-100 rounded-md">
@@ -178,8 +177,7 @@
                         </div>
                         <div class="p-6">
                             <div *ngIf="pendingQuotes.length > 0; else noQuotes" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div *ngFor="let quote of pendingQuotes"
-                                    class="quote-card group bg-gray-50 p-6 rounded-xl border border-gray-200">
+                                <div *ngFor="let quote of pendingQuotes" class="quote-card group bg-gray-50 p-6 rounded-xl border border-gray-200">
                                     <div class="flex items-center justify-between mb-4">
                                         <span class="px-3 py-1 bg-amber-500 text-white rounded-full text-xs font-semibold uppercase tracking-wide">{{ quote.status }}</span>
                                         <p class="text-xs text-gray-500">Created: {{ quote.createdDate | date: 'shortDate' }}</p>
@@ -292,11 +290,9 @@
     <div class="px-4 py-3 border-b border-gray-100">
         <h3 class="font-semibold text-pantone-dark-blue">Notifications</h3>
     </div>
-    <button mat-menu-item *ngFor="let notification of notifications" (click)="markNotificationAsRead(notification)"
-        class="!min-w-[350px] !whitespace-normal px-4 py-3 hover:bg-gray-50">
+    <button mat-menu-item *ngFor="let notification of notifications" (click)="markNotificationAsRead(notification)" class="!min-w-[350px] !whitespace-normal px-4 py-3 hover:bg-gray-50">
         <div class="flex items-start space-x-3">
-            <div class="w-2 h-2 rounded-full mt-2 flex-shrink-0"
-                [ngClass]="{'bg-pantone-dark-blue': !notification.read, 'bg-gray-300': notification.read}"></div>
+            <div class="w-2 h-2 rounded-full mt-2 flex-shrink-0" [ngClass]="{'bg-pantone-dark-blue': !notification.read, 'bg-gray-300': notification.read}"></div>
             <div class="flex-1 min-w-0">
                 <p class="font-semibold text-pantone-dark-blue text-sm">{{ notification.title }}</p>
                 <p class="text-sm text-gray-600 break-words">{{ notification.message }}</p>
