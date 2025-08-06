@@ -134,6 +134,11 @@
                                         <input type="text" formControlName="destination" class="w-full rounded-md border-gray-300 bg-gray-100 px-3 py-2" readonly/>
                                     </div>
                                 </div>
+                                <div class="mb-6">
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Vessel Name <span class="text-red-500">*</span></label>
+                                    <input type="text" formControlName="vesselName" placeholder="e.g., MSC Isabella" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'vesselName')}" />
+                                    <div *ngIf="isFieldInvalid(quotationForm, 'vesselName')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'vesselName') }}</div>
+                                </div>
                                 <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700">UCR Number <span class="text-red-500">*</span></label>
@@ -196,6 +201,7 @@
                                 <h3 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Shipment Details</h3>
                                 <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                                     <span class="text-gray-500">Trade / Cargo Type</span><span class="font-medium text-gray-800">{{ quotationForm.value.tradeType | titlecase }} / {{ quotationForm.value.cargoType | titlecase }}</span>
+                                    <span class="text-gray-500">Vessel Name</span><span class="font-medium text-gray-800">{{ quotationForm.value.vesselName }}</span>
                                     <span class="text-gray-500">Origin / Destination</span><span class="font-medium text-gray-800">{{ quotationForm.value.origin }} to {{ quotationForm.value.destination }}</span>
                                     <span class="text-gray-500">Cover Start Date</span><span class="font-medium text-gray-800">{{ quotationForm.value.coverStartDate | date:'longDate' }}</span>
                                     <span class="text-gray-500">Sum Insured (KES)</span><span class="font-medium text-gray-800">{{ quotationForm.value.sumInsured | number:'1.2-2' }}</span>
@@ -314,12 +320,12 @@
                              <div *ngIf="isFieldInvalid(showExportModal ? exportRequestForm : highRiskRequestForm, 'marineCargoType')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(showExportModal ? exportRequestForm : highRiskRequestForm, 'marineCargoType') }}</div>
                         </div>
                         <div>
-                            <label class="mb-1 block text-sm font-medium">IDF Number <span class="text-red-500">*</span></label>
+                            <label class="mb-1 block text-sm font-medium">IDF Number</label>
                             <input type="text" formControlName="idfNumber" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(showExportModal ? exportRequestForm : highRiskRequestForm, 'idfNumber')}"/>
                             <div *ngIf="isFieldInvalid(showExportModal ? exportRequestForm : highRiskRequestForm, 'idfNumber')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(showExportModal ? exportRequestForm : highRiskRequestForm, 'idfNumber') }}</div>
                         </div>
                         <div>
-                            <label class="mb-1 block text-sm font-medium">UCR Number <span class="text-red-500">*</span></label>
+                            <label class="mb-1 block text-sm font-medium">UCR Number</label>
                             <input type="text" formControlName="ucrNumber" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(showExportModal ? exportRequestForm : highRiskRequestForm, 'ucrNumber')}"/>
                              <div *ngIf="isFieldInvalid(showExportModal ? exportRequestForm : highRiskRequestForm, 'ucrNumber')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(showExportModal ? exportRequestForm : highRiskRequestForm, 'ucrNumber') }}</div>
                         </div>

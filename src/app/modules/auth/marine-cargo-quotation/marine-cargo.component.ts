@@ -241,6 +241,7 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             marineCargoType: ['', Validators.required],
             origin: ['', Validators.required],
             destination: [''],
+            vesselName: ['', Validators.required],
             coverStartDate: ['', [Validators.required, this.noPastDatesValidator]],
             sumInsured: ['', [Validators.required, Validators.min(10000)]],
             descriptionOfGoods: ['', [Validators.required, Validators.minLength(20)]],
@@ -249,7 +250,7 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         });
     }
 
-    private createModalForm(): FormGroup { return this.fb.group({ kraPin: ['', [Validators.required, Validators.pattern(/^[A-Z]\d{9}[A-Z]$/i)]], firstName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]], lastName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]], email: ['', [Validators.required, Validators.email]], phoneNumber: ['', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]], marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required], marineCargoType: ['', Validators.required], idfNumber: ['', [Validators.required, Validators.pattern(/^E\d{9,}$/)]], ucrNumber: ['', [Validators.required, Validators.pattern(/^UCR\d{7,}$/)]], originCountry: ['', Validators.required], destinationCountry: ['', Validators.required], shipmentDate: ['', [Validators.required, this.noPastDatesValidator]], goodsDescription: ['', [Validators.required, Validators.minLength(20), maxWords(100)]], termsAndPolicyConsent: [false, Validators.requiredTrue], }); }
+    private createModalForm(): FormGroup { return this.fb.group({ kraPin: ['', [Validators.required, Validators.pattern(/^[A-Z]\d{9}[A-Z]$/i)]], firstName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]], lastName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]], email: ['', [Validators.required, Validators.email]], phoneNumber: ['', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]], marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required], marineCargoType: ['', Validators.required], idfNumber: ['', [Validators.pattern(/^E\d{9,}$/)]], ucrNumber: ['', [Validators.pattern(/^UCR\d{7,}$/)]], originCountry: ['', Validators.required], destinationCountry: ['', Validators.required], shipmentDate: ['', [Validators.required, this.noPastDatesValidator]], goodsDescription: ['', [Validators.required, Validators.minLength(20), maxWords(100)]], termsAndPolicyConsent: [false, Validators.requiredTrue], }); }
     private createExportRequestForm(): FormGroup { const form = this.createModalForm(); form.get('originCountry')?.patchValue('Kenya'); form.get('originCountry')?.disable(); return form; }
     private createHighRiskRequestForm(): FormGroup { return this.createModalForm(); }
     private setDefaultDate(): void { this.quotationForm.patchValue({ coverStartDate: this.getToday() }); }
