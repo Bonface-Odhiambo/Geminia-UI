@@ -3,9 +3,13 @@
     <header class="sticky top-0 z-10 bg-white shadow-sm">
         <div class="mx-auto max-w-7xl px-4 sm:px-6">
             <div class="flex flex-col items-center justify-between gap-4 py-3 sm:flex-row sm:gap-0 sm:py-4">
+                <!-- Updated Header with Conspicuous Tagline -->
                 <div class="flex items-center gap-3 sm:gap-4">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROTKn0j9cVpA67LPdjPeYBR3KnWiwP1gsM3cS27rca-7m8BgvgUylY4uhBnOnVnXFx8Is&usqp=CAU" alt="Geminia Logo" class="h-8 w-auto sm:h-10"/>
-                    <h1 class="text-lg font-semibold text-slate-800 sm:text-xl">Geminia Marine</h1>
+                    <div>
+                        <h1 class="text-lg font-semibold text-slate-800 sm:text-xl">Geminia Marine</h1>
+                        <p class="text-xs font-semibold text-gray-500 tracking-wide">Think Insurance ... Think Geminia</p>
+                    </div>
                 </div>
                 <div class="flex flex-wrap items-center justify-center gap-3 sm:flex-nowrap sm:gap-4">
                     <span class="text-sm font-medium">Demo User:</span>
@@ -163,7 +167,7 @@
                                     </div>
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700">Sum Insured (KES) <span class="text-red-500">*</span></label>
-                                        <input type="number" formControlName="sumInsured" placeholder="2,500,000" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'sumInsured')}"/>
+                                        <input type="number" formControlName="sumInsured" placeholder="2500000" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'sumInsured')}"/>
                                         <div *ngIf="isFieldInvalid(quotationForm, 'sumInsured')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'sumInsured') }}</div>
                                     </div>
                                 </div>
