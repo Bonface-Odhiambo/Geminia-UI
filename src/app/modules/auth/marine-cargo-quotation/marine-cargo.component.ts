@@ -228,6 +228,13 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             phoneNumber: ['', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]],
             idNumber: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9-]{5,15}$/)]],
             kraPin: ['', [Validators.required, Validators.pattern(/^[A-Z]\d{9}[A-Z]$/i)]],
+            
+            // KYC Documents
+            kraPinUpload: [null, Validators.required],
+            nationalIdUpload: [null, Validators.required],
+            invoiceUpload: [null, Validators.required],
+            idfUpload: [null, Validators.required],
+
             termsAndPolicyConsent: [false, Validators.requiredTrue],
             
             // Shipment Details
