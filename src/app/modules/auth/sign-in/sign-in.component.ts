@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from 'app/modules/auth/shared/services/auth.service'; // Correct path to your custom service
+import { AuthService } from 'app/modules/auth/shared/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,13 +10,18 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
-
 import { FuseAlertComponent } from '@fuse/components/alert';
 
 export interface Alert {
     type: 'success' | 'error' | 'warning' | 'info';
     message: string;
     position?: 'inline' | 'bottom';
+}
+
+export interface PasswordStrength {
+    level: number;
+    text: string;
+    color: string;
 }
 
 @Component({
@@ -58,23 +63,23 @@ export class AuthSignInComponent implements OnInit {
         this.signInForm = this.fb.group({
             username: ['individual@geminia.com', [Validators.required, Validators.email]],
             password: ['password123', Validators.required],
-            agreementAccepted: [false, Validators.requiredTrue] // Added checkbox for sign-in
+            agreementAccepted: [false, Validators.requiredTrue]
         });
 
         this.registerForm = this.fb.group({
             accountType: ['individual', Validators.required],
-            fullName: ['', Validators.required],
+            fullName: ['', [Validators.required, this.fullNameValidator]],
             email: ['', [Validators.required, Validators.email]],
-            kraPin: ['', [Validators.required, Validators.pattern(/^[A-Za-z0-9]{10}$/)]], // Example: 10 alphanumeric characters
-            phoneNumber: ['', [Validators.required, Validators.pattern(/^\+?\d{10,14}$/)]], // Example: +1234567890 or 0712345678
+            kraPin: ['', [Validators.required, this.kraPinValidator]],
+            phoneNumber: ['', [Validators.required, this.phoneNumberValidator]],
             iraNumber: [''],
             pinNumber: [''],
-            password: ['', [Validators.required, Validators.minLength(8)]], // Minimum 8 characters
+            password: ['', [Validators.required, this.strongPasswordValidator]],
             agreementAccepted: [false, Validators.requiredTrue]
         });
 
-        // --- Conditional Validation Logic ---
-        this.registerForm.get('accountType').valueChanges.subscribe(accountType => {
+        // Conditional Validation Logic
+        this.registerForm.get('accountType')?.valueChanges.subscribe(accountType => {
             this.clearIndividualValidators();
             this.clearIntermediaryValidators();
 
@@ -84,7 +89,6 @@ export class AuthSignInComponent implements OnInit {
                 this.setIntermediaryValidators();
             }
 
-            // Update validity for the whole form
             this.registerForm.updateValueAndValidity();
         });
 
@@ -92,45 +96,162 @@ export class AuthSignInComponent implements OnInit {
         this.setIndividualValidators();
     }
 
+    // Custom validators
+    fullNameValidator(control: AbstractControl): ValidationErrors | null {
+        if (!control.value) return null;
+        const names = control.value.trim().split(' ').filter((name: string) => name.length > 0);
+        return names.length >= 2 ? null : { fullNameInvalid: true };
+    }
+
+    kraPinValidator(control: AbstractControl): ValidationErrors | null {
+        if (!control.value) return null;
+        const kraPattern = /^[A-Za-z]\d{9}[A-Za-z]$/;
+        return kraPattern.test(control.value) ? null : { kraPinInvalid: true };
+    }
+
+    phoneNumberValidator(control: AbstractControl): ValidationErrors | null {
+        if (!control.value) return null;
+        const phonePattern = /^\+254\d{9,12}$/;
+        return phonePattern.test(control.value) ? null : { phoneNumberInvalid: true };
+    }
+
+    strongPasswordValidator(control: AbstractControl): ValidationErrors | null {
+        if (!control.value) return null;
+        
+        const value = control.value;
+        const hasMinLength = value.length >= 8;
+        const hasLowerCase = /(?=.*[a-z])/.test(value);
+        const hasUpperCase = /(?=.*[A-Z])/.test(value);
+        const hasNumber = /(?=.*\d)/.test(value);
+        const hasSpecialChar = /(?=.*[@$!%*?&])/.test(value);
+
+        const valid = hasMinLength && hasLowerCase && hasUpperCase && hasNumber && hasSpecialChar;
+        return valid ? null : { strongPasswordInvalid: true };
+    }
+
+    // Password validation helper methods (used in HTML)
+    hasMinLength(password: string): boolean {
+        return password ? password.length >= 8 : false;
+    }
+
+    hasLowercase(password: string): boolean {
+        return password ? /(?=.*[a-z])/.test(password) : false;
+    }
+
+    hasUppercase(password: string): boolean {
+        return password ? /(?=.*[A-Z])/.test(password) : false;
+    }
+
+    hasNumber(password: string): boolean {
+        return password ? /(?=.*\d)/.test(password) : false;
+    }
+
+    hasSpecialChar(password: string): boolean {
+        return password ? /(?=.*[@$!%*?&])/.test(password) : false;
+    }
+
     private clearIndividualValidators(): void {
-        this.registerForm.get('fullName').clearValidators();
-        this.registerForm.get('email').clearValidators();
-        this.registerForm.get('kraPin').clearValidators();
-        this.registerForm.get('phoneNumber').clearValidators();
-        this.registerForm.get('fullName').updateValueAndValidity();
-        this.registerForm.get('email').updateValueAndValidity();
-        this.registerForm.get('kraPin').updateValueAndValidity();
-        this.registerForm.get('phoneNumber').updateValueAndValidity();
+        this.registerForm.get('fullName')?.clearValidators();
+        this.registerForm.get('email')?.clearValidators();
+        this.registerForm.get('kraPin')?.clearValidators();
+        this.registerForm.get('phoneNumber')?.clearValidators();
+        this.registerForm.get('fullName')?.updateValueAndValidity();
+        this.registerForm.get('email')?.updateValueAndValidity();
+        this.registerForm.get('kraPin')?.updateValueAndValidity();
+        this.registerForm.get('phoneNumber')?.updateValueAndValidity();
     }
 
     private setIndividualValidators(): void {
-        this.registerForm.get('fullName').setValidators(Validators.required);
-        this.registerForm.get('email').setValidators([Validators.required, Validators.email]);
-        this.registerForm.get('kraPin').setValidators([Validators.required, Validators.pattern(/^[A-Za-z0-9]{10}$/)]);
-        this.registerForm.get('phoneNumber').setValidators([Validators.required, Validators.pattern(/^\+?\d{10,14}$/)]);
-        this.registerForm.get('fullName').updateValueAndValidity();
-        this.registerForm.get('email').updateValueAndValidity();
-        this.registerForm.get('kraPin').updateValueAndValidity();
-        this.registerForm.get('phoneNumber').updateValueAndValidity();
+        this.registerForm.get('fullName')?.setValidators([Validators.required, this.fullNameValidator]);
+        this.registerForm.get('email')?.setValidators([Validators.required, Validators.email]);
+        this.registerForm.get('kraPin')?.setValidators([Validators.required, this.kraPinValidator]);
+        this.registerForm.get('phoneNumber')?.setValidators([Validators.required, this.phoneNumberValidator]);
+        this.registerForm.get('fullName')?.updateValueAndValidity();
+        this.registerForm.get('email')?.updateValueAndValidity();
+        this.registerForm.get('kraPin')?.updateValueAndValidity();
+        this.registerForm.get('phoneNumber')?.updateValueAndValidity();
     }
 
     private clearIntermediaryValidators(): void {
-        this.registerForm.get('iraNumber').clearValidators();
-        this.registerForm.get('pinNumber').clearValidators();
-        this.registerForm.get('iraNumber').updateValueAndValidity();
-        this.registerForm.get('pinNumber').updateValueAndValidity();
+        this.registerForm.get('iraNumber')?.clearValidators();
+        this.registerForm.get('pinNumber')?.clearValidators();
+        this.registerForm.get('iraNumber')?.updateValueAndValidity();
+        this.registerForm.get('pinNumber')?.updateValueAndValidity();
     }
 
     private setIntermediaryValidators(): void {
-        this.registerForm.get('iraNumber').setValidators([Validators.required, Validators.pattern(/^[A-Za-z0-9]{5,15}$/)]); // Example: 5-15 alphanumeric
-        this.registerForm.get('pinNumber').setValidators([Validators.required, Validators.pattern(/^[A-Za-z0-9]{10}$/)]); // Example: 10 alphanumeric
-        this.registerForm.get('iraNumber').updateValueAndValidity();
-        this.registerForm.get('pinNumber').updateValueAndValidity();
+        this.registerForm.get('iraNumber')?.setValidators([Validators.required, Validators.pattern(/^[A-Za-z0-9]{5,15}$/)]);
+        this.registerForm.get('pinNumber')?.setValidators([Validators.required, Validators.pattern(/^[A-Za-z0-9]{10}$/)]);
+        this.registerForm.get('iraNumber')?.updateValueAndValidity();
+        this.registerForm.get('pinNumber')?.updateValueAndValidity();
+    }
+
+    // Input formatting methods
+    onKraPinChange(event: any): void {
+        let value = event.target.value.toUpperCase();
+        value = value.replace(/[^A-Z0-9]/g, '');
+        if (value.length > 11) {
+            value = value.substring(0, 11);
+        }
+        this.registerForm.get('kraPin')?.setValue(value);
+    }
+
+    onPhoneNumberChange(event: any): void {
+        let value = event.target.value;
+        value = value.replace(/[^\d+]/g, '');
+        
+        if (!value.startsWith('+254') && value.length > 0) {
+            if (value.startsWith('0')) {
+                value = '+254' + value.substring(1);
+            } else if (value.startsWith('254')) {
+                value = '+' + value;
+            } else if (!value.startsWith('+')) {
+                value = '+254' + value;
+            }
+        }
+        
+        if (value.length > 13) {
+            value = value.substring(0, 13);
+        }
+        
+        this.registerForm.get('phoneNumber')?.setValue(value);
+    }
+
+    // Password strength checker
+    getPasswordStrength(password: string): PasswordStrength {
+        if (!password) {
+            return { level: 0, text: 'No password', color: 'text-gray-400' };
+        }
+
+        let score = 0;
+        const checks = [
+            password.length >= 8,
+            /(?=.*[a-z])/.test(password),
+            /(?=.*[A-Z])/.test(password),
+            /(?=.*\d)/.test(password),
+            /(?=.*[@$!%*?&])/.test(password)
+        ];
+
+        score = checks.filter(check => check).length;
+
+        const strengthLevels = [
+            { level: 1, text: 'Very Weak', color: 'text-red-500' },
+            { level: 2, text: 'Weak', color: 'text-red-500' },
+            { level: 3, text: 'Fair', color: 'text-yellow-500' },
+            { level: 4, text: 'Good', color: 'text-blue-500' },
+            { level: 5, text: 'Strong', color: 'text-green-500' }
+        ];
+
+        return strengthLevels[Math.max(0, score - 1)] || strengthLevels[0];
     }
 
     signIn(): void {
         if (this.signInForm.invalid) {
-            this.alert = { type: 'error', message: 'Please enter a valid email and password and accept the terms.', position: 'bottom' };
+            this.alert = { 
+                type: 'error', 
+                message: 'Please enter a valid email and password and accept the terms.', 
+                position: 'bottom' 
+            };
             this.showAlert = true;
             return;
         }
@@ -146,7 +267,11 @@ export class AuthSignInComponent implements OnInit {
             if (success) {
                 this.router.navigate(['/sign-up/dashboard']);
             } else {
-                this.alert = { type: 'error', message: 'Wrong email or password. Please try again.', position: 'bottom' };
+                this.alert = { 
+                    type: 'error', 
+                    message: 'Wrong email or password. Please try again.', 
+                    position: 'bottom' 
+                };
                 this.showAlert = true;
                 this.signInForm.enable();
             }
@@ -155,17 +280,25 @@ export class AuthSignInComponent implements OnInit {
 
     register(): void {
         if (this.registerForm.invalid) {
-            // Mark all fields as touched to display validation messages
             this.markAllAsTouched(this.registerForm);
-            this.alert = { type: 'error', message: 'Please correct the highlighted errors.', position: 'bottom' };
+            this.alert = { 
+                type: 'error', 
+                message: 'Please correct the highlighted errors.', 
+                position: 'bottom' 
+            };
             this.showAlert = true;
             return;
         }
+
         this.registerForm.disable();
         console.log('Registering user...', this.registerForm.value);
 
         setTimeout(() => {
-            this.alert = { type: 'success', message: 'Registration successful! Please sign in.', position: 'bottom' };
+            this.alert = { 
+                type: 'success', 
+                message: 'Registration successful! Please sign in.', 
+                position: 'bottom' 
+            };
             this.showAlert = true;
             this.formType = 'login';
             this.registerForm.enable();
@@ -173,7 +306,6 @@ export class AuthSignInComponent implements OnInit {
         }, 1500);
     }
 
-    // Helper to mark all controls in a form group as touched
     private markAllAsTouched(formGroup: FormGroup): void {
         Object.values(formGroup.controls).forEach(control => {
             control.markAsTouched();
