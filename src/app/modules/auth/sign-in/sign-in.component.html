@@ -1,13 +1,6 @@
 <div class="relative flex h-screen w-screen flex-col overflow-hidden">
-    <!-- Inline Alert for form errors -->
-    <div class="absolute top-0 z-50 w-full p-4 sm:p-8" *ngIf="showAlert && alert.position === 'inline'">
-        <fuse-alert class="w-full" [appearance]="'fill'" [showIcon]="true" [type]="alert.type" [@shake]="alert.type === 'error'">
-            {{ alert.message }}
-        </fuse-alert>
-    </div>
-
-    <!-- Bottom Toast Alert for success messages -->
-    <div class="absolute bottom-8 left-1/2 z-50 -translate-x-1/2" *ngIf="showAlert && alert.position === 'bottom'">
+    <!-- Bottom Right Toast Alert for all alerts -->
+    <div class="fixed bottom-4 right-4 z-50" *ngIf="showAlert">
         <fuse-alert class="login-toast show" [appearance]="'fill'" [showIcon]="true" [type]="alert.type">
             {{ alert.message }}
         </fuse-alert>
@@ -57,11 +50,14 @@
         </div>
 
         <!-- Login/Register Form (Right) -->
-        <div class="relative flex min-h-[60vh] w-full flex-auto flex-col items-center justify-center overflow-y-auto bg-white p-4 sm:h-screen sm:p-6 md:w-1/2 md:p-8 lg:p-12">
+        <div class="relative flex min-h-[60vh] w-full flex-auto flex-col items-center justify-center overflow-hidden bg-white p-4 sm:h-screen sm:p-6 md:w-1/2 md:p-8 lg:p-12">
             <div class="w-full max-w-sm px-2 sm:px-0">
                 <!-- Login Form -->
                 <div *ngIf="formType === 'login'" class="animate-fade-in">
-                    <div class="mb-8 text-center"><div class="text-2xl font-bold text-gray-800">Geminia Insurance</div><div class="mt-1 text-sm text-gray-500">Sign in to the Geminia Insurance Platform</div></div>
+                    <div class="mb-8 text-center">
+                        <div class="text-2xl font-bold text-gray-800">Geminia Insurance</div>
+                        <div class="mt-1 text-sm text-gray-500">Sign in to the Geminia Insurance Platform</div>
+                    </div>
                     <form [formGroup]="signInForm" (ngSubmit)="signIn()">
                         <div class="mb-4">
                             <label class="mb-2 block text-sm font-medium text-gray-700">Email Address</label>
@@ -71,52 +67,108 @@
                             <label class="mb-2 block text-sm font-medium text-gray-700">Password</label>
                             <div class="relative">
                                 <input [type]="showPassword ? 'text' : 'password'" class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500" formControlName="password" placeholder="Password"/>
-                                <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600" (click)="togglePasswordVisibility()"><mat-icon class="text-base">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon></button>
+                                <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600" (click)="togglePasswordVisibility()">
+                                    <mat-icon class="text-base">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                                </button>
                             </div>
+                        </div>
+                        <!-- Terms and Conditions Checkbox for Sign In -->
+                        <div class="mb-4 flex items-center">
+                            <mat-checkbox formControlName="agreementAccepted" id="signin-agreement" class="flex-shrink-0"></mat-checkbox>
+                            <label for="signin-agreement" class="ml-2 text-sm text-gray-600">
+                                I agree to the 
+                                <a href="javascript:void(0);" class="font-medium text-sky-500 hover:underline">Terms of Service</a> 
+                                and 
+                                <a href="javascript:void(0);" class="font-medium text-sky-500 hover:underline">Data Privacy Policy</a>.
+                            </label>
                         </div>
                         <button type="submit" class="mt-6 w-full rounded-md py-2.5 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2" [ngClass]="{ 'bg-sky-500 text-white hover:bg-sky-600 focus:ring-sky-500': signInForm.valid, 'cursor-not-allowed bg-gray-200 text-gray-500': signInForm.invalid || signInForm.disabled, }" [disabled]="signInForm.invalid || signInForm.disabled">
                             <div *ngIf="!signInForm.disabled; else signingIn">Sign In</div>
-                            <ng-template #signingIn><div class="flex items-center justify-center"><mat-progress-spinner [diameter]="20" mode="indeterminate" class="mr-2"></mat-progress-spinner><span>Signing in...</span></div></ng-template>
+                            <ng-template #signingIn>
+                                <div class="flex items-center justify-center">
+                                    <mat-progress-spinner [diameter]="20" mode="indeterminate" class="mr-2"></mat-progress-spinner>
+                                    <span>Signing in...</span>
+                                </div>
+                            </ng-template>
                         </button>
                     </form>
                     <div class="mt-6 flex items-center justify-between text-sm">
                         <a class="font-medium text-sky-500 hover:underline" routerLink="/forgot-password">Forgot password?</a>
-                        <div><span class="text-gray-600">No account?</span><a class="ml-1 cursor-pointer font-medium text-sky-500 hover:underline" (click)="formType = 'register'">Register here</a></div>
+                        <div>
+                            <span class="text-gray-600">No account?</span>
+                            <a class="ml-1 cursor-pointer font-medium text-sky-500 hover:underline" (click)="formType = 'register'">Register here</a>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Registration Form -->
                 <div *ngIf="formType === 'register'" class="animate-fade-in">
-                    <div class="mb-8 text-center"><div class="text-2xl font-bold text-gray-800">Create Your Account</div><div class="mt-1 text-sm text-gray-500">Fill in the details below to get started</div></div>
+                    <div class="mb-8 text-center">
+                        <div class="text-2xl font-bold text-gray-800">Create Your Account</div>
+                        <div class="mt-1 text-sm text-gray-500">Fill in the details below to get started</div>
+                    </div>
                     <form [formGroup]="registerForm" (ngSubmit)="register()">
                         <div class="mb-4">
                             <label class="mb-2 block text-sm font-medium text-gray-700">Account Type</label>
-                            <mat-radio-group class="flex space-x-4" formControlName="accountType"><mat-radio-button value="individual">Individual</mat-radio-button><mat-radio-button value="intermediary">Intermediary</mat-radio-button></mat-radio-group>
+                            <mat-radio-group class="flex space-x-4" formControlName="accountType">
+                                <mat-radio-button value="individual">Individual</mat-radio-button>
+                                <mat-radio-button value="intermediary">Intermediary</mat-radio-button>
+                            </mat-radio-group>
                         </div>
                         <div *ngIf="registerForm.get('accountType').value === 'individual'">
-                            <div class="mb-4"><label class="mb-2 block text-sm font-medium text-gray-700">Full Name</label><input type="text" class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500" formControlName="fullName" placeholder="Full Name"/></div>
-                            <div class="mb-4"><label class="mb-2 block text-sm font-medium text-gray-700">Email Address</label><input type="email" class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500" formControlName="email" placeholder="Email Address"/></div>
-                            <div class="mb-4"><label class="mb-2 block text-sm font-medium text-gray-700">KRA PIN</label><input type="text" class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500" formControlName="kraPin" placeholder="KRA PIN"/></div>
-                            <div class="mb-4"><label class="mb-2 block text-sm font-medium text-gray-700">Phone Number</label><input type="text" class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500" formControlName="phoneNumber" placeholder="Phone Number"/></div>
+                            <div class="mb-4">
+                                <label class="mb-2 block text-sm font-medium text-gray-700">Full Name</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500" formControlName="fullName" placeholder="Full Name"/>
+                            </div>
+                            <div class="mb-4">
+                                <label class="mb-2 block text-sm font-medium text-gray-700">Email Address</label>
+                                <input type="email" class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500" formControlName="email" placeholder="Email Address"/>
+                            </div>
+                            <div class="mb-4">
+                                <label class="mb-2 block text-sm font-medium text-gray-700">KRA PIN</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500" formControlName="kraPin" placeholder="KRA PIN"/>
+                            </div>
+                            <div class="mb-4">
+                                <label class="mb-2 block text-sm font-medium text-gray-700">Phone Number</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500" formControlName="phoneNumber" placeholder="Phone Number"/>
+                            </div>
                         </div>
                         <div *ngIf="registerForm.get('accountType').value === 'intermediary'">
-                            <div class="mb-4"><label class="mb-2 block text-sm font-medium text-gray-700">Intermediary - IRA Number</label><input type="text" class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500" formControlName="iraNumber" placeholder="IRA Number"/></div>
-                            <div class="mb-4"><label class="mb-2 block text-sm font-medium text-gray-700">PIN Number</label><input type="text" class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500" formControlName="pinNumber" placeholder="PIN Number"/></div>
+                            <div class="mb-4">
+                                <label class="mb-2 block text-sm font-medium text-gray-700">Intermediary - IRA Number</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500" formControlName="iraNumber" placeholder="IRA Number"/>
+                            </div>
+                            <div class="mb-4">
+                                <label class="mb-2 block text-sm font-medium text-gray-700">PIN Number</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500" formControlName="pinNumber" placeholder="PIN Number"/>
+                            </div>
                         </div>
                         <div class="mb-4">
                             <label class="mb-2 block text-sm font-medium text-gray-700">Password</label>
                             <div class="relative">
                                 <input [type]="showPassword ? 'text' : 'password'" class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-sky-500 focus:ring-sky-500" formControlName="password" placeholder="Password" required/>
-                                <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600" (click)="togglePasswordVisibility()"><mat-icon class="text-base">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon></button>
+                                <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600" (click)="togglePasswordVisibility()">
+                                    <mat-icon class="text-base">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                                </button>
                             </div>
                         </div>
                         <div class="mt-6 flex items-center">
-                            <mat-checkbox formControlName="agreementAccepted" id="agreement" class="flex-shrink-0"></mat-checkbox>
-                            <label for="agreement" class="ml-2 text-sm text-gray-600">I agree to the <a href="javascript:void(0);" class="font-medium text-sky-500 hover:underline">Terms of Service</a> and <a href="javascript:void(0);" class="font-medium text-sky-500 hover:underline">Data Privacy Policy</a>.</label>
+                            <mat-checkbox formControlName="agreementAccepted" id="register-agreement" class="flex-shrink-0"></mat-checkbox>
+                            <label for="register-agreement" class="ml-2 text-sm text-gray-600">
+                                I agree to the 
+                                <a href="javascript:void(0);" class="font-medium text-sky-500 hover:underline">Terms of Service</a> 
+                                and 
+                                <a href="javascript:void(0);" class="font-medium text-sky-500 hover:underline">Data Privacy Policy</a>.
+                            </label>
                         </div>
                         <button type="submit" class="mt-6 w-full rounded-md py-2.5 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2" [ngClass]="{ 'bg-sky-500 text-white hover:bg-sky-600 focus:ring-sky-500': registerForm.valid, 'cursor-not-allowed bg-gray-200 text-gray-500': registerForm.invalid || registerForm.disabled, }" [disabled]="registerForm.invalid || registerForm.disabled">
                             <div *ngIf="!registerForm.disabled; else registering">Create Account</div>
-                            <ng-template #registering><div class="flex items-center justify-center"><mat-progress-spinner [diameter]="20" mode="indeterminate" class="mr-2"></mat-progress-spinner><span>Creating account...</span></div></ng-template>
+                            <ng-template #registering>
+                                <div class="flex items-center justify-center">
+                                    <mat-progress-spinner [diameter]="20" mode="indeterminate" class="mr-2"></mat-progress-spinner>
+                                    <span>Creating account...</span>
+                                </div>
+                            </ng-template>
                         </button>
                     </form>
                     <div class="mt-6 text-center text-sm">

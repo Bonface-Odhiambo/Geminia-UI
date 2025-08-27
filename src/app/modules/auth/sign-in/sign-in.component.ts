@@ -8,13 +8,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatCheckboxModule } from '@angular/material/checkbox'; // Import for checkbox
-import { MatRadioModule } from '@angular/material/radio'; // Import for radio buttons
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
 
-// Assuming Fuse alert is shared. Adjust path if needed.
-import { FuseAlertComponent } from '@fuse/components/alert'; 
+import { FuseAlertComponent } from '@fuse/components/alert';
 
-// Define an interface for the alert object for type safety
 export interface Alert {
     type: 'success' | 'error' | 'warning' | 'info';
     message: string;
@@ -35,13 +33,12 @@ export interface Alert {
         MatInputModule,
         MatIconModule,
         MatProgressSpinnerModule,
-        MatCheckboxModule, // Add module
-        MatRadioModule,    // Add module
-        FuseAlertComponent // Add FuseAlertComponent
+        MatCheckboxModule,
+        MatRadioModule,
+        FuseAlertComponent
     ],
 })
 export class AuthSignInComponent implements OnInit {
-    // --- PROPERTIES FOR THE TEMPLATE ---
     showAlert: boolean = false;
     alert: Alert = { type: 'error', message: '' };
     signInForm: FormGroup;
@@ -56,33 +53,87 @@ export class AuthSignInComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        // Initialize Sign-In Form
         this.signInForm = this.fb.group({
             username: ['individual@geminia.com', [Validators.required, Validators.email]],
             password: ['password123', Validators.required],
+            agreementAccepted: [false, Validators.requiredTrue] // Added checkbox for sign-in
         });
 
-        // Initialize Register Form
         this.registerForm = this.fb.group({
             accountType: ['individual', Validators.required],
             fullName: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
-            kraPin: [''],
-            phoneNumber: [''],
+            kraPin: ['', [Validators.required, Validators.pattern(/^[A-Za-z0-9]{10}$/)]], // Example: 10 alphanumeric characters
+            phoneNumber: ['', [Validators.required, Validators.pattern(/^\+?\d{10,14}$/)]], // Example: +1234567890 or 0712345678
             iraNumber: [''],
             pinNumber: [''],
-            password: ['', Validators.required],
+            password: ['', [Validators.required, Validators.minLength(8)]], // Minimum 8 characters
             agreementAccepted: [false, Validators.requiredTrue]
         });
+
+        // --- Conditional Validation Logic ---
+        this.registerForm.get('accountType').valueChanges.subscribe(accountType => {
+            this.clearIndividualValidators();
+            this.clearIntermediaryValidators();
+
+            if (accountType === 'individual') {
+                this.setIndividualValidators();
+            } else if (accountType === 'intermediary') {
+                this.setIntermediaryValidators();
+            }
+
+            // Update validity for the whole form
+            this.registerForm.updateValueAndValidity();
+        });
+
+        // Initially set validators for the default 'individual' type
+        this.setIndividualValidators();
     }
 
-    // --- METHODS FOR THE TEMPLATE ---
+    private clearIndividualValidators(): void {
+        this.registerForm.get('fullName').clearValidators();
+        this.registerForm.get('email').clearValidators();
+        this.registerForm.get('kraPin').clearValidators();
+        this.registerForm.get('phoneNumber').clearValidators();
+        this.registerForm.get('fullName').updateValueAndValidity();
+        this.registerForm.get('email').updateValueAndValidity();
+        this.registerForm.get('kraPin').updateValueAndValidity();
+        this.registerForm.get('phoneNumber').updateValueAndValidity();
+    }
+
+    private setIndividualValidators(): void {
+        this.registerForm.get('fullName').setValidators(Validators.required);
+        this.registerForm.get('email').setValidators([Validators.required, Validators.email]);
+        this.registerForm.get('kraPin').setValidators([Validators.required, Validators.pattern(/^[A-Za-z0-9]{10}$/)]);
+        this.registerForm.get('phoneNumber').setValidators([Validators.required, Validators.pattern(/^\+?\d{10,14}$/)]);
+        this.registerForm.get('fullName').updateValueAndValidity();
+        this.registerForm.get('email').updateValueAndValidity();
+        this.registerForm.get('kraPin').updateValueAndValidity();
+        this.registerForm.get('phoneNumber').updateValueAndValidity();
+    }
+
+    private clearIntermediaryValidators(): void {
+        this.registerForm.get('iraNumber').clearValidators();
+        this.registerForm.get('pinNumber').clearValidators();
+        this.registerForm.get('iraNumber').updateValueAndValidity();
+        this.registerForm.get('pinNumber').updateValueAndValidity();
+    }
+
+    private setIntermediaryValidators(): void {
+        this.registerForm.get('iraNumber').setValidators([Validators.required, Validators.pattern(/^[A-Za-z0-9]{5,15}$/)]); // Example: 5-15 alphanumeric
+        this.registerForm.get('pinNumber').setValidators([Validators.required, Validators.pattern(/^[A-Za-z0-9]{10}$/)]); // Example: 10 alphanumeric
+        this.registerForm.get('iraNumber').updateValueAndValidity();
+        this.registerForm.get('pinNumber').updateValueAndValidity();
+    }
+
     signIn(): void {
         if (this.signInForm.invalid) {
+            this.alert = { type: 'error', message: 'Please enter a valid email and password and accept the terms.', position: 'bottom' };
+            this.showAlert = true;
             return;
         }
 
-        this.signInForm.disable(); // Disable form during submission
+        this.signInForm.disable();
         this.showAlert = false;
 
         const { username, password } = this.signInForm.value;
@@ -91,34 +142,43 @@ export class AuthSignInComponent implements OnInit {
             const success = this.authService.login(username, password);
 
             if (success) {
-                // CORRECTED: Navigate to the correct dashboard path
                 this.router.navigate(['/sign-up/dashboard']);
             } else {
-                // Show inline error alert
-                this.alert = { type: 'error', message: 'Wrong email or password. Please try again.', position: 'inline' };
+                this.alert = { type: 'error', message: 'Wrong email or password. Please try again.', position: 'bottom' };
                 this.showAlert = true;
-                this.signInForm.enable(); // Re-enable form
+                this.signInForm.enable();
             }
         }, 1000);
     }
 
     register(): void {
         if (this.registerForm.invalid) {
+            // Mark all fields as touched to display validation messages
+            this.markAllAsTouched(this.registerForm);
+            this.alert = { type: 'error', message: 'Please correct the highlighted errors.', position: 'bottom' };
+            this.showAlert = true;
             return;
         }
         this.registerForm.disable();
         console.log('Registering user...', this.registerForm.value);
-        // Implement registration logic here
-        
-        // On success, show a bottom toast and switch to login
+
         setTimeout(() => {
             this.alert = { type: 'success', message: 'Registration successful! Please sign in.', position: 'bottom' };
             this.showAlert = true;
             this.formType = 'login';
             this.registerForm.enable();
-            // Hide the toast after a few seconds
             setTimeout(() => this.showAlert = false, 5000);
         }, 1500);
+    }
+
+    // Helper to mark all controls in a form group as touched
+    private markAllAsTouched(formGroup: FormGroup): void {
+        Object.values(formGroup.controls).forEach(control => {
+            control.markAsTouched();
+            if ((control as FormGroup).controls) {
+                this.markAllAsTouched(control as FormGroup);
+            }
+        });
     }
 
     togglePasswordVisibility(): void {
