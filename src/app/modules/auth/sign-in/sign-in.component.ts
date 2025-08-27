@@ -45,6 +45,8 @@ export class AuthSignInComponent implements OnInit {
     registerForm: FormGroup;
     formType: 'login' | 'register' = 'login';
     showPassword = false;
+    showTermsModal = false;
+    showDataPrivacyModal = false;
 
     constructor(
         private fb: FormBuilder,
@@ -183,5 +185,13 @@ export class AuthSignInComponent implements OnInit {
 
     togglePasswordVisibility(): void {
         this.showPassword = !this.showPassword;
+    }
+
+    getCurrentDate(): string {
+        return new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
     }
 }
