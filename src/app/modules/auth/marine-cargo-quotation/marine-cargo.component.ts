@@ -148,15 +148,32 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             this.router.navigate(['/']);
         }
     }
+      logout(): void {
+        this.authService.logout();
+        this.showToast('You have been logged out successfully.');
+        setTimeout(() => {
+            this.router.navigate(['/']);
+        }, 1500);
+    }
 
     switchUser(event: any): void { 
-        const userType = event.target.value as 'individual' | 'intermediary';
-        this.displayUser.type = userType;
-        this.showToast(`Switched to ${userType} view.`); 
-        if (this.currentStep === 2) {
-            this.calculatePremium(); 
-        }
+    const userType = event.target.value as 'individual' | 'intermediary' | 'logout';
+    
+    if (userType === 'logout') {
+        this.logout();
+        // Reset dropdown to current user type after logout is triggered
+        setTimeout(() => {
+            event.target.value = this.displayUser.type;
+        }, 100);
+        return;
     }
+    
+    this.displayUser.type = userType as 'individual' | 'intermediary';
+    this.showToast(`Switched to ${userType} view.`); 
+    if (this.currentStep === 2) {
+        this.calculatePremium(); 
+    }
+}
 
     private prefillClientDetails(): void {
         if (!this.currentUser) return;
