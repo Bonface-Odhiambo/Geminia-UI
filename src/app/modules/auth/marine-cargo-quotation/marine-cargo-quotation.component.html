@@ -66,7 +66,8 @@
                                             IDF Document <span class="text-red-500">*</span>
                                         </label>
                                         <div class="mt-1">
-                                            <input id="idfUpload" formControlName="idfUpload" type="file" class="block w-full cursor-pointer rounded-md border border-gray-300 text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'idfUpload')}">
+                                            <input id="idfUpload" (change)="onFileSelected($event, 'idfUpload')" type="file" class="block w-full cursor-pointer rounded-md border border-gray-300 text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'idfUpload')}">
+                                            <span *ngIf="quotationForm.get('idfUpload')?.value" class="mt-2 block text-xs text-gray-500">Selected: {{ quotationForm.get('idfUpload')?.value.name }}</span>
                                         </div>
                                         <div *ngIf="isFieldInvalid(quotationForm, 'idfUpload')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'idfUpload') }}</div>
                                     </div>
@@ -76,7 +77,8 @@
                                             Invoice <span class="text-red-500">*</span>
                                         </label>
                                         <div class="mt-1">
-                                            <input id="invoiceUpload" formControlName="invoiceUpload" type="file" class="block w-full cursor-pointer rounded-md border border-gray-300 text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'invoiceUpload')}">
+                                            <input id="invoiceUpload" (change)="onFileSelected($event, 'invoiceUpload')" type="file" class="block w-full cursor-pointer rounded-md border border-gray-300 text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'invoiceUpload')}">
+                                            <span *ngIf="quotationForm.get('invoiceUpload')?.value" class="mt-2 block text-xs text-gray-500">Selected: {{ quotationForm.get('invoiceUpload')?.value.name }}</span>
                                         </div>
                                         <div *ngIf="isFieldInvalid(quotationForm, 'invoiceUpload')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'invoiceUpload') }}</div>
                                     </div>
@@ -86,18 +88,19 @@
                                             KRA PIN Certificate <span class="text-red-500">*</span>
                                         </label>
                                         <div class="mt-1">
-                                            <input id="kraPinUpload" formControlName="kraPinUpload" type="file" class="block w-full cursor-pointer rounded-md border border-gray-300 text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'kraPinUpload')}">
+                                            <input id="kraPinUpload" (change)="onFileSelected($event, 'kraPinUpload')" type="file" class="block w-full cursor-pointer rounded-md border border-gray-300 text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'kraPinUpload')}">
+                                            <span *ngIf="quotationForm.get('kraPinUpload')?.value" class="mt-2 block text-xs text-gray-500">Selected: {{ quotationForm.get('kraPinUpload')?.value.name }}</span>
                                         </div>
                                         <div *ngIf="isFieldInvalid(quotationForm, 'kraPinUpload')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'kraPinUpload') }}</div>
                                     </div>
-                                    <!-- Invoice Upload (moved to fourth position) -->
                                     <!-- National ID Upload -->
                                     <div>
                                         <label for="nationalIdUpload" class="block text-sm font-medium text-gray-700">
                                             National ID <span class="text-red-500">*</span>
                                         </label>
                                         <div class="mt-1">
-                                            <input id="nationalIdUpload" formControlName="nationalIdUpload" type="file" class="block w-full cursor-pointer rounded-md border border-gray-300 text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'nationalIdUpload')}">
+                                            <input id="nationalIdUpload" (change)="onFileSelected($event, 'nationalIdUpload')" type="file" class="block w-full cursor-pointer rounded-md border border-gray-300 text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'nationalIdUpload')}">
+                                            <span *ngIf="quotationForm.get('nationalIdUpload')?.value" class="mt-2 block text-xs text-gray-500">Selected: {{ quotationForm.get('nationalIdUpload')?.value.name }}</span>
                                         </div>
                                         <div *ngIf="isFieldInvalid(quotationForm, 'nationalIdUpload')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'nationalIdUpload') }}</div>
                                     </div>

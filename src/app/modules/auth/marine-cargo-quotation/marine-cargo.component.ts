@@ -21,6 +21,56 @@ export function maxWords(max: number) {
     }; 
 }
 
+// Custom validator for KRA PIN format
+export function kraPinValidator(control: AbstractControl): { [key: string]: any } | null {
+    if (!control.value) return null;
+    const kraPinPattern = /^[A-Z]\d{9}[A-Z]$/i;
+    return kraPinPattern.test(control.value) ? null : { kraPin: true };
+}
+
+// Custom validator for phone number format
+export function phoneNumberValidator(control: AbstractControl): { [key: string]: any } | null {
+    if (!control.value) return null;
+    const phonePattern = /^(07|01)\d{8}$/;
+    return phonePattern.test(control.value) ? null : { phoneNumber: true };
+}
+
+// Custom validator for ID number format
+export function idNumberValidator(control: AbstractControl): { [key: string]: any } | null {
+    if (!control.value) return null;
+    const idPattern = /^[a-zA-Z0-9-]{5,15}$/;
+    return idPattern.test(control.value) ? null : { idNumber: true };
+}
+
+// Custom validator for IDF number format (when provided)
+export function idfNumberValidator(control: AbstractControl): { [key: string]: any } | null {
+    if (!control.value) return null; // Optional field
+    const idfPattern = /^[a-zA-Z0-9]+$/;
+    const minLength = 8;
+    if (control.value.length < minLength) {
+        return { idfNumberLength: { requiredLength: minLength, actualLength: control.value.length } };
+    }
+    return idfPattern.test(control.value) ? null : { idfNumber: true };
+}
+
+// Custom validator for UCR number format (when provided)
+export function ucrNumberValidator(control: AbstractControl): { [key: string]: any } | null {
+    if (!control.value) return null; // Optional field
+    const ucrPattern = /^[a-zA-Z0-9]+$/;
+    const minLength = 8;
+    if (control.value.length < minLength) {
+        return { ucrNumberLength: { requiredLength: minLength, actualLength: control.value.length } };
+    }
+    return ucrPattern.test(control.value) ? null : { ucrNumber: true };
+}
+
+// Custom validator for name fields
+export function nameValidator(control: AbstractControl): { [key: string]: any } | null {
+    if (!control.value) return null;
+    const namePattern = /^[a-zA-Z\s'-]+$/;
+    return namePattern.test(control.value) ? null : { invalidName: true };
+}
+
 interface PremiumCalculation { 
     basePremium: number; 
     phcf: number; 
@@ -218,7 +268,7 @@ export class PaymentModalComponent implements OnInit {
         @Inject(MAT_DIALOG_DATA) public data: MpesaPayment
     ) { 
         this.stkForm = this.fb.group({ 
-            phoneNumber: [data.phoneNumber || '', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]] 
+            phoneNumber: [data.phoneNumber || '', [Validators.required, phoneNumberValidator]] 
         }); 
     }
     
@@ -376,11 +426,41 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             
         this.setupFormSubscriptions();
         this.setDefaultDate();
+        this.setupRealTimeValidation();
     }
 
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+    }
+
+    private setupRealTimeValidation(): void {
+        // Listen to all form control value changes and trigger validation
+        Object.keys(this.quotationForm.controls).forEach(key => {
+            const control = this.quotationForm.get(key);
+            if (control) {
+                control.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
+                    // Mark field as touched to trigger validation display
+                    if (control.value && control.value.toString().trim() !== '') {
+                        control.markAsTouched();
+                    }
+                });
+            }
+        });
+
+        // Setup real-time validation for modal forms as well
+        [this.exportRequestForm, this.highRiskRequestForm].forEach(form => {
+            Object.keys(form.controls).forEach(key => {
+                const control = form.get(key);
+                if (control) {
+                    control.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
+                        if (control.value && control.value.toString().trim() !== '') {
+                            control.markAsTouched();
+                        }
+                    });
+                }
+            });
+        });
     }
 
     openTermsModal(event?: Event): void {
@@ -478,6 +558,9 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     }
     
     onSubmit(): void {
+        // Mark all fields as touched to show validation errors
+        this.quotationForm.markAllAsTouched();
+        
         if (this.quotationForm.valid) {
             if (!this.showHighRiskModal && !this.showExportModal) {
                 this.calculatePremium();
@@ -495,9 +578,21 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
                 this.goToStep(2);
             }
         } else {
-            this.quotationForm.markAllAsTouched();
-            this.showToast('Please correct the errors before proceeding.');
+            this.showToast('Please fill in all required fields correctly before proceeding.');
+            this.scrollToFirstError();
         }
+    }
+
+    private scrollToFirstError(): void {
+        setTimeout(() => {
+            const firstErrorElement = document.querySelector('.border-red-500, .text-red-600');
+            if (firstErrorElement) {
+                firstErrorElement.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }
+        }, 100);
     }
 
     private openPaymentModal(): void { 
@@ -534,12 +629,12 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             idfUpload: [null, Validators.required],
 
             // Customer Details
-            firstName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]],
-            lastName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]],
+            firstName: ['', [Validators.required, nameValidator]],
+            lastName: ['', [Validators.required, nameValidator]],
             email: ['', [Validators.required, Validators.email]],
-            phoneNumber: ['', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]],
-            idNumber: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9-]{5,15}$/)]],
-            kraPin: ['', [Validators.required, Validators.pattern(/^[A-Z]\d{9}[A-Z]$/i)]],
+            phoneNumber: ['', [Validators.required, phoneNumberValidator]],
+            idNumber: ['', [Validators.required, idNumberValidator]],
+            kraPin: ['', [Validators.required, kraPinValidator]],
 
             termsAndPolicyConsent: [false, Validators.requiredTrue],
             
@@ -551,26 +646,26 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             marineCargoType: ['', Validators.required],
             origin: ['', Validators.required],
             destination: [''],
-            vesselName: [''],
+            vesselName: [''], // Made optional
             coverStartDate: ['', [Validators.required, this.noPastDatesValidator]],
             sumInsured: ['', [Validators.required, Validators.min(10000)]],
             descriptionOfGoods: ['', [Validators.required, Validators.minLength(20)]],
-            ucrNumber: [''],
-            idfNumber: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/), Validators.minLength(15)]],
+            ucrNumber: ['', ucrNumberValidator], // Made optional with custom validator
+            idfNumber: ['', [Validators.required, idfNumberValidator]],
         });
     }
 
     private createModalForm(): FormGroup { 
         return this.fb.group({ 
-            kraPin: ['', [Validators.required, Validators.pattern(/^[A-Z]\d{9}[A-Z]$/i)]], 
-            firstName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]], 
-            lastName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]], 
+            kraPin: ['', [Validators.required, kraPinValidator]], 
+            firstName: ['', [Validators.required, nameValidator]], 
+            lastName: ['', [Validators.required, nameValidator]], 
             email: ['', [Validators.required, Validators.email]], 
-            phoneNumber: ['', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]], 
+            phoneNumber: ['', [Validators.required, phoneNumberValidator]], 
             marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required], 
             marineCargoType: ['', Validators.required], 
-            idfNumber: ['', [Validators.pattern(/^[a-zA-Z0-9]+$/), Validators.minLength(15)]], 
-            ucrNumber: ['', [Validators.pattern(/^[a-zA-Z0-9]+$/), Validators.minLength(15)]], 
+            idfNumber: ['', idfNumberValidator], // Optional
+            ucrNumber: ['', ucrNumberValidator], // Optional
             originCountry: ['', Validators.required], 
             destinationCountry: ['', Validators.required], 
             shipmentDate: ['', [Validators.required, this.noPastDatesValidator]], 
@@ -583,6 +678,9 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         const form = this.createModalForm(); 
         form.get('originCountry')?.patchValue('Kenya'); 
         form.get('originCountry')?.disable(); 
+        // Make vessel name and UCR required for exports in modal
+        form.addControl('vesselName', this.fb.control('', Validators.required));
+        form.get('ucrNumber')?.setValidators([Validators.required, ucrNumberValidator]);
         return form; 
     }
 
@@ -600,21 +698,9 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         }); 
         
         this.quotationForm.get('tradeType')?.valueChanges.subscribe((type) => { 
-            if (type === 'export') this.showExportModal = true; 
-            
-            // Update validation based on trade type
-            const vesselControl = this.quotationForm.get('vesselName');
-            const ucrControl = this.quotationForm.get('ucrNumber');
-            
             if (type === 'export') {
-                vesselControl?.setValidators([Validators.required]);
-                ucrControl?.setValidators([Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/), Validators.minLength(15)]);
-            } else {
-                vesselControl?.clearValidators();
-                ucrControl?.clearValidators();
+                this.showExportModal = true;
             }
-            vesselControl?.updateValueAndValidity();
-            ucrControl?.updateValueAndValidity();
         }); 
         
         this.quotationForm.get('origin')?.valueChanges.subscribe((country) => { 
@@ -624,10 +710,13 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             } 
         }); 
         
-        this.quotationForm.get('ucrNumber')?.valueChanges.subscribe(() => { 
-            this.importerDetails = this.quotationForm.get('ucrNumber')?.valid ? 
-                { name: 'Global Imports Ltd.', kraPin: 'P051234567X' } : 
-                { name: '', kraPin: '' }; 
+        this.quotationForm.get('ucrNumber')?.valueChanges.subscribe((ucrValue) => { 
+            // Update importer details based on UCR validation
+            if (ucrValue && !this.quotationForm.get('ucrNumber')?.errors) {
+                this.importerDetails = { name: 'Global Imports Ltd.', kraPin: 'P051234567X' };
+            } else {
+                this.importerDetails = { name: '', kraPin: '' };
+            }
         }); 
     }
     
@@ -655,16 +744,22 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     }
 
     onExportRequestSubmit(): void { 
+        this.exportRequestForm.markAllAsTouched();
         if (this.exportRequestForm.valid) { 
             this.closeAllModals(); 
-            this.showToast('Export request submitted. Our underwriter will contact you.'); 
+            this.showToast('Export request submitted successfully. Our underwriter will contact you within 24 hours.'); 
+        } else {
+            this.showToast('Please fill in all required fields correctly.');
         }
     }
 
     onHighRiskRequestSubmit(): void { 
+        this.highRiskRequestForm.markAllAsTouched();
         if (this.highRiskRequestForm.valid) { 
             this.closeAllModals(); 
-            this.showToast('High-risk shipment request submitted for review.'); 
+            this.showToast('High-risk shipment request submitted successfully for manual review.'); 
+        } else {
+            this.showToast('Please fill in all required fields correctly.');
         }
     }
 
@@ -711,27 +806,61 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         if (!control || !control.errors) return ''; 
         
         if (control.hasError('required')) return 'This field is required.'; 
-        if (control.hasError('email')) return 'Please enter a valid email address.'; 
+        if (control.hasError('email')) return 'Please enter a valid email address (e.g., john@example.com).'; 
         if (control.hasError('min')) return `The minimum value is ${control.errors['min'].min}.`; 
         if (control.hasError('minLength')) return `Must be at least ${control.errors['minLength'].requiredLength} characters.`; 
-        
-        if (control.hasError('pattern')) { 
-            switch (field) { 
-                case 'idNumber': return 'Invalid format. Can contain letters, numbers, and hyphens.'; 
-                case 'kraPin': return 'Invalid KRA PIN format (e.g., A123456789Z).'; 
-                case 'phoneNumber': return 'Invalid phone number format (e.g., 0712345678).'; 
-                case 'ucrNumber': 
-                case 'idfNumber': return 'Invalid format. Must be at least 15 alphanumeric characters.'; 
-                case 'firstName': 
-                case 'lastName': return 'Please enter a valid name (letters and spaces only).'; 
-                default: return 'Invalid format. Please check your entry.'; 
-            }
-        } 
-        
-        if (control.hasError('maxWords')) return `Exceeds the maximum word count of ${control.errors['maxWords'].maxWords}.`; 
-        if (control.hasError('pastDate')) return 'Date cannot be in the past.'; 
         if (control.hasError('requiredTrue')) return 'You must agree to proceed.'; 
+        if (control.hasError('pastDate')) return 'Date cannot be in the past.'; 
         
-        return 'Invalid input.'; 
+        // Custom validator errors with format suggestions
+        if (control.hasError('kraPin')) return 'Invalid KRA PIN format. Use format: A123456789Z (1 letter, 9 digits, 1 letter).';
+        if (control.hasError('phoneNumber')) return 'Invalid phone number. Use format: 0712345678 or 0112345678.';
+        if (control.hasError('idNumber')) return 'Invalid ID format. Use 5-15 alphanumeric characters (e.g., 12345678, A123B456C).';
+        if (control.hasError('invalidName')) return 'Name can only contain letters, spaces, hyphens, and apostrophes.';
+        
+        if (control.hasError('idfNumber')) return 'Invalid IDF format. Use alphanumeric characters only (e.g., IDF123456789).';
+        if (control.hasError('idfNumberLength')) return `IDF number must be at least ${control.errors['idfNumberLength'].requiredLength} characters.`;
+        
+        if (control.hasError('ucrNumber')) return 'Invalid UCR format. Use alphanumeric characters only (e.g., UCR123456789).';
+        if (control.hasError('ucrNumberLength')) return `UCR number must be at least ${control.errors['ucrNumberLength'].requiredLength} characters.`;
+        
+        if (control.hasError('maxWords')) return `Description exceeds maximum word limit of ${control.errors['maxWords'].maxWords} words.`; 
+        
+        return 'Invalid input. Please check the format.'; 
+    }
+
+    // Helper methods for placeholder text and format hints
+    getFieldPlaceholder(fieldName: string): string {
+        const placeholders: { [key: string]: string } = {
+            'firstName': 'e.g., John',
+            'lastName': 'e.g., Doe',
+            'email': 'e.g., john.doe@example.com',
+            'phoneNumber': 'e.g., 0712345678',
+            'idNumber': 'e.g., 12345678 or A123B456C',
+            'kraPin': 'e.g., A123456789Z',
+            'vesselName': 'e.g., MSC Isabella (Optional)',
+            'ucrNumber': 'e.g., UCR123456789 (Optional)',
+            'idfNumber': 'e.g., IDF123456789',
+            'sumInsured': 'e.g., 2500000',
+            'descriptionOfGoods': 'Describe the goods, their value, quantity, packaging details...',
+            'origin': 'Search and select country...',
+            'marineProduct': 'Search for product type...',
+            'marineCargoType': 'Search for cargo type...'
+        };
+        return placeholders[fieldName] || '';
+    }
+
+    getFieldHint(fieldName: string): string {
+        const hints: { [key: string]: string } = {
+            'kraPin': 'Format: One letter, nine digits, one letter',
+            'phoneNumber': 'Format: 07XXXXXXXX or 01XXXXXXXX',
+            'idNumber': '5-15 characters, letters, numbers, and hyphens allowed',
+            'ucrNumber': 'Optional: 8+ alphanumeric characters',
+            'idfNumber': '8+ alphanumeric characters required',
+            'sumInsured': 'Minimum amount: KES 10,000',
+            'descriptionOfGoods': 'Minimum 20 characters required',
+            'vesselName': 'Optional: Enter if known'
+        };
+        return hints[fieldName] || '';
     }
 }
