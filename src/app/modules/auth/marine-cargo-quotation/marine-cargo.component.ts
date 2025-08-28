@@ -13,6 +13,17 @@ import { Subject, takeUntil } from 'rxjs';
 import { AuthService, StoredUser, PendingQuote } from '../shared/services/auth.service';
 
 // --- INTERFACES & VALIDATORS ---
+
+// Custom validator for minimum word count
+export function minWords(min: number) {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+        if (!control.value) return null; // Don't validate empty values to allow optional controls
+        const words = control.value.trim().split(/\s+/).length;
+        return words < min ? { minWords: { requiredWords: min, actualWords: words } } : null;
+    };
+}
+
+// Custom validator for maximum word count
 export function maxWords(max: number) { 
     return (control: AbstractControl): { [key: string]: any } | null => { 
         if (!control.value) return null; 
@@ -45,7 +56,6 @@ export function idNumberValidator(control: AbstractControl): { [key: string]: an
 // Custom validator for IDF number format (e.g., 25MV65757585MU567)
 export function idfNumberValidator(control: AbstractControl): { [key: string]: any } | null {
     if (!control.value) return null; 
-    // Format: 2 numbers, 2 letters, multiple numbers, 2 letters, multiple numbers
     const idfPattern = /^\d{2}[A-Z]{2}\d+[A-Z]{2}\d+$/i;
     return idfPattern.test(control.value) ? null : { idfNumber: true };
 }
@@ -53,7 +63,6 @@ export function idfNumberValidator(control: AbstractControl): { [key: string]: a
 // Custom validator for UCR number format (e.g., 25MV65757585MU567)
 export function ucrNumberValidator(control: AbstractControl): { [key: string]: any } | null {
     if (!control.value) return null;
-    // Format: 2 numbers, 2 letters, multiple numbers, 2 letters, multiple numbers
     const ucrPattern = /^\d{2}[A-Z]{2}\d+[A-Z]{2}\d+$/i;
     return ucrPattern.test(control.value) ? null : { ucrNumber: true };
 }
@@ -122,22 +131,7 @@ interface DisplayUser {
             <div class="content-text">
                 <h3>Terms of Use and Data Privacy Policy</h3>
                 <p>Geminia Insurance Company Limited is committed to protecting the fundamental human right to privacy of those with whom we interact. We recognize the need to safeguard personal data that is collected or disclosed to us as part of the Know-your-customer information required by us in order to provide you with the requisite financial product or service.</p>
-                
                 <p>We are committed to complying with the requirements of the Data Protection Act and the attendant regulations as well as best global best practices regarding the processing of your personal data. In this regard, you are required to acquaint yourselves with our data privacy statement (<a href="https://geminia.co.ke/data-privacy-statement/" target="_blank" class="policy-link">https://geminia.co.ke/data-privacy-statement/</a>) which is intended to tell you how we use your personal data and describes how we collect and process your personal data during and after your relationship with us.</p>
-                
-                <div class="policy-sections">
-                    <h4>Data Collection and Usage</h4>
-                    <p>We collect personal data necessary for insurance services, including identification documents, contact information, and financial details. This information is used solely for providing insurance products and services, compliance with legal requirements, and communication regarding your policy.</p>
-                    
-                    <h4>Data Protection</h4>
-                    <p>Your personal data is protected through appropriate technical and organizational measures. We do not share your information with third parties except as required by law or with your explicit consent.</p>
-                    
-                    <h4>Your Rights</h4>
-                    <p>You have the right to access, correct, or delete your personal data. You may also object to certain processing activities or request data portability where applicable.</p>
-                    
-                    <h4>Contact Information</h4>
-                    <p>For any questions regarding data privacy or to exercise your rights, please contact our Data Protection Officer at privacy&#64;geminia.co.ke</p>
-                </div>
             </div>
         </mat-dialog-content>
         <div class="modal-footer">
@@ -146,88 +140,19 @@ interface DisplayUser {
     </div>
     `,
     styles: [`
-    .modal-container {
-        background-color: white;
-        border-radius: 12px;
-        overflow: hidden;
-        max-width: 600px;
-        max-height: 80vh;
-    }
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px 24px;
-        background-color: #21275c;
-        color: white;
-        position: relative;
-    }
-    .modal-title {
-        font-size: 18px;
-        font-weight: 600;
-        margin: 0;
-    }
-    .close-button {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        color: rgba(255, 255, 255, 0.7);
-    }
-    .close-button:hover {
-        color: white;
-    }
-    .modal-content {
-        padding: 24px;
-        max-height: 60vh;
-        overflow-y: auto;
-    }
-    .content-text h3 {
-        color: #21275c;
-        font-size: 16px;
-        font-weight: 600;
-        margin-bottom: 16px;
-    }
-    .content-text h4 {
-        color: #04b2e1;
-        font-size: 14px;
-        font-weight: 600;
-        margin-top: 20px;
-        margin-bottom: 8px;
-    }
-    .content-text p {
-        line-height: 1.6;
-        margin-bottom: 12px;
-        font-size: 14px;
-        color: #4a5568;
-    }
-    .policy-link {
-        color: #04b2e1;
-        text-decoration: none;
-    }
-    .policy-link:hover {
-        text-decoration: underline;
-    }
-    .policy-sections {
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid #e2e8f0;
-    }
-    .modal-footer {
-        padding: 16px 24px;
-        background-color: #f8f9fa;
-        display: flex;
-        justify-content: center;
-    }
-    .accept-button {
-        background-color: #04b2e1 !important;
-        color: white !important;
-        font-weight: 600;
-        padding: 12px 24px;
-        border-radius: 8px;
-    }
-    .accept-button:hover {
-        background-color: #21275c !important;
-    }
+    .modal-container { background-color: white; border-radius: 12px; overflow: hidden; max-width: 600px; max-height: 80vh; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; background-color: #21275c; color: white; position: relative; }
+    .modal-title { font-size: 18px; font-weight: 600; margin: 0; }
+    .close-button { position: absolute; top: 12px; right: 12px; color: rgba(255, 255, 255, 0.7); }
+    .close-button:hover { color: white; }
+    .modal-content { padding: 24px; max-height: 60vh; overflow-y: auto; }
+    .content-text h3 { color: #21275c; font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+    .content-text p { line-height: 1.6; margin-bottom: 12px; font-size: 14px; color: #4a5568; }
+    .policy-link { color: #04b2e1; text-decoration: none; }
+    .policy-link:hover { text-decoration: underline; }
+    .modal-footer { padding: 16px 24px; background-color: #f8f9fa; display: flex; justify-content: center; }
+    .accept-button { background-color: #04b2e1 !important; color: white !important; font-weight: 600; padding: 12px 24px; border-radius: 8px; }
+    .accept-button:hover { background-color: #21275c !important; }
     `]
 })
 export class TermsPrivacyModalComponent {
@@ -247,7 +172,7 @@ export class TermsPrivacyModalComponent {
     standalone: true, 
     imports: [ CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatProgressSpinnerModule, MatTabsModule ], 
     template: `<div class="payment-modal-container"><div class="modal-header"><div class="header-icon-wrapper"><mat-icon>payment</mat-icon></div><div><h1 mat-dialog-title class="modal-title">Complete Your Payment</h1><p class="modal-subtitle">Pay KES {{ data.amount | number: '1.2-2' }} for {{ data.description }}</p></div><button mat-icon-button (click)="closeDialog()" class="close-button" aria-label="Close dialog"><mat-icon>close</mat-icon></button></div><mat-dialog-content class="modal-content"><mat-tab-group animationDuration="300ms" mat-stretch-tabs="true" class="payment-tabs"><mat-tab><ng-template mat-tab-label><div class="tab-label-content"><mat-icon>phone_iphone</mat-icon><span>M-PESA</span></div></ng-template><div class="tab-panel-content"><div class="sub-options"><button (click)="mpesaSubMethod = 'stk'" class="sub-option-btn" [class.active]="mpesaSubMethod === 'stk'"><mat-icon>tap_and_play</mat-icon><span>STK Push</span></button><button (click)="mpesaSubMethod = 'paybill'" class="sub-option-btn" [class.active]="mpesaSubMethod === 'paybill'"><mat-icon>article</mat-icon><span>Use Paybill</span></button></div><div *ngIf="mpesaSubMethod === 'stk'" class="option-view animate-fade-in"><p class="instruction-text">Enter your M-PESA phone number to receive a payment prompt.</p><form [formGroup]="stkForm"><mat-form-field appearance="outline"><mat-label>Phone Number</mat-label><input matInput formControlName="phoneNumber" placeholder="e.g., 0712345678" [disabled]="isProcessingStk"/><mat-icon matSuffix>phone_iphone</mat-icon></mat-form-field></form><button mat-raised-button class="action-button" (click)="processStkPush()" [disabled]="stkForm.invalid || isProcessingStk"><mat-spinner *ngIf="isProcessingStk" diameter="24"></mat-spinner><span *ngIf="!isProcessingStk">Pay KES {{ data.amount | number: '1.2-2' }}</span></button></div><div *ngIf="mpesaSubMethod === 'paybill'" class="option-view animate-fade-in"><p class="instruction-text">Use the details below on your M-PESA App to complete payment.</p><div class="paybill-details"><div class="detail-item"><span class="label">Paybill Number:</span><span class="value">853338</span></div><div class="detail-item"><span class="label">Account Number:</span><span class="value account-number">{{ data.reference }}</span></div></div><button mat-raised-button class="action-button" (click)="verifyPaybillPayment()" [disabled]="isVerifyingPaybill"><mat-spinner *ngIf="isVerifyingPaybill" diameter="24"></mat-spinner><span *ngIf="!isVerifyingPaybill">Verify Payment</span></button></div></div></mat-tab><mat-tab><ng-template mat-tab-label><div class="tab-label-content"><mat-icon>credit_card</mat-icon><span>Credit/Debit Card</span></div></ng-template><div class="tab-panel-content animate-fade-in"><div class="card-redirect-info"><p class="instruction-text">You will be redirected to pay via <strong>I&M Bank</strong>, our reliable and trusted payment partner.</p><button mat-raised-button class="action-button" (click)="redirectToCardGateway()" [disabled]="isRedirectingToCard"><mat-spinner *ngIf="isRedirectingToCard" diameter="24"></mat-spinner><span *ngIf="!isRedirectingToCard">Pay Using Credit/Debit Card</span></button></div></div></mat-tab></mat-tab-group></mat-dialog-content></div>`, 
-    styles: [`:host{display:block;--pantone-306c:#04b2e1;--pantone-2758c:#21275c;--white-color:#fff;--light-gray:#f8f9fa;--medium-gray:#e9ecef;--dark-gray:#495057}.payment-modal-container{background-color:var(--white-color);border-radius:16px;overflow:hidden;max-width:450px;box-shadow:0 10px 30px rgba(0,0,0,.1)}.modal-header{display:flex;align-items:center;padding:20px 24px;background-color:var(--pantone-2758c);color:var(--white-color);position:relative}.header-icon-wrapper{width:48px;height:48px;background-color:rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:16px;flex-shrink:0}.header-icon-wrapper mat-icon{font-size:28px;width:28px;height:28px}.modal-title{font-size:20px;font-weight:600;margin:0;color:var(--white-color)}.modal-subtitle{font-size:14px;opacity:.9;margin-top:2px;color:var(--white-color)}.close-button{position:absolute;top:12px;right:12px;color:rgba(255,255,255,.7)}.close-button:hover{color:var(--white-color)}.modal-content{padding:0!important;background-color:#f9fafb}.tab-panel-content{padding:24px}.sub-options{display:flex;gap:8px;margin-bottom:24px;border:1px solid var(--medium-gray);border-radius:12px;padding:6px;background-color:var(--medium-gray)}.sub-option-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border-radius:8px;border:none;background-color:transparent;font-weight:500;cursor:pointer;transition:all .3s ease;color:var(--dark-gray)}.sub-option-btn.active{background-color:var(--white-color);color:var(--pantone-2758c);box-shadow:0 2px 4px rgba(0,0,0,.05)}.instruction-text{text-align:center;color:var(--dark-gray);font-size:14px;margin-bottom:20px;line-height:1.5}mat-form-field{width:100%}.action-button{width:100%;height:50px;border-radius:12px;background-color:var(--pantone-2758c)!important;color:var(--white-color)!important;font-size:16px;font-weight:600}.action-button:disabled{background-color:#a0a3c2!important}.paybill-details{background:var(--white-color);border:1px dashed #d1d5db;border-radius:12px;padding:20px;margin-bottom:24px}.detail-item{display:flex;justify-content:space-between;align-items:center;font-size:16px;padding:12px 0}.detail-item+.detail-item{border-top:1px solid var(--medium-gray)}.detail-item .label{color:var(--dark-gray)}.detail-item .value{font-weight:700;color:var(--pantone-2758c)}.detail-item .account-number{font-family:'Courier New',monospace;background-color:var(--medium-gray);padding:4px 8px;border-radius:6px}.card-redirect-info{text-align:center}.animate-fade-in{animation:fadeIn .4s ease-in-out}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.tab-label-content{display:flex;align-items:center;gap:8px;height:60px}::ng-deep .payment-tabs .mat-mdc-tab-header{background-color:var(--white-color)}::ng-deep .payment-tabs .mdc-tab__text-label{color:var(--dark-gray);font-weight:500}::ng-deep .payment-tabs .mat-mdc-tab.mat-mdc-tab-active .mdc-tab__text-label{color:var(--pantone-306c)}::ng-deep .payment-tabs .mat-mdc-tab-indicator-bar{background-color:var(--pantone-306c)!important}`]
+    styles: [`:host{display:block;--primary:#04b2e1;--secondary:#21275c;}.payment-modal-container{border-radius:16px;overflow:hidden;max-width:450px;box-shadow:0 10px 30px rgba(0,0,0,.1)}.modal-header{display:flex;align-items:center;padding:20px 24px;background-color:var(--secondary);color:white}.header-icon-wrapper{width:48px;height:48px;background-color:rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:16px}.modal-title{font-size:20px;font-weight:600;margin:0}.modal-subtitle{font-size:14px;opacity:.9;margin-top:2px}.close-button{position:absolute;top:12px;right:12px;color:rgba(255,255,255,.7)}.modal-content{padding:0!important;background-color:#f9fafb}.tab-panel-content{padding:24px}.sub-options{display:flex;gap:8px;margin-bottom:24px;border-radius:12px;padding:6px;background-color:#e9ecef}.sub-option-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border-radius:8px;border:none;background:0 0;font-weight:500;cursor:pointer;transition:all .3s ease;color:#495057}.sub-option-btn.active{background-color:#fff;color:var(--secondary);box-shadow:0 2px 4px rgba(0,0,0,.05)}.action-button{width:100%;height:50px;border-radius:12px;background-color:var(--secondary)!important;color:#fff!important;font-size:16px;font-weight:600}.paybill-details{background:#fff;border:1px dashed #d1d5db;border-radius:12px;padding:20px;margin-bottom:24px}.detail-item{display:flex;justify-content:space-between;align-items:center;font-size:16px;padding:12px 0}.detail-item .value{font-weight:700;color:var(--secondary)}.animate-fade-in{animation:fadeIn .4s ease-in-out}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}`]
 })
 export class PaymentModalComponent implements OnInit {
     stkForm: FormGroup; 
@@ -262,27 +187,20 @@ export class PaymentModalComponent implements OnInit {
         @Inject(MAT_DIALOG_DATA) public data: MpesaPayment
     ) { 
         this.stkForm = this.fb.group({ 
-            phoneNumber: [data.phoneNumber || '', [Validators.required, phoneNumberValidator]] 
+            phoneNumber: [this.data.phoneNumber || '', [Validators.required, phoneNumberValidator]] 
         }); 
     }
     
     ngOnInit(): void {}
     
-    closeDialog(result: PaymentResult | null = null): void { 
-        this.dialogRef.close(result); 
-    }
+    closeDialog(result: PaymentResult | null = null): void { this.dialogRef.close(result); }
     
     processStkPush(): void { 
         if (this.stkForm.invalid) return; 
         this.isProcessingStk = true; 
         setTimeout(() => { 
             this.isProcessingStk = false; 
-            this.closeDialog({ 
-                success: true, 
-                method: 'stk', 
-                reference: this.data.reference, 
-                mpesaReceipt: 'S' + Math.random().toString(36).substring(2, 12).toUpperCase() 
-            }); 
+            this.closeDialog({ success: true, method: 'stk', reference: this.data.reference, mpesaReceipt: 'S' + Math.random().toString(36).substring(2, 12).toUpperCase() }); 
         }, 3000); 
     }
     
@@ -290,11 +208,7 @@ export class PaymentModalComponent implements OnInit {
         this.isVerifyingPaybill = true; 
         setTimeout(() => { 
             this.isVerifyingPaybill = false; 
-            this.closeDialog({ 
-                success: true, 
-                method: 'paybill', 
-                reference: this.data.reference 
-            }); 
+            this.closeDialog({ success: true, method: 'paybill', reference: this.data.reference }); 
         }, 3500); 
     }
     
@@ -302,12 +216,7 @@ export class PaymentModalComponent implements OnInit {
         this.isRedirectingToCard = true; 
         setTimeout(() => { 
             this.isRedirectingToCard = false; 
-            console.log('Redirecting to I&M Bank payment gateway...'); 
-            this.closeDialog({ 
-                success: true, 
-                method: 'card', 
-                reference: this.data.reference 
-            }); 
+            this.closeDialog({ success: true, method: 'card', reference: this.data.reference }); 
         }, 2000); 
     }
 }
@@ -316,18 +225,7 @@ export class PaymentModalComponent implements OnInit {
 @Component({
     selector: 'app-marine-cargo-quotation',
     standalone: true,
-    imports: [ 
-        CommonModule, 
-        ReactiveFormsModule, 
-        RouterLink, 
-        CurrencyPipe, 
-        DecimalPipe, 
-        MatDialogModule, 
-        MatIconModule, 
-        TitleCasePipe,
-        PaymentModalComponent,
-        TermsPrivacyModalComponent
-    ],
+    imports: [ CommonModule, ReactiveFormsModule, RouterLink, CurrencyPipe, DecimalPipe, MatDialogModule, MatIconModule, TitleCasePipe, PaymentModalComponent, TermsPrivacyModalComponent ],
     templateUrl: './marine-cargo-quotation.component.html',
     styleUrls: ['./marine-cargo-quotation.component.scss'],
 })
@@ -343,7 +241,6 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     showTermsModal: boolean = false;
     showPrivacyModal: boolean = false;
     toastMessage: string = '';
-    importerDetails: ImporterDetails = { name: '', kraPin: '' };
     premiumCalculation: PremiumCalculation = this.resetPremiumCalculation();
     private editModeQuoteId: string | null = null;
     
@@ -351,40 +248,13 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     currentUser: StoredUser | null = null;
     displayUser: DisplayUser = { type: 'individual', name: 'Individual User' };
     
-    // Registry to track uploaded files and prevent duplicates
     private uploadedFileRegistry = new Map<string, string>();
 
-
-    private readonly TAX_RATES = { 
-        PHCF_RATE: 0.0025, 
-        TRAINING_LEVY: 0.0025, 
-        COMMISSION_RATE: 0.1,
-        STAMP_DUTY_RATE: 0.05
-    };
-
-    readonly marineProducts: MarineProduct[] = [ 
-        { code: 'ICC_A', name: 'Institute Cargo Clauses (A) - All Risks', rate: 0.005 }, 
-        { code: 'ICC_B', name: 'Institute Cargo Clauses (B) - Named Perils', rate: 0.0035 }, 
-        { code: 'ICC_C', name: 'Institute Cargo Clauses (C) - Limited Perils', rate: 0.0025 } 
-    ];
-    
-    readonly marineCargoTypes: string[] = [ 
-        'Pharmaceuticals', 'Electronics', 'Apparel', 'Vehicles', 'Machinery', 'General Goods' 
-    ];
-    
-    readonly blacklistedCountries: string[] = [ 
-        'Russia', 'Ukraine', 'North Korea', 'Syria', 'Iran', 'Yemen', 'Sudan', 'Somalia' 
-    ];
-    
-    readonly allCountriesList: string[] = [ 
-        'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Australia', 'Austria', 
-        'Bangladesh', 'Belgium', 'Brazil', 'Canada', 'China', 'Denmark', 'Egypt', 'Finland', 'France', 
-        'Germany', 'Ghana', 'Greece', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 
-        'Japan', 'Kenya', 'Mexico', 'Netherlands', 'New Zealand', 'Nigeria', 'North Korea', 'Norway', 
-        'Pakistan', 'Russia', 'Saudi Arabia', 'Somalia', 'South Africa', 'Spain', 'Sudan', 'Sweden', 
-        'Switzerland', 'Syria', 'Tanzania', 'Turkey', 'Uganda', 'Ukraine', 'United Arab Emirates', 
-        'United Kingdom', 'United States of America', 'Yemen', 'Zambia', 'Zimbabwe' 
-    ];
+    private readonly TAX_RATES = { PHCF_RATE: 0.0025, TRAINING_LEVY: 0.0025, COMMISSION_RATE: 0.1 };
+    readonly marineProducts: MarineProduct[] = [ { code: 'ICC_A', name: 'Institute Cargo Clauses (A) - All Risks', rate: 0.005 }, { code: 'ICC_B', name: 'Institute Cargo Clauses (B) - Named Perils', rate: 0.0035 }, { code: 'ICC_C', name: 'Institute Cargo Clauses (C) - Limited Perils', rate: 0.0025 } ];
+    readonly marineCargoTypes: string[] = [ 'Pharmaceuticals', 'Electronics', 'Apparel', 'Vehicles', 'Machinery', 'General Goods' ];
+    readonly blacklistedCountries: string[] = [ 'Russia', 'Ukraine', 'North Korea', 'Syria', 'Iran', 'Yemen', 'Sudan', 'Somalia' ];
+    readonly allCountriesList: string[] = [ 'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Australia', 'Austria', 'Bangladesh', 'Belgium', 'Brazil', 'Canada', 'China', 'Denmark', 'Egypt', 'Finland', 'France', 'Germany', 'Ghana', 'Greece', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Japan', 'Kenya', 'Mexico', 'Netherlands', 'New Zealand', 'Nigeria', 'North Korea', 'Norway', 'Pakistan', 'Russia', 'Saudi Arabia', 'Somalia', 'South Africa', 'Spain', 'Sudan', 'Sweden', 'Switzerland', 'Syria', 'Tanzania', 'Turkey', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States of America', 'Yemen', 'Zambia', 'Zimbabwe' ];
 
     constructor(
         private fb: FormBuilder,
@@ -399,117 +269,65 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.authService.currentUser$
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(user => {
-                this.isLoggedIn = !!user;
-                this.currentUser = user;
-                if (user) {
-                    this.displayUser = { type: user.type, name: user.name };
-                    this.prefillClientDetails();
-                } else {
-                    // Default for logged-out users
-                    this.displayUser = { type: 'individual', name: 'Guest User' };
-                }
-            });
+        this.authService.currentUser$.pipe(takeUntil(this.destroy$)).subscribe(user => {
+            this.isLoggedIn = !!user;
+            this.currentUser = user;
+            if (user) {
+                this.displayUser = { type: user.type, name: user.name };
+                this.prefillClientDetails();
+            } else {
+                this.displayUser = { type: 'individual', name: 'Guest User' };
+            }
+        });
 
-        this.route.queryParams
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(params => {
-                const quoteId = params['editId'];
-                if (quoteId) {
-                    this.editModeQuoteId = quoteId;
-                    this.loadQuoteForEditing(quoteId);
-                }
-            });
+        this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
+            const quoteId = params['editId'];
+            if (quoteId) {
+                this.editModeQuoteId = quoteId;
+                this.loadQuoteForEditing(quoteId);
+            }
+        });
             
         this.setupFormSubscriptions();
         this.setDefaultDate();
-        this.setupRealTimeValidation();
     }
 
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
     }
-
-    private setupRealTimeValidation(): void {
-        // Listen to all form control value changes and trigger validation
-        Object.keys(this.quotationForm.controls).forEach(key => {
-            const control = this.quotationForm.get(key);
-            if (control) {
-                control.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
-                    // Mark field as touched to trigger validation display
-                    if (control.value && control.value.toString().trim() !== '') {
-                        control.markAsTouched();
-                    }
-                });
-            }
-        });
-
-        // Setup real-time validation for modal forms as well
-        [this.exportRequestForm, this.highRiskRequestForm].forEach(form => {
-            Object.keys(form.controls).forEach(key => {
-                const control = form.get(key);
-                if (control) {
-                    control.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
-                        if (control.value && control.value.toString().trim() !== '') {
-                            control.markAsTouched();
-                        }
-                    });
-                }
-            });
-        });
-    }
-
+    
     openTermsModal(event?: Event): void {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
+        if (event) { event.preventDefault(); event.stopPropagation(); }
         this.showTermsModal = true;
     }
 
-    closeTermsModal(): void {
-        this.showTermsModal = false;
-    }
+    closeTermsModal(): void { this.showTermsModal = false; }
 
     openPrivacyModal(event?: Event): void {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
+        if (event) { event.preventDefault(); event.stopPropagation(); }
         this.showPrivacyModal = true;
     }
 
-    closePrivacyModal(): void {
-        this.showPrivacyModal = false;
-    }
+    closePrivacyModal(): void { this.showPrivacyModal = false; }
 
     handlePayment(): void {
         if (this.isLoggedIn) {
             this.openPaymentModal();
         } else {
             this.showToast('Please log in or register to complete your purchase.');
-            // Redirect non-logged-in users to the homepage
             setTimeout(() => { this.router.navigate(['/']); }, 2500);
         }
     }
     
     closeForm(): void {
-        if (this.isLoggedIn) {
-            this.router.navigate(['/sign-up/dashboard']);
-        } else {
-            this.router.navigate(['/']);
-        }
+        this.router.navigate(this.isLoggedIn ? ['/sign-up/dashboard'] : ['/']);
     }
     
     logout(): void {
         this.authService.logout();
         this.showToast('You have been logged out successfully.');
-        setTimeout(() => {
-            this.router.navigate(['/']);
-        }, 1500);
+        setTimeout(() => { this.router.navigate(['/']); }, 1500);
     }
 
     private prefillClientDetails(): void {
@@ -530,8 +348,6 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         const quoteToEdit = this.authService.getPendingQuotes().find(q => q.id === quoteId);
         if (quoteToEdit) {
             this.quotationForm.patchValue(quoteToEdit.quoteDetails);
-            // Re-set file objects if they were part of the saved quoteDetails (though typically not saved directly)
-            // For now, files are handled as new uploads.
             this.premiumCalculation = quoteToEdit.premium;
             this.goToStep(2);
             this.showToast(`Editing your saved quote: ${quoteToEdit.title}.`);
@@ -542,7 +358,6 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     }
     
     onSubmit(): void {
-        // Mark all fields as touched to show validation errors
         this.quotationForm.markAllAsTouched();
         
         if (this.quotationForm.valid) {
@@ -551,11 +366,8 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
                 const newQuote: PendingQuote = {
                     id: this.editModeQuoteId || `GEM-Q-${Date.now()}`,
                     title: `Marine - ${this.quotationForm.value.marineCargoType || 'Quote'}`,
-                    type: 'marine',
-                    status: 'pending',
-                    createdDate: new Date().toISOString(),
-                    quoteDetails: this.quotationForm.value,
-                    premium: this.premiumCalculation
+                    type: 'marine', status: 'pending', createdDate: new Date().toISOString(),
+                    quoteDetails: this.quotationForm.value, premium: this.premiumCalculation
                 };
                 this.authService.savePendingQuote(newQuote);
                 this.showToast('Your quote has been saved! Please review and proceed.');
@@ -571,58 +383,40 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         setTimeout(() => {
             const firstErrorElement = document.querySelector('.border-red-500, .text-red-600');
             if (firstErrorElement) {
-                firstErrorElement.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center' 
-                });
+                firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }, 100);
     }
 
     private openPaymentModal(): void { 
-        const dialogRef = this.dialog.open(PaymentModalComponent, { 
+        this.dialog.open(PaymentModalComponent, { 
             data: { 
-                amount: this.premiumCalculation.totalPayable, 
-                phoneNumber: this.quotationForm.get('phoneNumber')?.value, 
-                reference: `GEM${Date.now()}`, 
-                description: 'Marine Cargo Insurance' 
+                amount: this.premiumCalculation.totalPayable, phoneNumber: this.quotationForm.get('phoneNumber')?.value, 
+                reference: `GEM${Date.now()}`, description: 'Marine Cargo Insurance' 
             }, 
-            panelClass: 'payment-dialog-container', 
-            autoFocus: false 
-        }); 
-        
-        dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((result: PaymentResult | null) => { 
+            panelClass: 'payment-dialog-container', autoFocus: false 
+        }).afterClosed().pipe(takeUntil(this.destroy$)).subscribe((result: PaymentResult | null) => { 
             if (result?.success) {
-                if (this.editModeQuoteId) { 
-                    this.authService.removePendingQuote(this.editModeQuoteId); 
-                }
+                if (this.editModeQuoteId) { this.authService.removePendingQuote(this.editModeQuoteId); }
                 this.showToast('Payment successful! Redirecting to your dashboard.');
-                setTimeout(() => { 
-                    this.router.navigate(['/sign-up/dashboard']); 
-                }, 2000); 
+                setTimeout(() => { this.router.navigate(['/sign-up/dashboard']); }, 2000); 
             } 
         }); 
     }
 
     private createQuotationForm(): FormGroup {
         return this.fb.group({
-            // KYC Documents
             kraPinUpload: [null, Validators.required],
             nationalIdUpload: [null, Validators.required],
             invoiceUpload: [null, Validators.required],
             idfUpload: [null, Validators.required],
-
-            // Customer Details
             firstName: ['', [Validators.required, nameValidator]],
             lastName: ['', [Validators.required, nameValidator]],
             email: ['', [Validators.required, Validators.email]],
             phoneNumber: ['', [Validators.required, phoneNumberValidator]],
             idNumber: ['', [Validators.required, idNumberValidator]],
             kraPin: ['', [Validators.required, kraPinValidator]],
-
             termsAndPolicyConsent: [false, Validators.requiredTrue],
-            
-            // Shipment Details
             cargoType: ['', Validators.required],
             tradeType: ['import', Validators.required],
             modeOfShipment: ['', Validators.required],
@@ -630,11 +424,11 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             marineCargoType: ['', Validators.required],
             origin: ['', Validators.required],
             destination: [''],
-            vesselName: [''], // Made optional
+            vesselName: [''], 
             coverStartDate: ['', [Validators.required, this.noPastDatesValidator]],
-            sumInsured: [''],
-            descriptionOfGoods: ['', [Validators.required, Validators.minLength(20)]],
-            ucrNumber: ['', ucrNumberValidator], // Made optional with custom validator
+            sumInsured: ['', Validators.required],
+            descriptionOfGoods: ['', [Validators.required, minWords(10), maxWords(100)]], // UPDATED VALIDATION
+            ucrNumber: ['', ucrNumberValidator], 
             idfNumber: ['', [Validators.required, idfNumberValidator]],
         });
     }
@@ -648,12 +442,12 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             phoneNumber: ['', [Validators.required, phoneNumberValidator]], 
             marineProduct: ['Institute Cargo Clauses (A) - All Risks', Validators.required], 
             marineCargoType: ['', Validators.required], 
-            idfNumber: ['', idfNumberValidator], // Optional
-            ucrNumber: ['', ucrNumberValidator], // Optional
+            idfNumber: ['', idfNumberValidator], 
+            ucrNumber: ['', ucrNumberValidator], 
             originCountry: ['', Validators.required], 
             destinationCountry: ['', Validators.required], 
             shipmentDate: ['', [Validators.required, this.noPastDatesValidator]], 
-            goodsDescription: ['', [Validators.required, Validators.minLength(20), maxWords(100)]], 
+            goodsDescription: ['', [Validators.required, minWords(10), maxWords(100)]], // UPDATED VALIDATION
             termsAndPolicyConsent: [false, Validators.requiredTrue], 
         }); 
     }
@@ -662,45 +456,26 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         const form = this.createModalForm(); 
         form.get('originCountry')?.patchValue('Kenya'); 
         form.get('originCountry')?.disable(); 
-        // Make vessel name and UCR required for exports in modal
         form.addControl('vesselName', this.fb.control('', Validators.required));
         form.get('ucrNumber')?.setValidators([Validators.required, ucrNumberValidator]);
         return form; 
     }
 
-    private createHighRiskRequestForm(): FormGroup { 
-        return this.createModalForm(); 
-    }
-
-    private setDefaultDate(): void { 
-        this.quotationForm.patchValue({ coverStartDate: this.getToday() }); 
-    }
+    private createHighRiskRequestForm(): FormGroup { return this.createModalForm(); }
+    private setDefaultDate(): void { this.quotationForm.patchValue({ coverStartDate: this.getToday() }); }
 
     private setupFormSubscriptions(): void { 
         this.quotationForm.get('modeOfShipment')?.valueChanges.subscribe((mode) => { 
             this.quotationForm.get('destination')?.setValue(mode === 'sea' ? 'Mombasa, Kenya' : mode === 'air' ? 'JKIA, Nairobi, Kenya' : ''); 
         }); 
-        
         this.quotationForm.get('tradeType')?.valueChanges.subscribe((type) => { 
-            if (type === 'export') {
-                this.showExportModal = true;
-            }
+            if (type === 'export') { this.showExportModal = true; }
         }); 
-        
         this.quotationForm.get('origin')?.valueChanges.subscribe((country) => { 
             if (this.blacklistedCountries.includes(country)) { 
                 this.highRiskRequestForm.patchValue({ originCountry: country }); 
                 this.showHighRiskModal = true; 
             } 
-        }); 
-        
-        this.quotationForm.get('ucrNumber')?.valueChanges.subscribe((ucrValue) => { 
-            // Update importer details based on UCR validation
-            if (ucrValue && !this.quotationForm.get('ucrNumber')?.errors) {
-                this.importerDetails = { name: 'Global Imports Ltd.', kraPin: 'P051234567X' };
-            } else {
-                this.importerDetails = { name: '', kraPin: '' };
-            }
         }); 
     }
     
@@ -709,17 +484,13 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         const productValue = this.quotationForm.get('marineProduct')?.value;
         const selectedProduct = this.marineProducts.find((p) => p.name === productValue);
         const rate = selectedProduct ? selectedProduct.rate : 0;
-        
-        const { PHCF_RATE, TRAINING_LEVY, COMMISSION_RATE, STAMP_DUTY_RATE } = this.TAX_RATES;
-
+        const { PHCF_RATE, TRAINING_LEVY, COMMISSION_RATE } = this.TAX_RATES;
         const basePremium = sumInsured * rate;
         const phcf = basePremium * PHCF_RATE;
         const trainingLevy = basePremium * TRAINING_LEVY;
-        const stampDuty = sumInsured * STAMP_DUTY_RATE;
+        const stampDuty = 40; // Fixed stamp duty
         const commission = this.displayUser.type === 'intermediary' ? basePremium * COMMISSION_RATE : 0;
-        
         const totalPayable = basePremium + phcf + trainingLevy + stampDuty - commission;
-
         this.premiumCalculation = { basePremium, phcf, trainingLevy, stampDuty, commission, totalPayable, currency: 'KES' };
     }
 
@@ -728,28 +499,21 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     }
 
     onExportRequestSubmit(): void { 
-        this.exportRequestForm.markAllAsTouched();
         if (this.exportRequestForm.valid) { 
             this.closeAllModals(); 
-            this.showToast('Export request submitted successfully. Our underwriter will contact you within 24 hours.'); 
-        } else {
-            this.showToast('Please fill in all required fields correctly.');
-        }
+            this.showToast('Export request submitted successfully. Our underwriter will contact you.'); 
+        } else { this.showToast('Please fill in all required fields correctly.'); }
     }
 
     onHighRiskRequestSubmit(): void { 
-        this.highRiskRequestForm.markAllAsTouched();
         if (this.highRiskRequestForm.valid) { 
             this.closeAllModals(); 
             this.showToast('High-risk shipment request submitted successfully for manual review.'); 
-        } else {
-            this.showToast('Please fill in all required fields correctly.');
-        }
+        } else { this.showToast('Please fill in all required fields correctly.'); }
     }
 
     closeAllModals(): void { 
-        this.showExportModal = false; 
-        this.showHighRiskModal = false; 
+        this.showExportModal = false; this.showHighRiskModal = false; 
         this.quotationForm.get('tradeType')?.setValue('import', { emitEvent: false }); 
         this.quotationForm.get('origin')?.setValue('', { emitEvent: false }); 
         this.exportRequestForm.reset({ marineProduct: 'Institute Cargo Clauses (A) - All Risks', originCountry: 'Kenya' }); 
@@ -761,25 +525,12 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         setTimeout(() => (this.toastMessage = ''), 5000); 
     }
     
-    downloadQuote(): void {
-        if (this.quotationForm.valid) { 
-            this.showToast('Quote download initiated successfully.'); 
-        }
-    }
-    
-    getToday(): string { 
-        return new Date().toISOString().split('T')[0]; 
-    }
-
+    downloadQuote(): void { if (this.quotationForm.valid) { this.showToast('Quote download initiated successfully.'); } }
+    getToday(): string { return new Date().toISOString().split('T')[0]; }
     noPastDatesValidator(control: AbstractControl): { [key: string]: boolean } | null { 
-        if (!control.value) return null; 
         return control.value < new Date().toISOString().split('T')[0] ? { pastDate: true } : null; 
     }
-
-    goToStep(step: number): void { 
-        this.currentStep = step; 
-    }
-
+    goToStep(step: number): void { this.currentStep = step; }
     isFieldInvalid(form: FormGroup, field: string): boolean { 
         const control = form.get(field); 
         return !!control && control.invalid && (control.dirty || control.touched); 
@@ -790,62 +541,47 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         if (!control || !control.errors) return ''; 
         
         if (control.hasError('required')) return 'This field is required.'; 
-        if (control.hasError('email')) return 'Please enter a valid email address (e.g., john@example.com).'; 
-        if (control.hasError('min')) return `The minimum value is ${control.errors['min'].min}.`; 
-        if (control.hasError('minLength')) return `Must be at least ${control.errors['minLength'].requiredLength} characters.`; 
+        if (control.hasError('email')) return 'Please enter a valid email address.'; 
         if (control.hasError('requiredTrue')) return 'You must agree to proceed.'; 
         if (control.hasError('pastDate')) return 'Date cannot be in the past.'; 
+        if (control.hasError('kraPin')) return 'Invalid KRA PIN format. (e.g., A123456789Z).';
+        if (control.hasError('phoneNumber')) return 'Invalid phone number. (e.g., 0712345678).';
+        if (control.hasError('idNumber')) return 'Invalid ID format. Use 5-15 alphanumeric characters.';
+        if (control.hasError('invalidName')) return 'Name can only contain letters, spaces, and hyphens.';
+        if (control.hasError('idfNumber')) return 'Invalid IDF format. (e.g. 25MV65757585MU567).';
+        if (control.hasError('ucrNumber')) return 'Invalid UCR format. (e.g. 25MV65757585MU567).';
         
-        // Custom validator errors with format suggestions
-        if (control.hasError('kraPin')) return 'Invalid KRA PIN format. Use format: A123456789Z (1 letter, 9 digits, 1 letter).';
-        if (control.hasError('phoneNumber')) return 'Invalid phone number. Use format: 0712345678 or 0112345678.';
-        if (control.hasError('idNumber')) return 'Invalid ID format. Use 5-15 alphanumeric characters (e.g., 12345678, A123B456C).';
-        if (control.hasError('invalidName')) return 'Name can only contain letters, spaces, hyphens, and apostrophes.';
+        // Word count errors
+        if (control.hasError('minWords')) return `Description must be at least ${control.errors['minWords'].requiredWords} words.`; 
+        if (control.hasError('maxWords')) return `Description exceeds maximum of ${control.errors['maxWords'].maxWords} words.`; 
         
-        if (control.hasError('idfNumber')) return 'Invalid IDF format. Expected format: 25MV65757585MU567.';
-        if (control.hasError('ucrNumber')) return 'Invalid UCR format. Expected format: 25MV65757585MU567.';
-        
-        if (control.hasError('maxWords')) return `Description exceeds maximum word limit of ${control.errors['maxWords'].maxWords} words.`; 
-        
-        return 'Please type in at least 10 words of description.'; 
+        return 'Please enter a valid value.'; 
     }
     
     onFileSelected(event: Event, controlName: string): void {
         const element = event.currentTarget as HTMLInputElement;
         const fileList: FileList | null = element.files;
-    
-        // First, find and remove the old file for this control from the registry
         let oldFileId: string | null = null;
         for (const [key, value] of this.uploadedFileRegistry.entries()) {
-            if (value === controlName) {
-                oldFileId = key;
-                break;
-            }
+            if (value === controlName) { oldFileId = key; break; }
         }
-        if (oldFileId) {
-            this.uploadedFileRegistry.delete(oldFileId);
-        }
+        if (oldFileId) { this.uploadedFileRegistry.delete(oldFileId); }
     
         if (fileList && fileList.length > 0) {
             const file = fileList[0];
             const fileId = `${file.name}:${file.size}`;
-    
-            // Check if the new file already exists in another field
             if (this.uploadedFileRegistry.has(fileId)) {
                 const existingControlName = this.uploadedFileRegistry.get(fileId);
-                this.showToast(`Error: The document "${file.name}" has already been uploaded for the ${existingControlName?.replace('Upload', '')} field.`);
-                element.value = ''; // Clear the file input
+                this.showToast(`Error: "${file.name}" is already used for the ${existingControlName?.replace('Upload', '')} field.`);
+                element.value = '';
                 this.quotationForm.get(controlName)?.setValue(null);
                 this.quotationForm.get(controlName)?.markAsTouched();
                 return;
             }
-    
-            // If no duplicate, add to form and registry
             this.quotationForm.get(controlName)?.setValue(file);
             this.uploadedFileRegistry.set(fileId, controlName);
             this.showToast(`${file.name} selected for ${controlName.replace('Upload', '')}.`);
         } else {
-            // If file is deselected, ensure it's cleared from the form
             this.quotationForm.get(controlName)?.setValue(null);
         }
     }

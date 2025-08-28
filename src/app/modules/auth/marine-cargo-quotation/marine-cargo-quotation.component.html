@@ -69,33 +69,27 @@
                                 <h3 class="mb-4 text-xl font-semibold text-gray-800">KYC Document Uploads</h3>
                                 <p class="mb-4 text-sm text-gray-500">Please upload the following required documents. Accepted formats: PDF, PNG, JPG.</p>
                                 <div class="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2">
-                                    <!-- IDF Document Upload (moved to first position) -->
+                                    <!-- IDF Document Upload -->
                                     <div>
-                                        <label for="idfUpload" class="block text-sm font-medium text-gray-700">
-                                            IDF Document <span class="text-red-500">*</span>
-                                        </label>
+                                        <label for="idfUpload" class="block text-sm font-medium text-gray-700">IDF Document <span class="text-red-500">*</span></label>
                                         <div class="mt-1">
                                             <input id="idfUpload" (change)="onFileSelected($event, 'idfUpload')" type="file" class="block w-full cursor-pointer rounded-md border border-gray-300 text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'idfUpload')}">
                                             <span *ngIf="quotationForm.get('idfUpload')?.value" class="mt-2 block text-xs text-gray-500">Selected: {{ quotationForm.get('idfUpload')?.value.name }}</span>
                                         </div>
                                         <div *ngIf="isFieldInvalid(quotationForm, 'idfUpload')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'idfUpload') }}</div>
                                     </div>
-                                    <!-- Invoice Upload (moved to fourth position) -->
+                                    <!-- Invoice Upload -->
                                     <div>
-                                        <label for="invoiceUpload" class="block text-sm font-medium text-gray-700">
-                                            Invoice <span class="text-red-500">*</span>
-                                        </label>
+                                        <label for="invoiceUpload" class="block text-sm font-medium text-gray-700">Invoice <span class="text-red-500">*</span></label>
                                         <div class="mt-1">
                                             <input id="invoiceUpload" (change)="onFileSelected($event, 'invoiceUpload')" type="file" class="block w-full cursor-pointer rounded-md border border-gray-300 text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'invoiceUpload')}">
                                             <span *ngIf="quotationForm.get('invoiceUpload')?.value" class="mt-2 block text-xs text-gray-500">Selected: {{ quotationForm.get('invoiceUpload')?.value.name }}</span>
                                         </div>
                                         <div *ngIf="isFieldInvalid(quotationForm, 'invoiceUpload')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'invoiceUpload') }}</div>
                                     </div>
-                                    <!-- KRA PIN Upload (moved to third position) -->
+                                    <!-- KRA PIN Upload -->
                                     <div>
-                                        <label for="kraPinUpload" class="block text-sm font-medium text-gray-700">
-                                            KRA PIN Certificate <span class="text-red-500">*</span>
-                                        </label>
+                                        <label for="kraPinUpload" class="block text-sm font-medium text-gray-700">KRA PIN Certificate <span class="text-red-500">*</span></label>
                                         <div class="mt-1">
                                             <input id="kraPinUpload" (change)="onFileSelected($event, 'kraPinUpload')" type="file" class="block w-full cursor-pointer rounded-md border border-gray-300 text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'kraPinUpload')}">
                                             <span *ngIf="quotationForm.get('kraPinUpload')?.value" class="mt-2 block text-xs text-gray-500">Selected: {{ quotationForm.get('kraPinUpload')?.value.name }}</span>
@@ -104,9 +98,7 @@
                                     </div>
                                     <!-- National ID Upload -->
                                     <div>
-                                        <label for="nationalIdUpload" class="block text-sm font-medium text-gray-700">
-                                            National ID <span class="text-red-500">*</span>
-                                        </label>
+                                        <label for="nationalIdUpload" class="block text-sm font-medium text-gray-700">National ID <span class="text-red-500">*</span></label>
                                         <div class="mt-1">
                                             <input id="nationalIdUpload" (change)="onFileSelected($event, 'nationalIdUpload')" type="file" class="block w-full cursor-pointer rounded-md border border-gray-300 text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'nationalIdUpload')}">
                                             <span *ngIf="quotationForm.get('nationalIdUpload')?.value" class="mt-2 block text-xs text-gray-500">Selected: {{ quotationForm.get('nationalIdUpload')?.value.name }}</span>
@@ -119,12 +111,13 @@
                                 <h3 class="mb-4 text-xl font-semibold text-gray-800 border-t pt-6 mt-6">Customer Information</h3>
                                 <p class="mb-4 text-sm text-gray-500">This is the person or entity purchasing the insurance policy.</p>
                                 <div class="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2">
-                                    <!-- KRA PIN and ID Number (swapped positions) -->
+                                    <!-- KRA PIN -->
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700">KRA PIN <span class="text-red-500">*</span></label>
                                         <input type="text" formControlName="kraPin" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" placeholder="Format: A123456789Z" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'kraPin')}"/>
                                         <div *ngIf="isFieldInvalid(quotationForm, 'kraPin')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'kraPin') }}</div>
                                     </div>
+                                    <!-- ID Number -->
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700">
                                             <span *ngIf="displayUser.type === 'individual'">ID Number</span>
@@ -134,23 +127,25 @@
                                         <input type="text" formControlName="idNumber" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'idNumber')}"/>
                                         <div *ngIf="isFieldInvalid(quotationForm, 'idNumber')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'idNumber') }}</div>
                                     </div>
-                                    <!-- First Name and Last Name -->
+                                    <!-- First Name -->
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700">First Name <span class="text-red-500">*</span></label>
                                         <input type="text" formControlName="firstName" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'firstName')}"/>
                                         <div *ngIf="isFieldInvalid(quotationForm, 'firstName')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'firstName') }}</div>
                                     </div>
+                                    <!-- Last Name -->
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700">Last Name <span class="text-red-500">*</span></label>
                                         <input type="text" formControlName="lastName" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'lastName')}"/>
                                         <div *ngIf="isFieldInvalid(quotationForm, 'lastName')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'lastName') }}</div>
                                     </div>
-                                    <!-- Email Address and Phone Number -->
+                                    <!-- Email Address -->
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700">Email Address <span class="text-red-500">*</span></label>
                                         <input type="email" formControlName="email" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'email')}"/>
                                         <div *ngIf="isFieldInvalid(quotationForm, 'email')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'email') }}</div>
                                     </div>
+                                    <!-- Phone Number -->
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700">Phone Number <span class="text-red-500">*</span></label>
                                         <input type="tel" formControlName="phoneNumber" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" placeholder="e.g. 0712345678" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'phoneNumber')}"/>
@@ -207,21 +202,19 @@
                                     </div>
                                 </div>
                                 <div class="mb-6">
-                                    <!-- Vessel Name - Removed mandatory asterisk -->
                                     <label class="mb-2 block text-sm font-medium text-gray-700">Vessel Name</label>
                                     <input type="text" formControlName="vesselName" placeholder="e.g., MSC Isabella" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'vesselName')}" />
                                     <div *ngIf="isFieldInvalid(quotationForm, 'vesselName')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'vesselName') }}</div>
                                 </div>
                                 <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-                                    <!-- UCR Number - Removed mandatory asterisk -->
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700">UCR Number</label>
-                                        <input type="text" formControlName="ucrNumber" placeholder="Enter UCR Number" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'ucrNumber')}"/>
+                                        <input type="text" formControlName="ucrNumber" placeholder="e.g. 25MV65757585MU567" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'ucrNumber')}"/>
                                         <div *ngIf="isFieldInvalid(quotationForm, 'ucrNumber')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'ucrNumber') }}</div>
                                     </div>
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700">IDF Number <span class="text-red-500">*</span></label>
-                                        <input type="text" formControlName="idfNumber" placeholder="Enter IDF Number" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'idfNumber')}"/>
+                                        <input type="text" formControlName="idfNumber" placeholder="e.g. 25MV65757585MU567" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'idfNumber')}"/>
                                         <div *ngIf="isFieldInvalid(quotationForm, 'idfNumber')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'idfNumber') }}</div>
                                     </div>
                                 </div>
@@ -239,7 +232,7 @@
                                 </div>
                                 <div class="mb-6">
                                     <label class="mb-2 block text-sm font-medium text-gray-700">Description of Goods <span class="text-red-500">*</span></label>
-                                    <textarea formControlName="descriptionOfGoods" rows="3" placeholder="Describe the type of goods, their value, quantity, packaging details..." class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'descriptionOfGoods')}"></textarea>
+                                    <textarea formControlName="descriptionOfGoods" rows="3" placeholder="Describe the type of goods, their value, quantity, packaging details... in at most 100 words" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'descriptionOfGoods')}"></textarea>
                                     <div *ngIf="isFieldInvalid(quotationForm, 'descriptionOfGoods')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'descriptionOfGoods') }}</div>
                                 </div>
                                  <div class="mt-6 space-y-2">
@@ -263,22 +256,28 @@
                            <!-- Customer Details Summary -->
                            <div>
                                 <h3 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Customer Details</h3>
-                                <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                                <div class="grid grid-cols-1 gap-x-4 gap-y-2 text-sm sm:grid-cols-2">
                                     <span class="text-gray-500">Full Name</span><span class="font-medium text-gray-800">{{ quotationForm.value.firstName }} {{ quotationForm.value.lastName }}</span>
                                     <span class="text-gray-500">Email</span><span class="font-medium text-gray-800">{{ quotationForm.value.email }}</span>
                                     <span class="text-gray-500">Phone</span><span class="font-medium text-gray-800">{{ quotationForm.value.phoneNumber }}</span>
                                     <span class="text-gray-500">KRA PIN</span><span class="font-medium text-gray-800">{{ quotationForm.value.kraPin }}</span>
+                                    <span class="text-gray-500">ID Number</span><span class="font-medium text-gray-800">{{ quotationForm.value.idNumber }}</span>
                                 </div>
                            </div>
                            <!-- Shipment Details Summary -->
                            <div>
                                 <h3 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Shipment Details</h3>
-                                <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                                <div class="grid grid-cols-1 gap-x-4 gap-y-2 text-sm sm:grid-cols-2">
                                     <span class="text-gray-500">Trade / Cargo Type</span><span class="font-medium text-gray-800">{{ quotationForm.value.tradeType | titlecase }} / {{ quotationForm.value.cargoType | titlecase }}</span>
-                                    <span class="text-gray-500">Vessel Name</span><span class="font-medium text-gray-800">{{ quotationForm.value.vesselName }}</span>
+                                    <span class="text-gray-500">Vessel Name</span><span class="font-medium text-gray-800">{{ quotationForm.value.vesselName || 'N/A' }}</span>
                                     <span class="text-gray-500">Origin / Destination</span><span class="font-medium text-gray-800">{{ quotationForm.value.origin }} to {{ quotationForm.value.destination }}</span>
                                     <span class="text-gray-500">Cover Start Date</span><span class="font-medium text-gray-800">{{ quotationForm.value.coverStartDate | date:'longDate' }}</span>
                                     <span class="text-gray-500">Sum Insured (KES)</span><span class="font-medium text-gray-800">{{ quotationForm.value.sumInsured | number:'1.2-2' }}</span>
+                                    <span class="text-gray-500">IDF Number</span><span class="font-medium text-gray-800">{{ quotationForm.value.idfNumber }}</span>
+                                </div>
+                                <div class="mt-4 text-sm">
+                                    <span class="text-gray-500">Description of Goods</span>
+                                    <p class="mt-1 font-medium text-gray-800 whitespace-pre-wrap bg-gray-50 p-3 rounded-md">{{ quotationForm.value.descriptionOfGoods }}</p>
                                 </div>
                            </div>
                         </div>
@@ -293,7 +292,7 @@
                     </div>
                 </div>
 
-                <!-- Right Column: Premium Summary (Redesigned) -->
+                <!-- Right Column: Premium Summary -->
                 <div class="lg:col-span-1">
                     <div class="sticky top-24 rounded-lg bg-white p-6 shadow-sm">
                         <h3 class="mb-4 text-xl font-bold text-gray-800">Premium Summary</h3>
@@ -333,7 +332,7 @@
                                     <span class="font-medium">-{{ premiumCalculation.currency }} {{ premiumCalculation.commission | number: '1.2-2' }}</span>
                                 </div>
                                 
-                                <div class="mt-4 rounded-lg bg-brand p-4 text-white">
+                                <div class="mt-4 rounded-lg bg-primary p-4 text-white">
                                     <div class="flex items-center justify-between">
                                         <span class="text-lg font-semibold">Total Payable</span>
                                         <span class="text-2xl font-bold">{{ premiumCalculation.currency }} {{ premiumCalculation.totalPayable | number: '1.2-2' }}</span>
@@ -522,7 +521,7 @@
     </div>
 
     <!-- Universal Toast Message -->
-    <div *ngIf="toastMessage" class="toast-container">
+    <div *ngIf="toastMessage" class="fixed bottom-5 right-5 z-50 rounded-lg bg-gray-800 px-5 py-3 text-white shadow-lg transition-opacity duration-300 animate-fade-in-out">
         {{ toastMessage }}
     </div>
 </div>
