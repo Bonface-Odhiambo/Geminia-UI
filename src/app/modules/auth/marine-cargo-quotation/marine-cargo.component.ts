@@ -357,6 +357,11 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     currentUser: StoredUser | null = null;
     displayUser: DisplayUser = { type: 'individual', name: 'Individual User' };
 
+    selectedKraPinFile: File | null = null;
+    selectedNationalIdFile: File | null = null;
+    selectedInvoiceFile: File | null = null;
+    selectedIdfFile: File | null = null;
+
     private readonly TAX_RATES = { 
         PHCF_RATE: 0.0025, 
         TRAINING_LEVY: 0.0025, 
@@ -548,6 +553,8 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         const quoteToEdit = this.authService.getPendingQuotes().find(q => q.id === quoteId);
         if (quoteToEdit) {
             this.quotationForm.patchValue(quoteToEdit.quoteDetails);
+            // Re-set file objects if they were part of the saved quoteDetails (though typically not saved directly)
+            // For now, files are handled as new uploads.
             this.premiumCalculation = quoteToEdit.premium;
             this.goToStep(2);
             this.showToast(`Editing your saved quote: ${quoteToEdit.title}.`);
@@ -862,5 +869,50 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             'vesselName': 'Optional: Enter if known'
         };
         return hints[fieldName] || '';
+    }
+
+    // File input change event handlers
+    onFileSelected(event: Event, controlName: string): void {
+        const element = event.currentTarget as HTMLInputElement;
+        let fileList: FileList | null = element.files;
+        if (fileList && fileList.length > 0) {
+            const file = fileList[0];
+            this.quotationForm.get(controlName)?.setValue(file); // Store the File object in the form control
+            
+            // Update the specific selected file property for display/tracking
+            switch (controlName) {
+                case 'kraPinUpload':
+                    this.selectedKraPinFile = file;
+                    break;
+                case 'nationalIdUpload':
+                    this.selectedNationalIdFile = file;
+                    break;
+                case 'invoiceUpload':
+                    this.selectedInvoiceFile = file;
+                    break;
+                case 'idfUpload':
+                    this.selectedIdfFile = file;
+                    break;
+            }
+            this.showToast(`${file.name} selected for ${controlName.replace('Upload', '')}.`);
+        } else {
+            this.quotationForm.get(controlName)?.setValue(null);
+            // Clear the specific selected file property
+            switch (controlName) {
+                case 'kraPinUpload':
+                    this.selectedKraPinFile = null;
+                    break;
+                case 'nationalIdUpload':
+                    this.selectedNationalIdFile = null;
+                    break;
+                case 'invoiceUpload':
+                    this.selectedInvoiceFile = null;
+                    break;
+                case 'idfUpload':
+                    this.selectedIdfFile = null;
+                    break;
+            }
+            this.showToast(`No file selected for ${controlName.replace('Upload', '')}.`);
+        }
     }
 }
