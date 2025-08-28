@@ -101,11 +101,10 @@
 
         <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50">
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="stats-card" *ngFor="let stat of [
                     { title: 'Active Claims', value: dashboardStats.activeClaims, prefix: '' },
                     { title: 'Marine Policies', value: dashboardStats.marinePolicies, prefix: '' }, 
-                    { title: 'Travel Policies', value: dashboardStats.travelPolicies, prefix: '' }, 
                     { title: 'Pending Quotes', value: dashboardStats.pendingQuotes, prefix: '' }, 
                     { title: 'Total Premium', value: (dashboardStats.totalPremium | number: '1.0-0'), prefix: 'KES' }
                 ]">
@@ -259,7 +258,7 @@
                         <div class="px-6 py-4 bg-pantone-light-blue text-white"><h3 class="text-lg font-bold">Quick Actions</h3></div>
                         <div class="p-6 space-y-4">
                             <button mat-raised-button [routerLink]="['/sign-up/marine-quote']" class="w-full bg-pantone-dark-blue text-white rounded-xl p-4 text-sm font-semibold">New Marine Quote</button>
-                            <button mat-raised-button [routerLink]="['/sign-up/travel-quote']" class="w-full bg-pantone-dark-blue text-white rounded-xl p-4 text-sm font-semibold">New Travel Quote</button>
+                            <!-- <button mat-raised-button [routerLink]="['/sign-up/travel-quote']" class="w-full bg-pantone-dark-blue text-white rounded-xl p-4 text-sm font-semibold">New Travel Quote</button> -->
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">

@@ -230,7 +230,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   navigationItems: NavigationItem[] = [];
   dashboardStats: DashboardStats = { marinePolicies: 0, travelPolicies: 0, pendingQuotes: 0, totalPremium: 0, activeClaims: 0 };
   
-  activePolicies: Policy[] = [ { id: 'P001', type: 'marine', title: 'Machinery Import', policyNumber: 'MAR/2024/7531', status: 'active', premium: 18500, startDate: new Date('2024-08-01'), endDate: new Date('2024-09-30'), certificateUrl: '/simulated/MAR-2024-7531.pdf', hasClaim: true, marineDetails: { vesselName: 'MSC Isabella', cargoType: 'Containerized', tradeType: 'Import', modeOfShipment: 'Sea', marineProduct: 'Institute Cargo Clauses (A) - All Risks', marineCargoType: 'Machinery', origin: 'Germany', destination: 'Mombasa, Kenya', sumInsured: 3500000, descriptionOfGoods: 'Industrial-grade printing press machine, packed in a 40ft container.', ucrNumber: 'UCR202408153', idfNumber: 'E2300012345', clientInfo: { name: 'Bonface Odhiambo', idNumber: '30123456', kraPin: 'A001234567Z', email: 'bonface@example.com', phoneNumber: '0712345678' } } }, { id: 'P002', type: 'travel', title: 'Schengen Visa Travel Insurance', policyNumber: 'TRV/2024/9102', status: 'active', premium: 4800, startDate: new Date('2024-09-01'), endDate: new Date('2025-08-31'), certificateUrl: '/simulated/TRV-2024-9102.pdf' } ];
+  activePolicies: Policy[] = [ 
+      { id: 'P001', type: 'marine', title: 'Machinery Import', policyNumber: 'MAR/2024/7531', status: 'active', premium: 18500, startDate: new Date('2024-08-01'), endDate: new Date('2024-09-30'), certificateUrl: '/simulated/MAR-2024-7531.pdf', hasClaim: true, marineDetails: { vesselName: 'MSC Isabella', cargoType: 'Containerized', tradeType: 'Import', modeOfShipment: 'Sea', marineProduct: 'Institute Cargo Clauses (A) - All Risks', marineCargoType: 'Machinery', origin: 'Germany', destination: 'Mombasa, Kenya', sumInsured: 3500000, descriptionOfGoods: 'Industrial-grade printing press machine, packed in a 40ft container.', ucrNumber: 'UCR202408153', idfNumber: 'E2300012345', clientInfo: { name: 'Bonface Odhiambo', idNumber: '30123456', kraPin: 'A001234567Z', email: 'bonface@example.com', phoneNumber: '0712345678' } } }
+      // { id: 'P002', type: 'travel', title: 'Schengen Visa Travel Insurance', policyNumber: 'TRV/2024/9102', status: 'active', premium: 4800, startDate: new Date('2024-09-01'), endDate: new Date('2025-08-31'), certificateUrl: '/simulated/TRV-2024-9102.pdf' } 
+  ];
   claims: Claim[] = [ { id: 'CLM1678886400', policyId: 'P001', policyNumber: 'MAR/2024/7531', claimNumber: 'CLM/2024/83145', dateOfLoss: new Date('2024-08-15'), typeOfLoss: 'Damage', description: 'Container was dropped during offloading at the port, causing significant damage to the casing of the printing press.', estimatedLoss: 450000, status: 'Under Review', submittedDate: new Date('2024-08-18'), documents: [ { name: 'Damage_Photos.zip', size: 5242880, type: 'application/zip' }, { name: 'Survey_Report.pdf', size: 122880, type: 'application/pdf' } ] }];
   recentActivities: Activity[] = [ { id: 'A001', title: 'Payment Successful', description: 'Travel Insurance for Europe', timestamp: new Date(Date.now() - 3600000), icon: 'payment', iconColor: '#04b2e1', relatedId: 'P003' }, { id: 'A002', title: 'Certificate Downloaded', description: 'Marine Cargo Policy MAR-2025-002', timestamp: new Date(Date.now() - 14400000), icon: 'download', iconColor: '#04b2e1', relatedId: 'P002' }, { id: 'A003', title: 'Profile Updated', description: 'Contact information updated', timestamp: new Date(Date.now() - 86400000), icon: 'person', iconColor: '#21275c' }];
   notifications: Notification[] = [ { id: 'N001', title: 'Quotes Awaiting Payment', message: 'You have quotes that need payment to activate your policy.', timestamp: new Date(), read: false, actionUrl: '#pending-quotes' }, { id: 'N002', title: 'Certificates Ready', message: 'Your new policy certificates are ready for download.', timestamp: new Date(), read: false, actionUrl: '#active-policies' } ];
@@ -395,10 +398,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         label: 'Marine Insurance', icon: 'directions_boat', isExpanded: true,
         children: [ { label: 'New Quote', route: '/sign-up/marine-quote', icon: 'add_circle' } ]
       },
-      {
-        label: 'Travel Insurance', icon: 'flight', isExpanded: true,
-        children: [ { label: 'New Quote', route: '/sign-up/travel-quote', icon: 'add_circle' } ]
-      },
+      // {
+      //   label: 'Travel Insurance', icon: 'flight', isExpanded: true,
+      //   children: [ { label: 'New Quote', route: '/sign-up/travel-quote', icon: 'add_circle' } ]
+      // },
       { label: 'My Policies', icon: 'shield', route: '/policies' },
       { label: 'Receipts', icon: 'receipt_long', route: '/receipts' }
     ];
