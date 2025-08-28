@@ -3,7 +3,7 @@
     <header class="sticky top-0 z-10 bg-white shadow-sm">
         <div class="mx-auto max-w-7xl px-4 sm:px-6">
             <div class="flex flex-col items-center justify-between gap-4 py-3 sm:flex-row sm:gap-0 sm:py-4">
-                <!-- Updated Header with Conspicuous Tagline -->
+                <!-- Logo and Tagline -->
                 <div class="flex items-center gap-3 sm:gap-4">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROTKn0j9cVpA67LPdjPeYBR3KnWiwP1gsM3cS27rca-7m8BgvgUylY4uhBnOnVnXFx8Is&usqp=CAU" alt="Geminia Logo" class="h-8 w-auto sm:h-10"/>
                     <div>
@@ -11,13 +11,22 @@
                         <p class="text-xs font-semibold text-gray-500 tracking-wide">Think Insurance ... Think Geminia</p>
                     </div>
                 </div>
-                <div class="flex flex-wrap items-center justify-center gap-3 sm:flex-nowrap sm:gap-4">
-                    <span class="text-sm font-medium">Demo User:</span>
-                    <select (change)="switchUser($event)" class="rounded-md border-gray-300 text-sm focus-ring-primary">
-                        <option value="individual" [selected]="displayUser.type === 'individual'">Individual</option>
-                        <option value="intermediary" [selected]="displayUser.type === 'intermediary'">Intermediary</option>
-                        <option *ngIf="isLoggedIn" value="logout" style="color: #ef4444;">Logout</option>
-                    </select>
+
+                <!-- User Info and Actions -->
+                <div class="flex flex-wrap items-center justify-center gap-4 sm:flex-nowrap">
+                    <!-- Display User Info if Logged In -->
+                    <div *ngIf="isLoggedIn" class="flex items-center gap-3 text-sm">
+                        <div class="text-right">
+                            <span class="font-semibold text-gray-800">{{ displayUser.name }}</span>
+                            <span class="block text-xs text-gray-500">{{ displayUser.type | titlecase }}</span>
+                        </div>
+                        <button (click)="logout()" class="flex items-center gap-2 rounded-md border border-red-500 bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition-colors duration-200 hover:bg-red-100" title="Logout">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                            Logout
+                        </button>
+                    </div>
+                    
+                    <!-- Close Button -->
                     <button (click)="closeForm()" class="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-50" title="Close">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         Close

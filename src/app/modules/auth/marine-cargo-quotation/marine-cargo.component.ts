@@ -356,11 +356,10 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     isLoggedIn: boolean = false;
     currentUser: StoredUser | null = null;
     displayUser: DisplayUser = { type: 'individual', name: 'Individual User' };
+    
+    // Registry to track uploaded files and prevent duplicates
+    private uploadedFileRegistry = new Map<string, string>();
 
-    selectedKraPinFile: File | null = null;
-    selectedNationalIdFile: File | null = null;
-    selectedInvoiceFile: File | null = null;
-    selectedIdfFile: File | null = null;
 
     private readonly TAX_RATES = { 
         PHCF_RATE: 0.0025, 
@@ -415,7 +414,8 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
                     this.displayUser = { type: user.type, name: user.name };
                     this.prefillClientDetails();
                 } else {
-                    this.displayUser = { type: 'individual', name: 'Individual User' };
+                    // Default for logged-out users
+                    this.displayUser = { type: 'individual', name: 'Guest User' };
                 }
             });
 
@@ -496,7 +496,8 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         if (this.isLoggedIn) {
             this.openPaymentModal();
         } else {
-            this.showToast('Please log in to complete your purchase.');
+            this.showToast('Please log in or register to complete your purchase.');
+            // Redirect non-logged-in users to the homepage
             setTimeout(() => { this.router.navigate(['/']); }, 2500);
         }
     }
@@ -515,24 +516,6 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         setTimeout(() => {
             this.router.navigate(['/']);
         }, 1500);
-    }
-
-    switchUser(event: any): void { 
-        const userType = event.target.value as 'individual' | 'intermediary' | 'logout';
-        
-        if (userType === 'logout') {
-            this.logout();
-            setTimeout(() => {
-                event.target.value = this.displayUser.type;
-            }, 100);
-            return;
-        }
-        
-        this.displayUser.type = userType as 'individual' | 'intermediary';
-        this.showToast(`Switched to ${userType} view.`); 
-        if (this.currentStep === 2) {
-            this.calculatePremium(); 
-        }
     }
 
     private prefillClientDetails(): void {
@@ -835,85 +818,44 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         
         return 'Please type in at least 10 words of description.'; 
     }
-
-    // Helper methods for placeholder text and format hints
-    getFieldPlaceholder(fieldName: string): string {
-        const placeholders: { [key: string]: string } = {
-            'firstName': 'e.g., John',
-            'lastName': 'e.g., Doe',
-            'email': 'e.g., john.doe@example.com',
-            'phoneNumber': 'e.g., 0712345678',
-            'idNumber': 'e.g., 12345678 or A123B456C',
-            'kraPin': 'e.g., A123456789Z',
-            'vesselName': 'e.g., MSC Isabella (Optional)',
-            'ucrNumber': 'e.g., UCR123456789 (Optional)',
-            'idfNumber': 'e.g., IDF123456789',
-            'sumInsured': 'e.g., 2500000',
-            'descriptionOfGoods': 'Describe the goods, their value, quantity, packaging details...',
-            'origin': 'Search and select country...',
-            'marineProduct': 'Search for product type...',
-            'marineCargoType': 'Search for cargo type...'
-        };
-        return placeholders[fieldName] || '';
-    }
-
-    getFieldHint(fieldName: string): string {
-        const hints: { [key: string]: string } = {
-            'kraPin': 'Format: One letter, nine digits, one letter',
-            'phoneNumber': 'Format: 07XXXXXXXX or 01XXXXXXXX',
-            'idNumber': '5-15 characters, letters, numbers, and hyphens allowed',
-            'ucrNumber': 'Optional: 8+ alphanumeric characters',
-            'idfNumber': '8+ alphanumeric characters required',
-            'sumInsured': 'Minimum amount: KES 10,000',
-            'descriptionOfGoods': 'Minimum 20 characters required',
-            'vesselName': 'Optional: Enter if known'
-        };
-        return hints[fieldName] || '';
-    }
-
-    // File input change event handlers
+    
     onFileSelected(event: Event, controlName: string): void {
         const element = event.currentTarget as HTMLInputElement;
-        let fileList: FileList | null = element.files;
+        const fileList: FileList | null = element.files;
+    
+        // First, find and remove the old file for this control from the registry
+        let oldFileId: string | null = null;
+        for (const [key, value] of this.uploadedFileRegistry.entries()) {
+            if (value === controlName) {
+                oldFileId = key;
+                break;
+            }
+        }
+        if (oldFileId) {
+            this.uploadedFileRegistry.delete(oldFileId);
+        }
+    
         if (fileList && fileList.length > 0) {
             const file = fileList[0];
-            this.quotationForm.get(controlName)?.setValue(file); // Store the File object in the form control
-            
-            // Update the specific selected file property for display/tracking
-            switch (controlName) {
-                case 'kraPinUpload':
-                    this.selectedKraPinFile = file;
-                    break;
-                case 'nationalIdUpload':
-                    this.selectedNationalIdFile = file;
-                    break;
-                case 'invoiceUpload':
-                    this.selectedInvoiceFile = file;
-                    break;
-                case 'idfUpload':
-                    this.selectedIdfFile = file;
-                    break;
+            const fileId = `${file.name}:${file.size}`;
+    
+            // Check if the new file already exists in another field
+            if (this.uploadedFileRegistry.has(fileId)) {
+                const existingControlName = this.uploadedFileRegistry.get(fileId);
+                this.showToast(`Error: The document "${file.name}" has already been uploaded for the ${existingControlName?.replace('Upload', '')} field.`);
+                element.value = ''; // Clear the file input
+                this.quotationForm.get(controlName)?.setValue(null);
+                this.quotationForm.get(controlName)?.markAsTouched();
+                return;
             }
+    
+            // If no duplicate, add to form and registry
+            this.quotationForm.get(controlName)?.setValue(file);
+            this.uploadedFileRegistry.set(fileId, controlName);
             this.showToast(`${file.name} selected for ${controlName.replace('Upload', '')}.`);
         } else {
+            // If file is deselected, ensure it's cleared from the form
             this.quotationForm.get(controlName)?.setValue(null);
-            // Clear the specific selected file property
-            switch (controlName) {
-                case 'kraPinUpload':
-                    this.selectedKraPinFile = null;
-                    break;
-                case 'nationalIdUpload':
-                    this.selectedNationalIdFile = null;
-                    break;
-                case 'invoiceUpload':
-                    this.selectedInvoiceFile = null;
-                    break;
-                case 'idfUpload':
-                    this.selectedIdfFile = null;
-                    break;
-            }
-            this.showToast(`No file selected for ${controlName.replace('Upload', '')}.`);
         }
     }
 }
-
