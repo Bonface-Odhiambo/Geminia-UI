@@ -273,7 +273,7 @@
                                 <div *ngIf="registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched" 
                                      class="mt-0.5 text-xs text-red-500">
                                     <span *ngIf="registerForm.get('fullName')?.errors?.['required']">Full name is required</span>
-                                    <span *ngIf="registerForm.get('fullName')?.errors?.['fullNameInvalid']">Please enter at least two names</span>
+                                    <span *ngIf="registerForm.get('fullName')?.errors?.['fullNameInvalid']">Please enter at least two names separated by a space</span>
                                 </div>
                             </div>
                             <div class="mb-3">
