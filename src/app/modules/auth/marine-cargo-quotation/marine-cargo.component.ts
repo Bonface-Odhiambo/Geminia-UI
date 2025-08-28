@@ -13,13 +13,189 @@ import { Subject, takeUntil } from 'rxjs';
 import { AuthService, StoredUser, PendingQuote } from '../shared/services/auth.service';
 
 // --- INTERFACES & VALIDATORS ---
-export function maxWords(max: number) { return (control: AbstractControl): { [key: string]: any } | null => { if (!control.value) return null; const words = control.value.trim().split(/\s+/).length; return words > max ? { maxWords: { maxWords: max, actualWords: words } } : null; }; }
-interface PremiumCalculation { basePremium: number; phcf: number; trainingLevy: number; stampDuty: number; commission: number; totalPayable: number; currency: string; }
-interface MarineProduct { code: string; name: string; rate: number; }
-interface ImporterDetails { name: string; kraPin: string; }
-interface MpesaPayment { amount: number; phoneNumber: string; reference: string; description: string; }
-export interface PaymentResult { success: boolean; method: 'stk' | 'paybill' | 'card'; reference: string; mpesaReceipt?: string; }
-interface DisplayUser { type: 'individual' | 'intermediary'; name: string; }
+export function maxWords(max: number) { 
+    return (control: AbstractControl): { [key: string]: any } | null => { 
+        if (!control.value) return null; 
+        const words = control.value.trim().split(/\s+/).length; 
+        return words > max ? { maxWords: { maxWords: max, actualWords: words } } : null; 
+    }; 
+}
+
+interface PremiumCalculation { 
+    basePremium: number; 
+    phcf: number; 
+    trainingLevy: number; 
+    stampDuty: number; 
+    commission: number; 
+    totalPayable: number; 
+    currency: string; 
+}
+
+interface MarineProduct { 
+    code: string; 
+    name: string; 
+    rate: number; 
+}
+
+interface ImporterDetails { 
+    name: string; 
+    kraPin: string; 
+}
+
+interface MpesaPayment { 
+    amount: number; 
+    phoneNumber: string; 
+    reference: string; 
+    description: string; 
+}
+
+export interface PaymentResult { 
+    success: boolean; 
+    method: 'stk' | 'paybill' | 'card'; 
+    reference: string; 
+    mpesaReceipt?: string; 
+}
+
+interface DisplayUser { 
+    type: 'individual' | 'intermediary'; 
+    name: string; 
+}
+
+// --- TERMS AND PRIVACY POLICY MODAL COMPONENT ---
+@Component({
+    selector: 'app-terms-privacy-modal',
+    standalone: true,
+    imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
+    template: `
+    <div class="modal-container">
+        <div class="modal-header">
+            <h2 mat-dialog-title class="modal-title">{{ data.title }}</h2>
+            <button mat-icon-button (click)="closeDialog()" class="close-button" aria-label="Close dialog">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <mat-dialog-content class="modal-content">
+            <div class="content-text">
+                <h3>Terms of Use and Data Privacy Policy</h3>
+                <p>Geminia Insurance Company Limited is committed to protecting the fundamental human right to privacy of those with whom we interact. We recognize the need to safeguard personal data that is collected or disclosed to us as part of the Know-your-customer information required by us in order to provide you with the requisite financial product or service.</p>
+                
+                <p>We are committed to complying with the requirements of the Data Protection Act and the attendant regulations as well as best global best practices regarding the processing of your personal data. In this regard, you are required to acquaint yourselves with our data privacy statement (<a href="https://geminia.co.ke/data-privacy-statement/" target="_blank" class="policy-link">https://geminia.co.ke/data-privacy-statement/</a>) which is intended to tell you how we use your personal data and describes how we collect and process your personal data during and after your relationship with us.</p>
+                
+                <div class="policy-sections">
+                    <h4>Data Collection and Usage</h4>
+                    <p>We collect personal data necessary for insurance services, including identification documents, contact information, and financial details. This information is used solely for providing insurance products and services, compliance with legal requirements, and communication regarding your policy.</p>
+                    
+                    <h4>Data Protection</h4>
+                    <p>Your personal data is protected through appropriate technical and organizational measures. We do not share your information with third parties except as required by law or with your explicit consent.</p>
+                    
+                    <h4>Your Rights</h4>
+                    <p>You have the right to access, correct, or delete your personal data. You may also object to certain processing activities or request data portability where applicable.</p>
+                    
+                    <h4>Contact Information</h4>
+                    <p>For any questions regarding data privacy or to exercise your rights, please contact our Data Protection Officer at privacy&#64;geminia.co.ke</p>
+                </div>
+            </div>
+        </mat-dialog-content>
+        <div class="modal-footer">
+            <button mat-raised-button (click)="closeDialog()" class="accept-button">I Understand</button>
+        </div>
+    </div>
+    `,
+    styles: [`
+    .modal-container {
+        background-color: white;
+        border-radius: 12px;
+        overflow: hidden;
+        max-width: 600px;
+        max-height: 80vh;
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px;
+        background-color: #21275c;
+        color: white;
+        position: relative;
+    }
+    .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+    }
+    .close-button {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    .close-button:hover {
+        color: white;
+    }
+    .modal-content {
+        padding: 24px;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    .content-text h3 {
+        color: #21275c;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 16px;
+    }
+    .content-text h4 {
+        color: #04b2e1;
+        font-size: 14px;
+        font-weight: 600;
+        margin-top: 20px;
+        margin-bottom: 8px;
+    }
+    .content-text p {
+        line-height: 1.6;
+        margin-bottom: 12px;
+        font-size: 14px;
+        color: #4a5568;
+    }
+    .policy-link {
+        color: #04b2e1;
+        text-decoration: none;
+    }
+    .policy-link:hover {
+        text-decoration: underline;
+    }
+    .policy-sections {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
+    }
+    .modal-footer {
+        padding: 16px 24px;
+        background-color: #f8f9fa;
+        display: flex;
+        justify-content: center;
+    }
+    .accept-button {
+        background-color: #04b2e1 !important;
+        color: white !important;
+        font-weight: 600;
+        padding: 12px 24px;
+        border-radius: 8px;
+    }
+    .accept-button:hover {
+        background-color: #21275c !important;
+    }
+    `]
+})
+export class TermsPrivacyModalComponent {
+    constructor(
+        public dialogRef: MatDialogRef<TermsPrivacyModalComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: { title: string }
+    ) {}
+
+    closeDialog(): void {
+        this.dialogRef.close();
+    }
+}
 
 // --- PAYMENT MODAL COMPONENT ---
 @Component({ 
@@ -30,13 +206,66 @@ interface DisplayUser { type: 'individual' | 'intermediary'; name: string; }
     styles: [`:host{display:block;--pantone-306c:#04b2e1;--pantone-2758c:#21275c;--white-color:#fff;--light-gray:#f8f9fa;--medium-gray:#e9ecef;--dark-gray:#495057}.payment-modal-container{background-color:var(--white-color);border-radius:16px;overflow:hidden;max-width:450px;box-shadow:0 10px 30px rgba(0,0,0,.1)}.modal-header{display:flex;align-items:center;padding:20px 24px;background-color:var(--pantone-2758c);color:var(--white-color);position:relative}.header-icon-wrapper{width:48px;height:48px;background-color:rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:16px;flex-shrink:0}.header-icon-wrapper mat-icon{font-size:28px;width:28px;height:28px}.modal-title{font-size:20px;font-weight:600;margin:0;color:var(--white-color)}.modal-subtitle{font-size:14px;opacity:.9;margin-top:2px;color:var(--white-color)}.close-button{position:absolute;top:12px;right:12px;color:rgba(255,255,255,.7)}.close-button:hover{color:var(--white-color)}.modal-content{padding:0!important;background-color:#f9fafb}.tab-panel-content{padding:24px}.sub-options{display:flex;gap:8px;margin-bottom:24px;border:1px solid var(--medium-gray);border-radius:12px;padding:6px;background-color:var(--medium-gray)}.sub-option-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border-radius:8px;border:none;background-color:transparent;font-weight:500;cursor:pointer;transition:all .3s ease;color:var(--dark-gray)}.sub-option-btn.active{background-color:var(--white-color);color:var(--pantone-2758c);box-shadow:0 2px 4px rgba(0,0,0,.05)}.instruction-text{text-align:center;color:var(--dark-gray);font-size:14px;margin-bottom:20px;line-height:1.5}mat-form-field{width:100%}.action-button{width:100%;height:50px;border-radius:12px;background-color:var(--pantone-2758c)!important;color:var(--white-color)!important;font-size:16px;font-weight:600}.action-button:disabled{background-color:#a0a3c2!important}.paybill-details{background:var(--white-color);border:1px dashed #d1d5db;border-radius:12px;padding:20px;margin-bottom:24px}.detail-item{display:flex;justify-content:space-between;align-items:center;font-size:16px;padding:12px 0}.detail-item+.detail-item{border-top:1px solid var(--medium-gray)}.detail-item .label{color:var(--dark-gray)}.detail-item .value{font-weight:700;color:var(--pantone-2758c)}.detail-item .account-number{font-family:'Courier New',monospace;background-color:var(--medium-gray);padding:4px 8px;border-radius:6px}.card-redirect-info{text-align:center}.animate-fade-in{animation:fadeIn .4s ease-in-out}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.tab-label-content{display:flex;align-items:center;gap:8px;height:60px}::ng-deep .payment-tabs .mat-mdc-tab-header{background-color:var(--white-color)}::ng-deep .payment-tabs .mdc-tab__text-label{color:var(--dark-gray);font-weight:500}::ng-deep .payment-tabs .mat-mdc-tab.mat-mdc-tab-active .mdc-tab__text-label{color:var(--pantone-306c)}::ng-deep .payment-tabs .mat-mdc-tab-indicator-bar{background-color:var(--pantone-306c)!important}`]
 })
 export class PaymentModalComponent implements OnInit {
-    stkForm: FormGroup; mpesaSubMethod: 'stk' | 'paybill' = 'stk'; isProcessingStk = false; isVerifyingPaybill = false; isRedirectingToCard = false;
-    constructor(private fb: FormBuilder, public dialogRef: MatDialogRef<PaymentModalComponent>, @Inject(MAT_DIALOG_DATA) public data: MpesaPayment) { this.stkForm = this.fb.group({ phoneNumber: [data.phoneNumber || '', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]] }); }
+    stkForm: FormGroup; 
+    mpesaSubMethod: 'stk' | 'paybill' = 'stk'; 
+    isProcessingStk = false; 
+    isVerifyingPaybill = false; 
+    isRedirectingToCard = false;
+    
+    constructor(
+        private fb: FormBuilder, 
+        public dialogRef: MatDialogRef<PaymentModalComponent>, 
+        @Inject(MAT_DIALOG_DATA) public data: MpesaPayment
+    ) { 
+        this.stkForm = this.fb.group({ 
+            phoneNumber: [data.phoneNumber || '', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]] 
+        }); 
+    }
+    
     ngOnInit(): void {}
-    closeDialog(result: PaymentResult | null = null): void { this.dialogRef.close(result); }
-    processStkPush(): void { if (this.stkForm.invalid) return; this.isProcessingStk = true; setTimeout(() => { this.isProcessingStk = false; this.closeDialog({ success: true, method: 'stk', reference: this.data.reference, mpesaReceipt: 'S' + Math.random().toString(36).substring(2, 12).toUpperCase() }); }, 3000); }
-    verifyPaybillPayment(): void { this.isVerifyingPaybill = true; setTimeout(() => { this.isVerifyingPaybill = false; this.closeDialog({ success: true, method: 'paybill', reference: this.data.reference }); }, 3500); }
-    redirectToCardGateway(): void { this.isRedirectingToCard = true; setTimeout(() => { this.isRedirectingToCard = false; console.log('Redirecting to I&M Bank payment gateway...'); this.closeDialog({ success: true, method: 'card', reference: this.data.reference }); }, 2000); }
+    
+    closeDialog(result: PaymentResult | null = null): void { 
+        this.dialogRef.close(result); 
+    }
+    
+    processStkPush(): void { 
+        if (this.stkForm.invalid) return; 
+        this.isProcessingStk = true; 
+        setTimeout(() => { 
+            this.isProcessingStk = false; 
+            this.closeDialog({ 
+                success: true, 
+                method: 'stk', 
+                reference: this.data.reference, 
+                mpesaReceipt: 'S' + Math.random().toString(36).substring(2, 12).toUpperCase() 
+            }); 
+        }, 3000); 
+    }
+    
+    verifyPaybillPayment(): void { 
+        this.isVerifyingPaybill = true; 
+        setTimeout(() => { 
+            this.isVerifyingPaybill = false; 
+            this.closeDialog({ 
+                success: true, 
+                method: 'paybill', 
+                reference: this.data.reference 
+            }); 
+        }, 3500); 
+    }
+    
+    redirectToCardGateway(): void { 
+        this.isRedirectingToCard = true; 
+        setTimeout(() => { 
+            this.isRedirectingToCard = false; 
+            console.log('Redirecting to I&M Bank payment gateway...'); 
+            this.closeDialog({ 
+                success: true, 
+                method: 'card', 
+                reference: this.data.reference 
+            }); 
+        }, 2000); 
+    }
 }
 
 // --- MAIN MARINE CARGO QUOTATION COMPONENT ---
@@ -52,7 +281,8 @@ export class PaymentModalComponent implements OnInit {
         MatDialogModule, 
         MatIconModule, 
         TitleCasePipe,
-        PaymentModalComponent
+        PaymentModalComponent,
+        TermsPrivacyModalComponent
     ],
     templateUrl: './marine-cargo-quotation.component.html',
     styleUrls: ['./marine-cargo-quotation.component.scss'],
@@ -66,6 +296,8 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     currentStep: number = 1;
     showExportModal: boolean = false;
     showHighRiskModal: boolean = false;
+    showTermsModal: boolean = false;
+    showPrivacyModal: boolean = false;
     toastMessage: string = '';
     importerDetails: ImporterDetails = { name: '', kraPin: '' };
     premiumCalculation: PremiumCalculation = this.resetPremiumCalculation();
@@ -82,10 +314,29 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         STAMP_DUTY_RATE: 0.05
     };
 
-    readonly marineProducts: MarineProduct[] = [ { code: 'ICC_A', name: 'Institute Cargo Clauses (A) - All Risks', rate: 0.005 }, { code: 'ICC_B', name: 'Institute Cargo Clauses (B) - Named Perils', rate: 0.0035 }, { code: 'ICC_C', name: 'Institute Cargo Clauses (C) - Limited Perils', rate: 0.0025 } ];
-    readonly marineCargoTypes: string[] = [ 'Pharmaceuticals', 'Electronics', 'Apparel', 'Vehicles', 'Machinery', 'General Goods' ];
-    readonly blacklistedCountries: string[] = [ 'Russia', 'Ukraine', 'North Korea', 'Syria', 'Iran', 'Yemen', 'Sudan', 'Somalia' ];
-    readonly allCountriesList: string[] = [ 'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Australia', 'Austria', 'Bangladesh', 'Belgium', 'Brazil', 'Canada', 'China', 'Denmark', 'Egypt', 'Finland', 'France', 'Germany', 'Ghana', 'Greece', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Japan', 'Kenya', 'Mexico', 'Netherlands', 'New Zealand', 'Nigeria', 'North Korea', 'Norway', 'Pakistan', 'Russia', 'Saudi Arabia', 'Somalia', 'South Africa', 'Spain', 'Sudan', 'Sweden', 'Switzerland', 'Syria', 'Tanzania', 'Turkey', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States of America', 'Yemen', 'Zambia', 'Zimbabwe' ];
+    readonly marineProducts: MarineProduct[] = [ 
+        { code: 'ICC_A', name: 'Institute Cargo Clauses (A) - All Risks', rate: 0.005 }, 
+        { code: 'ICC_B', name: 'Institute Cargo Clauses (B) - Named Perils', rate: 0.0035 }, 
+        { code: 'ICC_C', name: 'Institute Cargo Clauses (C) - Limited Perils', rate: 0.0025 } 
+    ];
+    
+    readonly marineCargoTypes: string[] = [ 
+        'Pharmaceuticals', 'Electronics', 'Apparel', 'Vehicles', 'Machinery', 'General Goods' 
+    ];
+    
+    readonly blacklistedCountries: string[] = [ 
+        'Russia', 'Ukraine', 'North Korea', 'Syria', 'Iran', 'Yemen', 'Sudan', 'Somalia' 
+    ];
+    
+    readonly allCountriesList: string[] = [ 
+        'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Australia', 'Austria', 
+        'Bangladesh', 'Belgium', 'Brazil', 'Canada', 'China', 'Denmark', 'Egypt', 'Finland', 'France', 
+        'Germany', 'Ghana', 'Greece', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 
+        'Japan', 'Kenya', 'Mexico', 'Netherlands', 'New Zealand', 'Nigeria', 'North Korea', 'Norway', 
+        'Pakistan', 'Russia', 'Saudi Arabia', 'Somalia', 'South Africa', 'Spain', 'Sudan', 'Sweden', 
+        'Switzerland', 'Syria', 'Tanzania', 'Turkey', 'Uganda', 'Ukraine', 'United Arab Emirates', 
+        'United Kingdom', 'United States of America', 'Yemen', 'Zambia', 'Zimbabwe' 
+    ];
 
     constructor(
         private fb: FormBuilder,
@@ -132,6 +383,30 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
+    openTermsModal(event?: Event): void {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        this.showTermsModal = true;
+    }
+
+    closeTermsModal(): void {
+        this.showTermsModal = false;
+    }
+
+    openPrivacyModal(event?: Event): void {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        this.showPrivacyModal = true;
+    }
+
+    closePrivacyModal(): void {
+        this.showPrivacyModal = false;
+    }
+
     handlePayment(): void {
         if (this.isLoggedIn) {
             this.openPaymentModal();
@@ -148,7 +423,8 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             this.router.navigate(['/']);
         }
     }
-      logout(): void {
+    
+    logout(): void {
         this.authService.logout();
         this.showToast('You have been logged out successfully.');
         setTimeout(() => {
@@ -157,23 +433,22 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     }
 
     switchUser(event: any): void { 
-    const userType = event.target.value as 'individual' | 'intermediary' | 'logout';
-    
-    if (userType === 'logout') {
-        this.logout();
-        // Reset dropdown to current user type after logout is triggered
-        setTimeout(() => {
-            event.target.value = this.displayUser.type;
-        }, 100);
-        return;
+        const userType = event.target.value as 'individual' | 'intermediary' | 'logout';
+        
+        if (userType === 'logout') {
+            this.logout();
+            setTimeout(() => {
+                event.target.value = this.displayUser.type;
+            }, 100);
+            return;
+        }
+        
+        this.displayUser.type = userType as 'individual' | 'intermediary';
+        this.showToast(`Switched to ${userType} view.`); 
+        if (this.currentStep === 2) {
+            this.calculatePremium(); 
+        }
     }
-    
-    this.displayUser.type = userType as 'individual' | 'intermediary';
-    this.showToast(`Switched to ${userType} view.`); 
-    if (this.currentStep === 2) {
-        this.calculatePremium(); 
-    }
-}
 
     private prefillClientDetails(): void {
         if (!this.currentUser) return;
@@ -226,18 +501,38 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
     }
 
     private openPaymentModal(): void { 
-        const dialogRef = this.dialog.open(PaymentModalComponent, { data: { amount: this.premiumCalculation.totalPayable, phoneNumber: this.quotationForm.get('phoneNumber')?.value, reference: `GEM${Date.now()}`, description: 'Marine Cargo Insurance' }, panelClass: 'payment-dialog-container', autoFocus: false }); 
+        const dialogRef = this.dialog.open(PaymentModalComponent, { 
+            data: { 
+                amount: this.premiumCalculation.totalPayable, 
+                phoneNumber: this.quotationForm.get('phoneNumber')?.value, 
+                reference: `GEM${Date.now()}`, 
+                description: 'Marine Cargo Insurance' 
+            }, 
+            panelClass: 'payment-dialog-container', 
+            autoFocus: false 
+        }); 
+        
         dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((result: PaymentResult | null) => { 
             if (result?.success) {
-                if (this.editModeQuoteId) { this.authService.removePendingQuote(this.editModeQuoteId); }
+                if (this.editModeQuoteId) { 
+                    this.authService.removePendingQuote(this.editModeQuoteId); 
+                }
                 this.showToast('Payment successful! Redirecting to your dashboard.');
-                setTimeout(() => { this.router.navigate(['/sign-up/dashboard']); }, 2000); 
+                setTimeout(() => { 
+                    this.router.navigate(['/sign-up/dashboard']); 
+                }, 2000); 
             } 
         }); 
     }
 
     private createQuotationForm(): FormGroup {
         return this.fb.group({
+            // KYC Documents
+            kraPinUpload: [null, Validators.required],
+            nationalIdUpload: [null, Validators.required],
+            invoiceUpload: [null, Validators.required],
+            idfUpload: [null, Validators.required],
+
             // Customer Details
             firstName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]],
             lastName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s'-]+$/)]],
@@ -245,12 +540,6 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             phoneNumber: ['', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]],
             idNumber: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9-]{5,15}$/)]],
             kraPin: ['', [Validators.required, Validators.pattern(/^[A-Z]\d{9}[A-Z]$/i)]],
-            
-            // KYC Documents
-            kraPinUpload: [null, Validators.required],
-            nationalIdUpload: [null, Validators.required],
-            invoiceUpload: [null, Validators.required],
-            idfUpload: [null, Validators.required],
 
             termsAndPolicyConsent: [false, Validators.requiredTrue],
             
@@ -262,11 +551,11 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             marineCargoType: ['', Validators.required],
             origin: ['', Validators.required],
             destination: [''],
-            vesselName: ['', Validators.required],
+            vesselName: [''],
             coverStartDate: ['', [Validators.required, this.noPastDatesValidator]],
             sumInsured: ['', [Validators.required, Validators.min(10000)]],
             descriptionOfGoods: ['', [Validators.required, Validators.minLength(20)]],
-            ucrNumber: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/), Validators.minLength(15)]],
+            ucrNumber: [''],
             idfNumber: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/), Validators.minLength(15)]],
         });
     }
@@ -289,10 +578,58 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             termsAndPolicyConsent: [false, Validators.requiredTrue], 
         }); 
     }
-    private createExportRequestForm(): FormGroup { const form = this.createModalForm(); form.get('originCountry')?.patchValue('Kenya'); form.get('originCountry')?.disable(); return form; }
-    private createHighRiskRequestForm(): FormGroup { return this.createModalForm(); }
-    private setDefaultDate(): void { this.quotationForm.patchValue({ coverStartDate: this.getToday() }); }
-    private setupFormSubscriptions(): void { this.quotationForm.get('modeOfShipment')?.valueChanges.subscribe((mode) => { this.quotationForm.get('destination')?.setValue(mode === 'sea' ? 'Mombasa, Kenya' : mode === 'air' ? 'JKIA, Nairobi, Kenya' : ''); }); this.quotationForm.get('tradeType')?.valueChanges.subscribe((type) => { if (type === 'export') this.showExportModal = true; }); this.quotationForm.get('origin')?.valueChanges.subscribe((country) => { if (this.blacklistedCountries.includes(country)) { this.highRiskRequestForm.patchValue({ originCountry: country }); this.showHighRiskModal = true; } }); this.quotationForm.get('ucrNumber')?.valueChanges.subscribe(() => { this.importerDetails = this.quotationForm.get('ucrNumber')?.valid ? { name: 'Global Imports Ltd.', kraPin: 'P051234567X' } : { name: '', kraPin: '' }; }); }
+
+    private createExportRequestForm(): FormGroup { 
+        const form = this.createModalForm(); 
+        form.get('originCountry')?.patchValue('Kenya'); 
+        form.get('originCountry')?.disable(); 
+        return form; 
+    }
+
+    private createHighRiskRequestForm(): FormGroup { 
+        return this.createModalForm(); 
+    }
+
+    private setDefaultDate(): void { 
+        this.quotationForm.patchValue({ coverStartDate: this.getToday() }); 
+    }
+
+    private setupFormSubscriptions(): void { 
+        this.quotationForm.get('modeOfShipment')?.valueChanges.subscribe((mode) => { 
+            this.quotationForm.get('destination')?.setValue(mode === 'sea' ? 'Mombasa, Kenya' : mode === 'air' ? 'JKIA, Nairobi, Kenya' : ''); 
+        }); 
+        
+        this.quotationForm.get('tradeType')?.valueChanges.subscribe((type) => { 
+            if (type === 'export') this.showExportModal = true; 
+            
+            // Update validation based on trade type
+            const vesselControl = this.quotationForm.get('vesselName');
+            const ucrControl = this.quotationForm.get('ucrNumber');
+            
+            if (type === 'export') {
+                vesselControl?.setValidators([Validators.required]);
+                ucrControl?.setValidators([Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/), Validators.minLength(15)]);
+            } else {
+                vesselControl?.clearValidators();
+                ucrControl?.clearValidators();
+            }
+            vesselControl?.updateValueAndValidity();
+            ucrControl?.updateValueAndValidity();
+        }); 
+        
+        this.quotationForm.get('origin')?.valueChanges.subscribe((country) => { 
+            if (this.blacklistedCountries.includes(country)) { 
+                this.highRiskRequestForm.patchValue({ originCountry: country }); 
+                this.showHighRiskModal = true; 
+            } 
+        }); 
+        
+        this.quotationForm.get('ucrNumber')?.valueChanges.subscribe(() => { 
+            this.importerDetails = this.quotationForm.get('ucrNumber')?.valid ? 
+                { name: 'Global Imports Ltd.', kraPin: 'P051234567X' } : 
+                { name: '', kraPin: '' }; 
+        }); 
+    }
     
     private calculatePremium(): void {
         const sumInsured = this.quotationForm.get('sumInsured')?.value || 0;
@@ -313,19 +650,88 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         this.premiumCalculation = { basePremium, phcf, trainingLevy, stampDuty, commission, totalPayable, currency: 'KES' };
     }
 
-    private resetPremiumCalculation(): PremiumCalculation { return { basePremium: 0, phcf: 0, trainingLevy: 0, stampDuty: 0, commission: 0, totalPayable: 0, currency: 'KES' }; }
-    onExportRequestSubmit(): void { if (this.exportRequestForm.valid) { this.closeAllModals(); this.showToast('Export request submitted. Our underwriter will contact you.'); }}
-    onHighRiskRequestSubmit(): void { if (this.highRiskRequestForm.valid) { this.closeAllModals(); this.showToast('High-risk shipment request submitted for review.'); }}
-    closeAllModals(): void { this.showExportModal = false; this.showHighRiskModal = false; this.quotationForm.get('tradeType')?.setValue('import', { emitEvent: false }); this.quotationForm.get('origin')?.setValue('', { emitEvent: false }); this.exportRequestForm.reset({ marineProduct: 'Institute Cargo Clauses (A) - All Risks', originCountry: 'Kenya' }); this.highRiskRequestForm.reset({ marineProduct: 'Institute Cargo Clauses (A) - All Risks' }); }
-    private showToast(message: string): void { this.toastMessage = message; setTimeout(() => (this.toastMessage = ''), 5000); }
-    
-    downloadQuote(): void {
-        if (this.quotationForm.valid) { this.showToast('Quote download initiated successfully.'); }
+    private resetPremiumCalculation(): PremiumCalculation { 
+        return { basePremium: 0, phcf: 0, trainingLevy: 0, stampDuty: 0, commission: 0, totalPayable: 0, currency: 'KES' }; 
+    }
+
+    onExportRequestSubmit(): void { 
+        if (this.exportRequestForm.valid) { 
+            this.closeAllModals(); 
+            this.showToast('Export request submitted. Our underwriter will contact you.'); 
+        }
+    }
+
+    onHighRiskRequestSubmit(): void { 
+        if (this.highRiskRequestForm.valid) { 
+            this.closeAllModals(); 
+            this.showToast('High-risk shipment request submitted for review.'); 
+        }
+    }
+
+    closeAllModals(): void { 
+        this.showExportModal = false; 
+        this.showHighRiskModal = false; 
+        this.quotationForm.get('tradeType')?.setValue('import', { emitEvent: false }); 
+        this.quotationForm.get('origin')?.setValue('', { emitEvent: false }); 
+        this.exportRequestForm.reset({ marineProduct: 'Institute Cargo Clauses (A) - All Risks', originCountry: 'Kenya' }); 
+        this.highRiskRequestForm.reset({ marineProduct: 'Institute Cargo Clauses (A) - All Risks' }); 
+    }
+
+    private showToast(message: string): void { 
+        this.toastMessage = message; 
+        setTimeout(() => (this.toastMessage = ''), 5000); 
     }
     
-    getToday(): string { return new Date().toISOString().split('T')[0]; }
-    noPastDatesValidator(control: AbstractControl): { [key: string]: boolean } | null { if (!control.value) return null; return control.value < new Date().toISOString().split('T')[0] ? { pastDate: true } : null; }
-    goToStep(step: number): void { this.currentStep = step; }
-    isFieldInvalid(form: FormGroup, field: string): boolean { const control = form.get(field); return !!control && control.invalid && (control.dirty || control.touched); }
-    getErrorMessage(form: FormGroup, field: string): string { const control = form.get(field); if (!control || !control.errors) return ''; if (control.hasError('required')) return 'This field is required.'; if (control.hasError('email')) return 'Please enter a valid email address.'; if (control.hasError('min')) return `The minimum value is ${control.errors['min'].min}.`; if (control.hasError('minLength')) return `Must be at least ${control.errors['minLength'].requiredLength} characters.`; if (control.hasError('pattern')) { switch (field) { case 'idNumber': return 'Invalid format. Can contain letters, numbers, and hyphens.'; case 'kraPin': return 'Invalid KRA PIN format (e.g., A123456789Z).'; case 'phoneNumber': return 'Invalid phone number format (e.g., 0712345678).'; case 'ucrNumber': case 'idfNumber': return 'Invalid format. Must be at least 15 alphanumeric characters.'; case 'firstName': case 'lastName': return 'Please enter a valid name (letters and spaces only).'; default: return 'Invalid format. Please check your entry.'; }} if (control.hasError('maxWords')) return `Exceeds the maximum word count of ${control.errors['maxWords'].maxWords}.`; if (control.hasError('pastDate')) return 'Date cannot be in the past.'; if (control.hasError('requiredTrue')) return 'You must agree to proceed.'; return 'Invalid input.'; }
+    downloadQuote(): void {
+        if (this.quotationForm.valid) { 
+            this.showToast('Quote download initiated successfully.'); 
+        }
+    }
+    
+    getToday(): string { 
+        return new Date().toISOString().split('T')[0]; 
+    }
+
+    noPastDatesValidator(control: AbstractControl): { [key: string]: boolean } | null { 
+        if (!control.value) return null; 
+        return control.value < new Date().toISOString().split('T')[0] ? { pastDate: true } : null; 
+    }
+
+    goToStep(step: number): void { 
+        this.currentStep = step; 
+    }
+
+    isFieldInvalid(form: FormGroup, field: string): boolean { 
+        const control = form.get(field); 
+        return !!control && control.invalid && (control.dirty || control.touched); 
+    }
+
+    getErrorMessage(form: FormGroup, field: string): string { 
+        const control = form.get(field); 
+        if (!control || !control.errors) return ''; 
+        
+        if (control.hasError('required')) return 'This field is required.'; 
+        if (control.hasError('email')) return 'Please enter a valid email address.'; 
+        if (control.hasError('min')) return `The minimum value is ${control.errors['min'].min}.`; 
+        if (control.hasError('minLength')) return `Must be at least ${control.errors['minLength'].requiredLength} characters.`; 
+        
+        if (control.hasError('pattern')) { 
+            switch (field) { 
+                case 'idNumber': return 'Invalid format. Can contain letters, numbers, and hyphens.'; 
+                case 'kraPin': return 'Invalid KRA PIN format (e.g., A123456789Z).'; 
+                case 'phoneNumber': return 'Invalid phone number format (e.g., 0712345678).'; 
+                case 'ucrNumber': 
+                case 'idfNumber': return 'Invalid format. Must be at least 15 alphanumeric characters.'; 
+                case 'firstName': 
+                case 'lastName': return 'Please enter a valid name (letters and spaces only).'; 
+                default: return 'Invalid format. Please check your entry.'; 
+            }
+        } 
+        
+        if (control.hasError('maxWords')) return `Exceeds the maximum word count of ${control.errors['maxWords'].maxWords}.`; 
+        if (control.hasError('pastDate')) return 'Date cannot be in the past.'; 
+        if (control.hasError('requiredTrue')) return 'You must agree to proceed.'; 
+        
+        return 'Invalid input.'; 
+    }
 }

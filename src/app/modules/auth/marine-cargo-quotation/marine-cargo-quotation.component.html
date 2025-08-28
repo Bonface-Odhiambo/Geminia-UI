@@ -55,48 +55,9 @@
                         <p class="mb-6 text-gray-600">Complete the details below for your marine cargo insurance quote.</p>
                         <form [formGroup]="quotationForm" (ngSubmit)="onSubmit()">
                             <fieldset [disabled]="showHighRiskModal || showExportModal">
-                                <!-- Customer Information Section -->
-                                <h3 class="mb-4 text-xl font-semibold text-gray-800">Customer Information</h3>
-                                <p class="mb-4 text-sm text-gray-500">This is the person or entity purchasing the insurance policy.</p>
-                                <div class="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2">
-                                    <div>
-                                        <label class="mb-2 block text-sm font-medium text-gray-700">First Name <span class="text-red-500">*</span></label>
-                                        <input type="text" formControlName="firstName" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'firstName')}"/>
-                                        <div *ngIf="isFieldInvalid(quotationForm, 'firstName')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'firstName') }}</div>
-                                    </div>
-                                    <div>
-                                        <label class="mb-2 block text-sm font-medium text-gray-700">Last Name / Company Name <span class="text-red-500">*</span></label>
-                                        <input type="text" formControlName="lastName" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'lastName')}"/>
-                                        <div *ngIf="isFieldInvalid(quotationForm, 'lastName')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'lastName') }}</div>
-                                    </div>
-                                    <div>
-                                        <label class="mb-2 block text-sm font-medium text-gray-700">Email Address <span class="text-red-500">*</span></label>
-                                        <input type="email" formControlName="email" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'email')}"/>
-                                        <div *ngIf="isFieldInvalid(quotationForm, 'email')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'email') }}</div>
-                                    </div>
-                                    <div>
-                                        <label class="mb-2 block text-sm font-medium text-gray-700">Phone Number <span class="text-red-500">*</span></label>
-                                        <input type="tel" formControlName="phoneNumber" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" placeholder="e.g. 0712345678" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'phoneNumber')}"/>
-                                        <div *ngIf="isFieldInvalid(quotationForm, 'phoneNumber')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'phoneNumber') }}</div>
-                                    </div>
-                                     <div>
-                                        <label class="mb-2 block text-sm font-medium text-gray-700">
-                                            <span *ngIf="displayUser.type === 'individual'">ID Number</span>
-                                            <span *ngIf="displayUser.type === 'intermediary'">ID / Corp. Reg. No.</span>
-                                            <span class="text-red-500">*</span>
-                                        </label>
-                                        <input type="text" formControlName="idNumber" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'idNumber')}"/>
-                                        <div *ngIf="isFieldInvalid(quotationForm, 'idNumber')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'idNumber') }}</div>
-                                    </div>
-                                    <div>
-                                        <label class="mb-2 block text-sm font-medium text-gray-700">KRA PIN <span class="text-red-500">*</span></label>
-                                        <input type="text" formControlName="kraPin" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" placeholder="Format: A123456789Z" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'kraPin')}"/>
-                                        <div *ngIf="isFieldInvalid(quotationForm, 'kraPin')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'kraPin') }}</div>
-                                    </div>
-                                </div>
-
+                                
                                 <!-- KYC Document Uploads Section -->
-                                <h4 class="mt-6 mb-4 text-lg font-semibold text-gray-700 border-t pt-6">KYC Document Uploads</h4>
+                                <h3 class="mb-4 text-xl font-semibold text-gray-800">KYC Document Uploads</h3>
                                 <p class="mb-4 text-sm text-gray-500">Please upload the following required documents. Accepted formats: PDF, PNG, JPG.</p>
                                 <div class="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2">
                                     <!-- KRA PIN Upload -->
@@ -112,7 +73,7 @@
                                     <!-- National ID Upload -->
                                     <div>
                                         <label for="nationalIdUpload" class="block text-sm font-medium text-gray-700">
-                                            National ID / Passport <span class="text-red-500">*</span>
+                                            National ID <span class="text-red-500">*</span>
                                         </label>
                                         <div class="mt-1">
                                             <input id="nationalIdUpload" formControlName="nationalIdUpload" type="file" class="block w-full cursor-pointer rounded-md border border-gray-300 text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'nationalIdUpload')}">
@@ -122,7 +83,7 @@
                                     <!-- Invoice Upload -->
                                     <div>
                                         <label for="invoiceUpload" class="block text-sm font-medium text-gray-700">
-                                            Proforma Invoice <span class="text-red-500">*</span>
+                                            Invoice <span class="text-red-500">*</span>
                                         </label>
                                         <div class="mt-1">
                                             <input id="invoiceUpload" formControlName="invoiceUpload" type="file" class="block w-full cursor-pointer rounded-md border border-gray-300 text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'invoiceUpload')}">
@@ -138,6 +99,49 @@
                                             <input id="idfUpload" formControlName="idfUpload" type="file" class="block w-full cursor-pointer rounded-md border border-gray-300 text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'idfUpload')}">
                                         </div>
                                         <div *ngIf="isFieldInvalid(quotationForm, 'idfUpload')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'idfUpload') }}</div>
+                                    </div>
+                                </div>
+
+                                <!-- Customer Information Section -->
+                                <h3 class="mb-4 text-xl font-semibold text-gray-800 border-t pt-6 mt-6">Customer Information</h3>
+                                <p class="mb-4 text-sm text-gray-500">This is the person or entity purchasing the insurance policy.</p>
+                                <div class="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2">
+                                    <!-- ID Number and KRA PIN -->
+                                    <div>
+                                        <label class="mb-2 block text-sm font-medium text-gray-700">
+                                            <span *ngIf="displayUser.type === 'individual'">ID Number</span>
+                                            <span *ngIf="displayUser.type === 'intermediary'">ID / Corp. Reg. No.</span>
+                                            <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" formControlName="idNumber" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'idNumber')}"/>
+                                        <div *ngIf="isFieldInvalid(quotationForm, 'idNumber')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'idNumber') }}</div>
+                                    </div>
+                                    <div>
+                                        <label class="mb-2 block text-sm font-medium text-gray-700">KRA PIN <span class="text-red-500">*</span></label>
+                                        <input type="text" formControlName="kraPin" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" placeholder="Format: A123456789Z" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'kraPin')}"/>
+                                        <div *ngIf="isFieldInvalid(quotationForm, 'kraPin')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'kraPin') }}</div>
+                                    </div>
+                                    <!-- First Name and Last Name -->
+                                    <div>
+                                        <label class="mb-2 block text-sm font-medium text-gray-700">First Name <span class="text-red-500">*</span></label>
+                                        <input type="text" formControlName="firstName" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'firstName')}"/>
+                                        <div *ngIf="isFieldInvalid(quotationForm, 'firstName')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'firstName') }}</div>
+                                    </div>
+                                    <div>
+                                        <label class="mb-2 block text-sm font-medium text-gray-700">Last Name <span class="text-red-500">*</span></label>
+                                        <input type="text" formControlName="lastName" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'lastName')}"/>
+                                        <div *ngIf="isFieldInvalid(quotationForm, 'lastName')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'lastName') }}</div>
+                                    </div>
+                                    <!-- Email Address and Phone Number -->
+                                    <div>
+                                        <label class="mb-2 block text-sm font-medium text-gray-700">Email Address <span class="text-red-500">*</span></label>
+                                        <input type="email" formControlName="email" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'email')}"/>
+                                        <div *ngIf="isFieldInvalid(quotationForm, 'email')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'email') }}</div>
+                                    </div>
+                                    <div>
+                                        <label class="mb-2 block text-sm font-medium text-gray-700">Phone Number <span class="text-red-500">*</span></label>
+                                        <input type="tel" formControlName="phoneNumber" class="w-full rounded-md border bg-white px-3 py-2 focus-ring-primary" placeholder="e.g. 0712345678" [ngClass]="{'border-red-500': isFieldInvalid(quotationForm, 'phoneNumber')}"/>
+                                        <div *ngIf="isFieldInvalid(quotationForm, 'phoneNumber')" class="mt-1 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'phoneNumber') }}</div>
                                     </div>
                                 </div>
                                 
@@ -226,7 +230,7 @@
                                  <div class="mt-6 space-y-2">
                                     <label class="flex items-start">
                                         <input type="checkbox" formControlName="termsAndPolicyConsent" class="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus-ring-primary"/>
-                                        <span class="ml-3 text-sm text-gray-700">I agree to the <a href="/terms" target="_blank" class="font-medium text-primary hover:underline">Terms of Use</a> and to the <a href="/privacy" target="_blank" class="font-medium text-primary hover:underline">Data Privacy Policy</a>.*</span>
+                                        <span class="ml-3 text-sm text-gray-700">I agree to the <a (click)="openTermsModal($event)" class="font-medium text-primary hover:underline cursor-pointer">Terms of Use</a> and to the <a (click)="openPrivacyModal($event)" class="font-medium text-primary hover:underline cursor-pointer">Data Privacy Policy</a>.*</span>
                                     </label>
                                     <div *ngIf="isFieldInvalid(quotationForm, 'termsAndPolicyConsent')" class="ml-7 text-sm text-red-600">{{ getErrorMessage(quotationForm, 'termsAndPolicyConsent') }}</div>
                                 </div>
@@ -409,7 +413,7 @@
                     <div class="mt-6 space-y-2">
                         <label class="flex items-start">
                             <input type="checkbox" formControlName="termsAndPolicyConsent" class="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus-ring-primary"/>
-                            <span class="ml-3 text-sm text-gray-700">I agree to the <a href="/terms" target="_blank" class="font-medium text-primary hover:underline">Terms of Use</a> and to the <a href="/privacy" target="_blank" class="font-medium text-primary hover:underline">Data Privacy Policy</a>.*</span>
+                            <span class="ml-3 text-sm text-gray-700">I agree to the <a (click)="openTermsModal($event)" class="font-medium text-primary hover:underline cursor-pointer">Terms of Use</a> and to the <a (click)="openPrivacyModal($event)" class="font-medium text-primary hover:underline cursor-pointer">Data Privacy Policy</a>.*</span>
                         </label>
                         <div *ngIf="isFieldInvalid(showExportModal ? exportRequestForm : highRiskRequestForm, 'termsAndPolicyConsent')" class="ml-7 text-sm text-red-600">{{ getErrorMessage(showExportModal ? exportRequestForm : highRiskRequestForm, 'termsAndPolicyConsent') }}</div>
                     </div>
@@ -422,6 +426,86 @@
         </div>
     </div>
     
+    <!-- Terms of Use Modal -->
+    <div *ngIf="showTermsModal" (click)="closeTermsModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
+        <div (click)="$event.stopPropagation()" class="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white shadow-xl">
+            <div class="sticky top-0 bg-white border-b px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-2xl font-bold text-gray-900">Terms of Use</h2>
+                    <button (click)="closeTermsModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="prose max-w-none text-gray-700">
+                    <h3 class="text-lg font-semibold mb-4">Terms of Use and Data Privacy Policy</h3>
+                    <p class="mb-4">
+                        Geminia Insurance Company Limited is committed to protecting the fundamental human right to privacy of those with whom we interact. We recognize the need to safeguard personal data that is collected or disclosed to us as part of the Know-your-customer information required by us in order to provide you with the requisite financial product or service.
+                    </p>
+                    <p class="mb-4">
+                        We are committed to complying with the requirements of the Data Protection Act and the attendant regulations as well as best global best practices regarding the processing of your personal data. In this regard, you are required to acquaint yourselves with our data privacy statement which is intended to tell you how we use your personal data and describes how we collect and process your personal data during and after your relationship.
+                    </p>
+                    <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                        <p class="text-sm text-blue-800">
+                            <strong>External Link:</strong> For complete terms and conditions, please visit: 
+                            <a href="https://geminia.co.ke/data-privacy-statement/" target="_blank" class="font-medium text-blue-600 hover:underline ml-1">
+                                https://geminia.co.ke/data-privacy-statement/
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-end border-t pt-4">
+                    <button (click)="closeTermsModal()" class="btn-primary rounded-md px-6 py-2 font-medium text-white">
+                        I Understand
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Privacy Policy Modal -->
+    <div *ngIf="showPrivacyModal" (click)="closePrivacyModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
+        <div (click)="$event.stopPropagation()" class="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white shadow-xl">
+            <div class="sticky top-0 bg-white border-b px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-2xl font-bold text-gray-900">Data Privacy Policy</h2>
+                    <button (click)="closePrivacyModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="prose max-w-none text-gray-700">
+                    <h3 class="text-lg font-semibold mb-4">Data Privacy Statement</h3>
+                    <p class="mb-4">
+                        Geminia Insurance Company Limited is committed to protecting the fundamental human right to privacy of those with whom we interact. We recognize the need to safeguard personal data that is collected or disclosed to us as part of the Know-your-customer information required by us in order to provide you with the requisite financial product or service.
+                    </p>
+                    <p class="mb-4">
+                        We are committed to complying with the requirements of the Data Protection Act and the attendant regulations as well as best global best practices regarding the processing of your personal data. In this regard, you are required to acquaint yourselves with our data privacy statement which is intended to tell you how we use your personal data and describes how we collect and process your personal data during and after your relationship.
+                    </p>
+                    <div class="mt-6 p-4 bg-green-50 rounded-lg">
+                        <p class="text-sm text-green-800">
+                            <strong>External Link:</strong> For complete privacy policy details, please visit: 
+                            <a href="https://geminia.co.ke/data-privacy-statement/" target="_blank" class="font-medium text-green-600 hover:underline ml-1">
+                                https://geminia.co.ke/data-privacy-statement/
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-end border-t pt-4">
+                    <button (click)="closePrivacyModal()" class="btn-primary rounded-md px-6 py-2 font-medium text-white">
+                        I Understand
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Universal Toast Message -->
     <div *ngIf="toastMessage" class="toast-container">
         {{ toastMessage }}
