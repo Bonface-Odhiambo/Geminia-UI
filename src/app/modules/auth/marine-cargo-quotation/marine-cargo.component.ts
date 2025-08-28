@@ -42,25 +42,19 @@ export function idNumberValidator(control: AbstractControl): { [key: string]: an
     return idPattern.test(control.value) ? null : { idNumber: true };
 }
 
-// Custom validator for IDF number format (when provided)
+// Custom validator for IDF number format (e.g., 25MV65757585MU567)
 export function idfNumberValidator(control: AbstractControl): { [key: string]: any } | null {
-    if (!control.value) return null; // Optional field
-    const idfPattern = /^[a-zA-Z0-9]+$/;
-    const minLength = 8;
-    if (control.value.length < minLength) {
-        return { idfNumberLength: { requiredLength: minLength, actualLength: control.value.length } };
-    }
+    if (!control.value) return null; 
+    // Format: 2 numbers, 2 letters, multiple numbers, 2 letters, multiple numbers
+    const idfPattern = /^\d{2}[A-Z]{2}\d+[A-Z]{2}\d+$/i;
     return idfPattern.test(control.value) ? null : { idfNumber: true };
 }
 
-// Custom validator for UCR number format (when provided)
+// Custom validator for UCR number format (e.g., 25MV65757585MU567)
 export function ucrNumberValidator(control: AbstractControl): { [key: string]: any } | null {
-    if (!control.value) return null; // Optional field
-    const ucrPattern = /^[a-zA-Z0-9]+$/;
-    const minLength = 8;
-    if (control.value.length < minLength) {
-        return { ucrNumberLength: { requiredLength: minLength, actualLength: control.value.length } };
-    }
+    if (!control.value) return null;
+    // Format: 2 numbers, 2 letters, multiple numbers, 2 letters, multiple numbers
+    const ucrPattern = /^\d{2}[A-Z]{2}\d+[A-Z]{2}\d+$/i;
     return ucrPattern.test(control.value) ? null : { ucrNumber: true };
 }
 
@@ -808,11 +802,8 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         if (control.hasError('idNumber')) return 'Invalid ID format. Use 5-15 alphanumeric characters (e.g., 12345678, A123B456C).';
         if (control.hasError('invalidName')) return 'Name can only contain letters, spaces, hyphens, and apostrophes.';
         
-        if (control.hasError('idfNumber')) return 'Invalid IDF format. Use alphanumeric characters only (e.g., IDF123456789).';
-        if (control.hasError('idfNumberLength')) return `IDF number must be at least ${control.errors['idfNumberLength'].requiredLength} characters.`;
-        
-        if (control.hasError('ucrNumber')) return 'Invalid UCR format. Use alphanumeric characters only (e.g., UCR123456789).';
-        if (control.hasError('ucrNumberLength')) return `UCR number must be at least ${control.errors['ucrNumberLength'].requiredLength} characters.`;
+        if (control.hasError('idfNumber')) return 'Invalid IDF format. Expected format: 25MV65757585MU567.';
+        if (control.hasError('ucrNumber')) return 'Invalid UCR format. Expected format: 25MV65757585MU567.';
         
         if (control.hasError('maxWords')) return `Description exceeds maximum word limit of ${control.errors['maxWords'].maxWords} words.`; 
         
