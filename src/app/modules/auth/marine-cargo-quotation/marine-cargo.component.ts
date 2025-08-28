@@ -655,7 +655,7 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
             destination: [''],
             vesselName: [''], // Made optional
             coverStartDate: ['', [Validators.required, this.noPastDatesValidator]],
-            sumInsured: ['', [Validators.required, Validators.min(10000)]],
+            sumInsured: [''],
             descriptionOfGoods: ['', [Validators.required, Validators.minLength(20)]],
             ucrNumber: ['', ucrNumberValidator], // Made optional with custom validator
             idfNumber: ['', [Validators.required, idfNumberValidator]],
@@ -833,7 +833,7 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         
         if (control.hasError('maxWords')) return `Description exceeds maximum word limit of ${control.errors['maxWords'].maxWords} words.`; 
         
-        return 'Invalid input. Please check the format.'; 
+        return 'Please type in at least 10 words of description.'; 
     }
 
     // Helper methods for placeholder text and format hints
@@ -916,3 +916,4 @@ export class MarineCargoQuotationComponent implements OnInit, OnDestroy {
         }
     }
 }
+
